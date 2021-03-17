@@ -1,5 +1,9 @@
 query Alerts {
-    alerts {
-        alertDescriptionText
+    alertDescriptionText
+    alertSeverityLevel
+    alertUrl
+    alertUrlTranslations {
+      text
+      language
     }
-}
+  }
