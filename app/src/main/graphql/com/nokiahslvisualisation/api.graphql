@@ -1,0 +1,5 @@
+query Alerts {
+    alerts {
+        alertDescriptionText
+    }
+}
