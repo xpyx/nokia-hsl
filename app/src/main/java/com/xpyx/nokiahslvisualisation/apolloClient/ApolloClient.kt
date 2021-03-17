@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 class ApolloClient {
 
     val apolloClient = ApolloClient.builder()
-        .serverUrl("https://api.digitransit.fi/graphiql/hsl/")
+        .serverUrl("https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql")
         .okHttpClient(
             OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)

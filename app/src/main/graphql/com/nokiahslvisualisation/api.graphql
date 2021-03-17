@@ -1,9 +1,0 @@
-query Alerts {
-    alertDescriptionText
-    alertSeverityLevel
-    alertUrl
-    alertUrlTranslations {
-      text
-      language
-    }
-  }
