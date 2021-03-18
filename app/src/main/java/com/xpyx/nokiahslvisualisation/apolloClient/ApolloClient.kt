@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 class ApolloClient {
 
-    val apolloClient = ApolloClient.builder()
+    val client: ApolloClient = ApolloClient.builder()
         .serverUrl("https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql")
         .okHttpClient(
             OkHttpClient.Builder()

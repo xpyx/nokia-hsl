@@ -17,11 +17,10 @@ class MainActivity : AppCompatActivity() {
 
         val btn = findViewById<Button>(R.id.button)
         val text = findViewById<TextView>(R.id.textView)
-
-        val apolloClient = ApolloClient()
+        val apollo = ApolloClient()
 
         btn.setOnClickListener{
-            apolloClient.apolloClient.query(
+            apollo.client.query(
                 GetAlertsQuery.builder().build()
             ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
 
