@@ -21,6 +21,9 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
 
+      - name: Fix error instrumentation error
+        run: mv /Users/runner/Library/Android/sdk/ndk-bundle /Users/runner/Library/Android/sdk/ndk/
+
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -30,7 +33,7 @@ jobs:
           avd-name: test
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: mv /Users/runner/Library/Android/sdk/ndk-bundle /Users/runner/Library/Android/sdk/ndk/ && ./gradlew connectedCheck
+          script: ./gradlew connectedCheck
 
       - name: Upload Reports
         uses: actions/upload-artifact@v1
