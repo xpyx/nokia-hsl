@@ -4,7 +4,7 @@ on: [push]
 jobs:
   build-and-test:
     name: Build and run tests
-    runs-on: macos-latest 
+    runs-on: macos-10.15 
     steps:
 
       - name: Checkout current repository in ubuntu's file system 
@@ -20,9 +20,6 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
-
-      - name: Fix error instrumentation error
-        run: mv /Users/runner/Library/Android/sdk/ndk-bundle /Users/runner/Library/Android/sdk/ndk/
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
