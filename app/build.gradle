@@ -7,13 +7,13 @@ plugins {
 
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.xpyx.nokiahslvisualisation"
-        minSdkVersion 30
-        targetSdkVersion 30
+        minSdkVersion 29
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -32,6 +32,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
     }
 }
 
