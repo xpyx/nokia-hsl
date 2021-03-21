@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onResponse(response: Response<GetAlertsQuery.Data>) {
-                    Log.d("DBG, on response", response.data().toString())
-                    text.text = response.data().toString()
+                    Log.d("DBG, on response", response.data.toString())
+                    text.text = response.data.toString()
                 }
             })
         }
