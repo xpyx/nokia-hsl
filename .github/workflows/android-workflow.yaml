@@ -23,21 +23,9 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
-
-      - name: Run instrumentation tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          arch: x86
-          profile: Nexus 6
-          ndk: 21.4.7075529
-          avd-name: test
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          script: ./gradlew connectedCheck
-
-      - name: Upload Reports
-        uses: actions/upload-artifact@v1
+        
+      - name: Upload reports
+ 	uses: actions/upload-artifact@v1
         with:
            name: reports
            path: app/build/reportsk
