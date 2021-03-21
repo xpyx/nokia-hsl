@@ -19,9 +19,6 @@ jobs:
       - name: Print contents in current directory
         run: ls -la
 
-      - name: Fix ndk location
-        run: mv /Users/runner/Library/Android/sdk/ndk-bundle /Users/runner/Library/Android/sdk/ndk/21.4.7075529
-
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
 
