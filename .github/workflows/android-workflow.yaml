@@ -3,21 +3,6 @@ on: [push]
 
 jobs:
 
-    test:
-    runs-on: macos-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v2
-
-    - name: run tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 30
-	target: google_apis
-	arch: x86
-        profile: Pixel 4 API 30
-        script: ./gradlew connectedCheck
-
   build-and-test:
     name: Build and run tests
     runs-on: macos-10.15 
@@ -39,6 +24,12 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
+
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
 
       - name: Upload Reports
         uses: actions/upload-artifact@v1
