@@ -3,17 +3,19 @@ on: [push]
 
 jobs:
 
-  test:
-      runs-on: macos-latest
-      steps:
-      - name: checkout
-        uses: actions/checkout@v2
+    test:
+    runs-on: macos-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
 
-      - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          script: ./gradlew connectedCheck
+    - name: run tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 30
+	arch: x86_64
+        profile: Pixel 4 API 30
+        script: ./gradlew connectedCheck
 
   build-and-test:
     name: Build and run tests
