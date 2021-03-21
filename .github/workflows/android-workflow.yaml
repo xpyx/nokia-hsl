@@ -28,4 +28,4 @@ jobs:
  	uses: actions/upload-artifact@v1
         with:
            name: reports
-           path: app/build/reportsk
+           path: app/build/reports
