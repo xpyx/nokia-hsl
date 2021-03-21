@@ -1,0 +1,35 @@
+query GetAlerts {
+
+    alerts {
+        alertHeaderText
+        alertHeaderTextTranslations {
+            text
+            language
+        }
+        alertDescriptionText
+        alertDescriptionTextTranslations {
+            text
+            language
+        }
+        alertUrl
+        effectiveStartDate
+        effectiveEndDate
+        agency {
+            gtfsId
+        }
+        route {
+            gtfsId
+        }
+        patterns {
+            code
+        }
+        trip {
+            gtfsId
+        }
+        stop {
+            gtfsId
+        }
+    }
+
+
+}
