@@ -20,19 +20,19 @@ jobs:
         run: ls -la
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest
+        run: cd NokiaHslVisualisation && ./gradlew testDebugUnitTest
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: ./gradlew connectedCheck
+          script: cd NokiaHslVisualisation && ./gradlew connectedCheck
 
       - name: Upload Reports
         uses: actions/upload-artifact@v1
         with:
            name: reports
-           path: app/build/reports 
+           path: NokiaHslVisualisation/app/build/reports 
 
 
   generate-apk:
@@ -49,10 +49,10 @@ jobs:
           java-version: 1.8
 
       - name: Generate apk
-        run: ./gradlew assembleDebug
+        run: cd NokiaHslVisualisation && ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
           name: build-output
-          path: app/build/outputs/apk/debug/app-debug.apk      
+          path: NokiaHslVisualisation/app/build/outputs/apk/debug/app-debug.apk      
