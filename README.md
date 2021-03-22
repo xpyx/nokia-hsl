@@ -6,8 +6,8 @@ To run the Realtime Transport Updates API:
 
 Prerequisites:
 
-[Node](https://nodejs.org/en/)
-[Npm](https://www.npmjs.com/)
+[Node](https://nodejs.org/en/) | 
+[Npm](https://www.npmjs.com/) | 
 [Docker](https://www.docker.com/products/docker-desktop)
 
 1. `npm install gtfs -g`
