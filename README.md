@@ -6,8 +6,9 @@ To run the Realtime Transport Updates API:
 
 Prerequisites:
 
-Node & Npm
-Docker
+[Node](https://nodejs.org/en/)
+[Npm](https://www.npmjs.com/)
+[Docker](https://www.docker.com/products/docker-desktop)
 
 1. `npm install gtfs -g`
 2. `cd Realtime-Transport-Updates-API`
