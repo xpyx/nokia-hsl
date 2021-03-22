@@ -1,5 +1,7 @@
 ### HSL Visualisation
 
+[![CI Workflow](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml/badge.svg)](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml)
+
 To run the Android app, open NokiaHslVisualisation directory in Android Studio and run.
 
 To run the Realtime Transport Updates API:
