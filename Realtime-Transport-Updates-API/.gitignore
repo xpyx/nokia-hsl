@@ -3,7 +3,5 @@ docker-test-db
 .nyc_output
 GTFSR_Outputs
 unused_files
-.env
 Dockerfile
 sample-config.js
-docker-compose.yml

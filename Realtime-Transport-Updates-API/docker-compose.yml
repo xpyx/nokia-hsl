@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+    docker-gtfs-db:
+        container_name: docker-gtfs-db
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+            - '1433:1433'
+        environment: 
+            SA_PASSWORD: '10Password'
+            ACCEPT_EULA: 'Y'
