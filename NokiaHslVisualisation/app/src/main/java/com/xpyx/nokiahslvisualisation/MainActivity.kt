@@ -19,8 +19,7 @@ class MainActivity : AppCompatActivity() {
         val text = findViewById<TextView>(R.id.textView)
         val apollo = ApolloClient()
 
-        // Corrupt code test
-        tn.setOnClickListener{
+        btn.setOnClickListener{
             apollo.client.query(
                 GetAlertsQuery.builder().build()
             ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
