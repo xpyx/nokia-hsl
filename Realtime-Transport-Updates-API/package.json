@@ -105,6 +105,7 @@
     "moment": "^2.29.1",
     "mssql": "^7.0.0-alpha.4",
     "node-fetch": "^2.6.1",
+    "npm": "^7.6.3",
     "pretty-error": "^2.1.2",
     "shelljs": "^0.8.4",
     "sqlstring": "^2.3.2",
