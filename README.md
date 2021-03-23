@@ -35,9 +35,9 @@ After this you have a docker container with the GTFS data from HSL to make queri
 12. `npm run`
 13. Go to (http://127.0.0.1:3000/api/routes/1001) to see route information
 
-#### The GTFS database is in azure now and the server connects to it with variables set in the .env file
+#### The GTFS database is in Azure now and the server connects to it with variables set in the .env file
 
-1. Setup .env
+1. Setup .env with Azure secrets from here: https://docs.google.com/spreadsheets/d/1x4Js820tdTT7_A2OFcWZzXjuSML6FdiHpvU0n0_NLWQ
 2. `npm run prod`
 3. Go to (http://127.0.0.1:3000/api/routes/1001) to see route information
 
