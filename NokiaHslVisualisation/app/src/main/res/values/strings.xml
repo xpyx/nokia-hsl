@@ -8,4 +8,11 @@
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+    // Home fragment
+    <string name="btn_alerts">Get Alerts</string>
+    <string name="btn_positions">Get Positions</string>
+
 </resources>
