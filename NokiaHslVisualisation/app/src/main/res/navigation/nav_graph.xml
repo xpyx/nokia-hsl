@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/action_home">
+
+    <fragment
+        android:id="@+id/action_home"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/action_list"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.ListFragment"
+        android:label="List View"
+        tools:layout="@layout/fragment_list" />
+    <fragment
+        android:id="@+id/action_map"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map" />
+</navigation>

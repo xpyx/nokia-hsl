@@ -1,39 +1,32 @@
 package com.xpyx.nokiahslvisualisation
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.exception.ApolloException
-import com.xpyx.nokiahslvisualisation.apolloClient.ApolloClient
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btn = findViewById<Button>(R.id.button)
-        val text = findViewById<TextView>(R.id.textView)
-        val apollo = ApolloClient()
 
-        btn.setOnClickListener{
-            apollo.client.query(
-                GetAlertsQuery.builder().build()
-            ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
+        // Navigation
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_menu)
+        val navController = findNavController(R.id.nav_host_fragment)
 
-                override fun onFailure(e: ApolloException) {
-                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
-                }
-
-                override fun onResponse(response: Response<GetAlertsQuery.Data>) {
-                    Log.d("DBG, on response", response.data.toString())
-                    text.text = response.data.toString()
-                }
-            })
-        }
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.action_home,
+                R.id.action_map,
+                R.id.action_list
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        bottomNavigationView.setupWithNavController(navController)
 
     }
 }
