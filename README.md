@@ -48,3 +48,4 @@ After this you have a docker container with the GTFS data from HSL to make queri
 2. `mqtt subscribe -h mqtt.hsl.fi -l mqtts -p 8883 -v \
   -t "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"`
 
+You can check for examples here (https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/#examples)
