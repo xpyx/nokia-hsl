@@ -49,26 +49,31 @@ class MapFragment : Fragment() {
         mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync { mapboxMap ->
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-                // Adding a raster source layer
-                val source = RasterSource(
-                    "hsl-map",
-                    TileSet("2.1.0", "https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png")
-                )
+           // mapboxMap.getStyle {
+              //  mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+                    // Adding a raster source layer
+
+                     mapboxMap.setStyle(Style.Builder().fromUri("asset://local_style")) {
+
+                    val source = RasterSource(
+                        "map",
+                        TileSet( "https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png","mapbox://mapid")
+                    )
 
 
 
-                mapboxMap?.addMarker(
-                    MarkerOptions()
-                        .position(LatLng(60.444, 24.0, 1.0))
-                )
-                val position = CameraPosition.Builder()
-                    .target(LatLng(60.444, 24.07520))
-                    .zoom(10.0)
-                    .tilt(20.0)
-                    .build()
-                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
-                it.addSource(source)
+                    mapboxMap?.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(60.444, 24.0, 1.0))
+                    )
+                    val position = CameraPosition.Builder()
+                        .target(LatLng(60.444, 24.07520))
+                        .zoom(10.0)
+                        .tilt(20.0)
+                        .build()
+                    mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
+                    it.addSource(source)
+
 
             }
         }
