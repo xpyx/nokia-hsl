@@ -5,19 +5,35 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/action_home">
 
+
+    <action android:id="@+id/action_global_action_home" app:destination="@id/action_home"/>
     <fragment
         android:id="@+id/action_home"
         android:name="com.xpyx.nokiahslvisualisation.fragments.home.HomeFragment"
-        android:label="Home"
+        android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/action_list"
         android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
-        android:label="List View"
-        tools:layout="@layout/fragment_list" />
+        android:label="@string/menu_list"
+        tools:layout="@layout/fragment_list">
+        <action
+            android:id="@+id/action_action_list_to_action_bus"
+            app:destination="@id/action_bus" />
+    </fragment>
     <fragment
         android:id="@+id/action_map"
         android:name="com.xpyx.nokiahslvisualisation.fragments.map.MapFragment"
-        android:label="Map"
+        android:label="@string/menu_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/action_bus"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.busdetails.BusDetailsFragment"
+        android:label="@string/details_view"
+        tools:layout="@layout/fragment_bus_details"
+        >
+        <action
+            android:id="@+id/action_action_bus_to_action_list"
+            app:destination="@id/action_list" />
+    </fragment>
 </navigation>
