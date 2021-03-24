@@ -40,11 +40,6 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       /* context?.let { Mapbox.getInstance(
-            it.applicationContext,
-            getString(R.string.mapbox_access_token)
-        ) }*/
-
 
         mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
@@ -67,7 +62,7 @@ class MapFragment : Fragment() {
                             .position(LatLng(60.444, 24.0, 1.0))
                     )
                     val position = CameraPosition.Builder()
-                        .target(LatLng(60.444, 24.07520))
+                        .target(LatLng(60.1733244, 24.9410248))
                         .zoom(10.0)
                         .tilt(20.0)
                         .build()
