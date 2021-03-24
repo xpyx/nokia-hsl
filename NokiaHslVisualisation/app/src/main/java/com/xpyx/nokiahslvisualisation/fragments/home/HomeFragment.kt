@@ -15,8 +15,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_MQTT_HOST
 import com.xpyx.nokiahslvisualisation.GetAlertsQuery
 import com.xpyx.nokiahslvisualisation.R
-import com.xpyx.nokiahslvisualisation.apolloClient.ApolloClient
-import com.xpyx.nokiahslvisualisation.mqttClient.MqttClientHelper
+import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
+import com.xpyx.nokiahslvisualisation.networking.mqttClient.MqttClientHelper
 import android.text.method.ScrollingMovementMethod
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
