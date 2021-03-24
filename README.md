@@ -1,6 +1,10 @@
 # AR Visualisation tool
+<<<<<<< HEAD
 
 ## for transportation problems in the HSL public transport region
+=======
+### (for transportation problems in the HSL public transport region)
+>>>>>>> 56a11a9a04a647bf04a3f351f16379d30ab40e54
 
 [![CI Workflow](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml/badge.svg)](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml)
 
@@ -12,6 +16,7 @@ This repository contains:
 #### To run the Android app, open NokiaHslVisualisation directory in Android Studio and run.
 
 #### To run the Realtime Transport Updates API
+<<<<<<< HEAD
 
 #### You will need:
 
@@ -39,6 +44,35 @@ You can check for examples here (https://digitransit.fi/en/developers/apis/4-rea
 
 ### Tools no more in use (updated in case a library is dropped)
 
+=======
+
+#### You will need:
+
+[Node](https://nodejs.org/en/) & [Npm](https://www.npmjs.com/)
+
+### The HSL GTFS static data is located in an Azure SQL Server
+
+You will need to set the connection variables in the .env file
+
+0. `cd Realtime-Transport-Updates-API`
+1. `cp .env.example .env`
+2. Edit the `.env` file. Add the Azure secrets from this sheet: https://docs.google.com/spreadsheets/d/1x4Js820tdTT7_A2OFcWZzXjuSML6FdiHpvU0n0_NLWQ
+3. If you can't access the sheet, contact ville.pystynen@metropolia.fi
+4. `npm run prod`
+5. Go to (http://127.0.0.1:3000/api/routes/1001) to see route information
+
+### To get the MQTT feed of vehicles
+
+1. `npm install -g mqtt`
+2. `mqtt subscribe -h mqtt.hsl.fi -l mqtts -p 8883 -v \
+  -t "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"`
+
+You can check for examples here (https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/#examples)
+
+
+### Tools no more in use (updated in case a library is dropped)
+
+>>>>>>> 56a11a9a04a647bf04a3f351f16379d30ab40e54
 Docker
 
 ### Instructions no more in use 
