@@ -10,7 +10,7 @@
         android:id="@+id/btn_alerts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="24dp"
         android:text="@string/btn_alerts"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,19 +18,20 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="361dp"
-        android:layout_height="299dp"
+        android:layout_width="358dp"
+        android:layout_height="421dp"
         android:layout_marginBottom="54dp"
         app:layout_constraintBottom_toTopOf="@+id/textViewMsgPayload"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.452"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textViewMsgPayload"
-        android:layout_width="357dp"
-        android:layout_height="265dp"
+        android:layout_width="363dp"
+        android:layout_height="122dp"
         android:layout_marginBottom="108dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -42,9 +43,9 @@
         android:id="@+id/btn_positions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="4dp"
         android:layout_marginBottom="24dp"
-        android:text="@string/btn_positions"
+        android:text="@string/btn_start_mqtt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -57,5 +58,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewMsgPayload" />
+
+    <Button
+        android:id="@+id/btn_positions_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="@string/btn_stop_mqtt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
