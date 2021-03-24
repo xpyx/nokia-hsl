@@ -45,10 +45,10 @@ const prod = {
 		apiUrl: GTFSR_API_URL
 	},
 	sql: {
-		server: DOCKER_SQL_SERVER,
-		database: DOCKER_SQL_DATABASE,
-		user: DOCKER_SQL_USER,
-		password: DOCKER_SQL_PASSWORD,
+		server: SQL_SERVER,
+		database: SQL_DATABASE,
+		user: SQL_USER,
+		password: SQL_PASSWORD,
 		options: {
 			encrypt: sqlEncrypt,
 			enableArithAbort: true,
@@ -67,10 +67,10 @@ const test = {
 		apiUrl: GTFSR_TEST_API_URL
 	},
 	sql: {
-		server: DOCKER_SQL_SERVER,
-		database: DOCKER_SQL_DATABASE,
-		user: DOCKER_SQL_USER,
-		password: DOCKER_SQL_PASSWORD,
+		server: SQL_SERVER,
+		database: SQL_DATABASE,
+		user: SQL_USER,
+		password: SQL_PASSWORD,
 		options: {
 			encrypt: sqlEncrypt,
 			enableArithAbort: true,
