@@ -1,5 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,26 +12,17 @@ import android.widget.TextView
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
-import com.google.android.material.snackbar.Snackbar
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_MQTT_HOST
 import com.xpyx.nokiahslvisualisation.GetAlertsQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
-import com.xpyx.nokiahslvisualisation.networking.mqttClient.MqttClientHelper
 import android.text.method.ScrollingMovementMethod
-
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
-import org.eclipse.paho.client.mqttv3.MqttMessage
-import java.util.*
+import org.eclipse.paho.android.service.MqttAndroidClient
+import org.eclipse.paho.client.mqttv3.*
 
 class HomeFragment : Fragment() {
 
+    private lateinit var mqttAndroidClient: MqttAndroidClient
 
-
-    private val mqttClient by lazy {
-        MqttClientHelper(activity)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,54 +53,43 @@ class HomeFragment : Fragment() {
             })
         }
 
-        // Get HSL Vehicle positions
+        // Get HSL Vehicle positions with MQTT
+
+        // Connect to HSL MQTT broker
+        connect(view.context)
+
         val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-        setMqttCallBack(view)
 
         // initialize 'num msgs received' field in the view
-        var textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
+        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
         textViewNumMsgs.text = "0"
 
         btnPositions.setOnClickListener{
-            mqttClient.subscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
+//            mqttClient.subscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
         }
         return view
     }
 
-    private fun setMqttCallBack(view: View) {
-        var textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
-        var textViewMsgPayload = view.findViewById<TextView>(R.id.textViewMsgPayload)
-        textViewMsgPayload.movementMethod = ScrollingMovementMethod()
-
-        mqttClient.setCallback(object : MqttCallbackExtended {
-            override fun connectComplete(b: Boolean, s: String) {
-                val snackbarMsg = "Connected to host:\n'$HSL_MQTT_HOST'."
-                Log.w("Debug", snackbarMsg)
-                Snackbar.make(view.findViewById(android.R.id.content), snackbarMsg, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+    fun connect(applicationContext : Context) {
+        mqttAndroidClient = MqttAndroidClient ( context?.applicationContext,"tcp://mqtt.hsl.fi:1883","YOUR CLIENT ID" )
+        try {
+            val token = mqttAndroidClient.connect()
+            token.actionCallback = object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken)                        {
+                    Log.i("Connection", "success ")
+                    //connectionStatus = true
+                    // Give your callback on connection established here
+                }
+                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                    //connectionStatus = false
+                    Log.i("Connection", "failure")
+                    // Give your callback on connection failure here
+                    exception.printStackTrace()
+                }
             }
-            override fun connectionLost(throwable: Throwable) {
-                val snackbarMsg = "Connection to host lost:\n'$HSL_MQTT_HOST'"
-                Log.w("Debug", snackbarMsg)
-                Snackbar.make(view.findViewById(android.R.id.content), snackbarMsg, Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-            }
-            @Throws(Exception::class)
-            override fun messageArrived(topic: String, mqttMessage: MqttMessage) {
-                Log.w("Debug", "Message received from host '$HSL_MQTT_HOST': $mqttMessage")
-                textViewNumMsgs.text = ("${textViewNumMsgs.text.toString().toInt() + 1}")
-                val str: String = "------------"+ Calendar.getInstance().time +"-------------\n$mqttMessage\n${textViewMsgPayload.text}"
-                textViewMsgPayload.text = str
-            }
-
-            override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {
-                Log.w("Debug", "Message published to host '$HSL_MQTT_HOST'")
-            }
-        })
-    }
-
-    override fun onDestroy() {
-        mqttClient.destroy()
-        super.onDestroy()
+        } catch (e: MqttException) {
+            // Give your callback on connection failure here
+            e.printStackTrace()
+        }
     }
 }
