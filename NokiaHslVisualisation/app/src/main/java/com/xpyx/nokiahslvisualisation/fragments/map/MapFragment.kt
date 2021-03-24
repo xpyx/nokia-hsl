@@ -1,4 +1,4 @@
-package com.xpyx.nokiahslvisualisation.fragments
+package com.xpyx.nokiahslvisualisation.fragments.map
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
