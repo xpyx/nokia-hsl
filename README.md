@@ -1,5 +1,5 @@
 # AR Visualisation tool
-## for transportation problems in the HSL public transport region
+### for transportation problems in the HSL public transport region
 
 [![CI Workflow](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml/badge.svg)](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml)
 
