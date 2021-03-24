@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/action_home"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.HomeFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.home.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/action_list"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.ListFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
         android:label="List View"
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/action_map"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.MapFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.map.MapFragment"
         android:label="Map"
         tools:layout="@layout/fragment_map" />
 </navigation>

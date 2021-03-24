@@ -1,4 +1,4 @@
-package com.xpyx.nokiahslvisualisation.fragments
+package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.os.Bundle
 import android.util.Log
