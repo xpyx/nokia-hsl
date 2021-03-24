@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
 import org.w3c.dom.Text
@@ -24,6 +25,8 @@ class BusListAdapter(private val busList: MutableList<FakeBus>) : RecyclerView.A
         titleTextView.text = bus.title
         val problemTextView = holder.itemView.findViewById<TextView>(R.id.problem_text_view)
         problemTextView.text = bus.problem
+        holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_list_to_action_bus))
+
     }
 
     override fun getItemCount(): Int {
