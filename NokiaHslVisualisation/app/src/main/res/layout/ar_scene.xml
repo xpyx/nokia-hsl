@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ARFragment">
+    tools:context=".MainActivity">
 
     <fragment
         android:name="com.google.ar.sceneform.ux.ArFragment"

@@ -6,6 +6,7 @@
     <string name="menu_list">List View</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Bus details</string>
+    <string name="menu_ar">AR View</string>
 
     // List view
     <string name="button_text">Refresh</string>

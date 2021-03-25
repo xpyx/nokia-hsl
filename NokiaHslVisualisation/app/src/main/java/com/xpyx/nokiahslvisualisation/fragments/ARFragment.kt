@@ -20,7 +20,7 @@ class ARFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.ar_view, container, false)
+        return inflater.inflate(R.layout.ar_scene, container, false)
     }
 
 }
