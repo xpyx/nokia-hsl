@@ -1,9 +1,7 @@
-package com.xpyx.nokiahslvisualisation.mqttClient
+package com.xpyx.nokiahslvisualisation.networking.mqttClient
 
 import android.util.Log
 import android.content.Context
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CLIENT_PASSWORD
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_CLEAN_SESSION
 import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_KEEP_ALIVE_INTERVAL
 import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_RECONNECT

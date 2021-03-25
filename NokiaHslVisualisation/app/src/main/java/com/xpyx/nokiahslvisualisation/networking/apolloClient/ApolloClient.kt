@@ -1,4 +1,4 @@
-package com.xpyx.nokiahslvisualisation.apolloClient
+package com.xpyx.nokiahslvisualisation.networking.apolloClient
 
 import com.apollographql.apollo.ApolloClient
 
