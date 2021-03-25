@@ -13,4 +13,8 @@
     <item android:id="@+id/action_list"
         android:title="@string/menu_list"
         android:icon="@drawable/list_icon" />
+
+    <item android:id="@+id/ARFragment"
+        android:title="@string/menu_AR"
+        android:icon="@drawable/ar_icon" />
 </menu>

@@ -20,4 +20,9 @@
         android:name="com.xpyx.nokiahslvisualisation.fragments.MapFragment"
         android:label="Map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/ARFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.ARFragment"
+        android:label="Augmented Reality"
+        tools:layout="@layout/ar_view" />
 </navigation>
