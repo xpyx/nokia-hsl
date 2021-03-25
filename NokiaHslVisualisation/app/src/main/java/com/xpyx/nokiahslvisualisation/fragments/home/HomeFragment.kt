@@ -59,26 +59,24 @@ class HomeFragment : Fragment() {
         }
 
         // Get HSL Vehicle positions with MQTT
-
         // Connect to HSL MQTT broker
         connect(view.context)
-
         val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-
         // initialize 'num msgs received' field in the view
         val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
         textViewNumMsgs.text = counter.toString()
-
         btnPositions.setOnClickListener{
             scope.launch {
                 subscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
                 receiveMessages()
-
             }
+        }
 
-
-
-
+        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
+        btnStop.setOnClickListener{
+            scope.launch {
+                unSubscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
+            }
         }
         return view
     }
@@ -160,6 +158,23 @@ class HomeFragment : Fragment() {
             }
         })
     }
+
+    fun unSubscribe(topic: String) {
+        try {
+            val unsubToken = mqttAndroidClient.unsubscribe(topic)
+            unsubToken.actionCallback = object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken) {
+                    // Give your callback on unsubscribing here
+                }
+                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                    // Give your callback on failure here
+                }
+            }
+        } catch (e: MqttException) {
+            // Give your callback on failure here
+        }
+    }
+
 
     fun Fragment?.runOnUiThread(action: () -> Unit) {
         this ?: return

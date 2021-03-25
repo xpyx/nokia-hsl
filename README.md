@@ -1,22 +1,28 @@
 # AR Visualisation tool
-## for transportation problems in the HSL public transport region
+#### for transportation problems in the HSL public transport region
 
 [![CI Workflow](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml/badge.svg)](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml)
 
 This repository contains:
 
 - Android client for displaying realtime public transport data
-- Node Express server for connecting to HSL GTFS-RT feed and to a SQL Server in Azure cloud 
+- Node Express server for connecting to HSL GTFS-RT feed and to a SQL Server in Azure cloud
 
-#### To run the Android app, open NokiaHslVisualisation directory in Android Studio and run.
+Used libraries:
 
-#### To run the Realtime Transport Updates API
+- Jetbox Navigation
+- Apollo Graphql
+- Paho Mqtt
+- Mapbox
+- Jacoco
 
-#### You will need:
+#### To run the Android app
 
-[Node](https://nodejs.org/en/) & [Npm](https://www.npmjs.com/)
+Open NokiaHslVisualisation directory in Android Studio and run the app.
 
-### The HSL GTFS static data is located in an Azure SQL Server
+#### To run the Realtime Transport Updates API server
+
+Prerequisites: [Node](https://nodejs.org/en/) & [Npm](https://www.npmjs.com/)
 
 You will need to set the connection variables in the .env file
 
@@ -27,21 +33,19 @@ You will need to set the connection variables in the .env file
 4. `npm run prod`
 5. Go to (http://127.0.0.1:3000/api/routes/1001) to see route information
 
-### To get the MQTT feed of vehicles
+## Tools no more in use (updated in case a library is dropped)
+
+Docker
+
+## Instructions no more in use 
+
+#### To get the MQTT feed of vehicles
 
 1. `npm install -g mqtt`
 2. `mqtt subscribe -h mqtt.hsl.fi -l mqtts -p 8883 -v \
   -t "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"`
 
 You can check for examples here (https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/#examples)
-
-
-### Tools no more in use (updated in case a library is dropped)
-
-
-Docker
-
-### Instructions no more in use 
 
 #### If you need the GFTS database locally, you can achieve it like this:
 
