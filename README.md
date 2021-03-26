@@ -16,6 +16,7 @@ Used libraries:
 - Mapbox
 - Jacoco
 
+
 #### To run the Android app
 
 Open NokiaHslVisualisation directory in Android Studio and run the app.
