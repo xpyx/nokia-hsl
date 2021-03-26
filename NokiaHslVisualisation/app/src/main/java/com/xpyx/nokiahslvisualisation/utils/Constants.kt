@@ -10,5 +10,6 @@ class Constants {
         const val HSL_CONNECTION_KEEP_ALIVE_INTERVAL = 15
         const val HSL_CONNECTION_CLEAN_SESSION = true
         const val HSL_CONNECTION_RECONNECT = true
+        const val BASE_URL_HERE_TRAFFIC = "https://traffic.ls.hereapi.com/traffic/6.3/"
     }
 }
