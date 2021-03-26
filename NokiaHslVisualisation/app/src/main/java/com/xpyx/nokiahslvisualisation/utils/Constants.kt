@@ -1,4 +1,4 @@
-package com.xpyx.nokiahslvisualisation
+package com.xpyx.nokiahslvisualisation.utils
 
 class Constants {
 
