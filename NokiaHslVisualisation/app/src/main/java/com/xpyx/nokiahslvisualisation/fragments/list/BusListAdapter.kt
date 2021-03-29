@@ -8,9 +8,11 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.model.traffic.TRAFFIC_ITEM
 import org.w3c.dom.Text
 
 class BusListAdapter(private val busList: MutableList<FakeBus>) : RecyclerView.Adapter<BusListAdapter.BusViewHolder>() {
+
 
 
     class BusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

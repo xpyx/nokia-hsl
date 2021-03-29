@@ -38,7 +38,7 @@
     </fragment>
     <fragment
         android:id="@+id/ar_view"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.ARFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.ar.ARFragment"
         android:label="@string/menu_ar"
         tools:layout="@layout/ar_scene" />
 </navigation>
