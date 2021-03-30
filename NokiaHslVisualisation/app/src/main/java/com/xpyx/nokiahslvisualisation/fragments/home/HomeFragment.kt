@@ -1,7 +1,11 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
+import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,28 +20,48 @@ import com.xpyx.nokiahslvisualisation.GetAlertsQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import android.text.method.ScrollingMovementMethod
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
-import kotlin.properties.Delegates
 
 class HomeFragment : Fragment() {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
     private val scope = CoroutineScope(Dispatchers.IO)
     private var counter: Int = 0
+    private lateinit var editText: EditText
+    private lateinit var busLineValue: Editable
+    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
+        // create a color state list programmatically
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_enabled), // enabled
+            intArrayOf(-android.R.attr.state_enabled) // disabled
+        )
+        val colors = intArrayOf(
+            Color.parseColor("#545AA7"), // enabled color
+            Color.parseColor("#E6E6FA") // disabled color
+        )
+        val colorStates = ColorStateList(states,colors)
+
         // Get HSL Alerts
         val btnAlerts = view.findViewById<Button>(R.id.btn_alerts)
+        btnAlerts.backgroundTintList = colorStates
         val alertText = view.findViewById<TextView>(R.id.textView)
         alertText.movementMethod = ScrollingMovementMethod()
         val apollo = ApolloClient()
@@ -62,22 +86,62 @@ class HomeFragment : Fragment() {
         // Connect to HSL MQTT broker
         connect(view.context)
         val btnPositions = view.findViewById<Button>(R.id.btn_positions)
+        // set button background tint
+        btnPositions.backgroundTintList = colorStates
         // initialize 'num msgs received' field in the view
         val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
         textViewNumMsgs.text = counter.toString()
+
+        // Get editText value
+        editText = view.findViewById(R.id.editText)
+        busLineValue = editText.text
+
+        // Listen to editText, clear editText and hide keyboard
+        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+        // Subscribe
         btnPositions.setOnClickListener{
             scope.launch {
-                subscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
+                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
+                Log.d("DBG", topic)
+                subscribe(topic)
                 receiveMessages()
+                runOnUiThread {
+                    editText.text.clear()
+                    hideKeyboard()
+                    (it as MaterialButton).apply {
+                        isEnabled = false
+                        isClickable = false
+                    }
+                }
             }
         }
 
+        // Unsubscribe
         val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
+        btnStop.backgroundTintList = colorStates
+        (btnStop as MaterialButton).apply {
+            isEnabled = true
+            isClickable = true
+        }
         btnStop.setOnClickListener{
             scope.launch {
-                unSubscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
+                unSubscribe(topic)
+                runOnUiThread {
+                    (btnPositions as MaterialButton).apply {
+                        isEnabled = true
+                        isClickable = true
+                    }
+                }
             }
         }
+
         return view
     }
 
@@ -165,6 +229,8 @@ class HomeFragment : Fragment() {
             unsubToken.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on unsubscribing here
+                    Log.i("Connection", "Unsubscribe success ")
+
                 }
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
                     // Give your callback on failure here
@@ -181,4 +247,16 @@ class HomeFragment : Fragment() {
         if (!isAdded) return // Fragment not attached to an Activity
         activity?.runOnUiThread(action)
     }
+
+    // For hiding the soft keyboard
+    private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
 }
