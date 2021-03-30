@@ -15,8 +15,8 @@ import com.google.gson.annotations.SerializedName
 
 data class TRAFFIC_ITEM (
 
-    @SerializedName("TRAFFIC_ITEM_ID") val traffic_item_id : Int,
-    @SerializedName("ORIGINAL_TRAFFIC_ITEM_ID") val original_traffic_item_id : Int,
+    @SerializedName("TRAFFIC_ITEM_ID") val traffic_item_id : Long,
+    @SerializedName("ORIGINAL_TRAFFIC_ITEM_ID") val original_traffic_item_id : Long,
     @SerializedName("TRAFFIC_ITEM_STATUS_SHORT_DESC") val traffic_item_status_short_desc : String,
     @SerializedName("TRAFFIC_ITEM_TYPE_DESC") val traffic_item_type_desc : String,
     @SerializedName("START_TIME") val start_time : String,

@@ -12,7 +12,9 @@ interface TrafficItemDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun addTrafficItem(traffic: TrafficItem)
 
-    @Query("SELECT * FROM trafficitems ORDER BY id DESC")
+    @Query("SELECT * FROM trafficitems ORDER BY idRoomDatabase DESC")
     fun readAllData(): LiveData<List<TrafficItem>>
 
+    @Query("SELECT * FROM trafficitems WHERE idRoomDatabase = :id")
+    suspend fun getTrafficItem(id: Int): TrafficItem
 }

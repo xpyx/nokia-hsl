@@ -8,12 +8,13 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.data.TrafficItem
 import com.xpyx.nokiahslvisualisation.model.traffic.TRAFFIC_ITEM
 import org.w3c.dom.Text
 
-class BusListAdapter(private val busList: MutableList<FakeBus>) : RecyclerView.Adapter<BusListAdapter.BusViewHolder>() {
+class BusListAdapter() : RecyclerView.Adapter<BusListAdapter.BusViewHolder>() {
 
-
+    private var busList = emptyList<TrafficItem>()
 
     class BusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -22,16 +23,21 @@ class BusListAdapter(private val busList: MutableList<FakeBus>) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: BusViewHolder, position: Int) {
-        val bus: FakeBus = busList[position]
+        val bus = busList[position]
         val titleTextView = holder.itemView.findViewById<TextView>(R.id.title_text_view)
-        titleTextView.text = bus.title
+        titleTextView.text = bus.traffic_item_id.toString()
         val problemTextView = holder.itemView.findViewById<TextView>(R.id.problem_text_view)
-        problemTextView.text = bus.problem
+        problemTextView.text = "Start: ${bus.start_time}, End: ${bus.end_time}, Type: ${bus.traffic_item_type_desc}"
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_list_to_action_bus))
 
     }
 
     override fun getItemCount(): Int {
         return busList.size
+    }
+
+    fun setData(traffic: List<TrafficItem>) {
+        this.busList = traffic
+        notifyDataSetChanged()
     }
 }

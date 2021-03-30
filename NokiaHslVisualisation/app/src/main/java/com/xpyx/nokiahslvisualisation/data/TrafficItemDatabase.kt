@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.xpyx.nokiahslvisualisation.utils.Converters
 
-@Database(entities = [TrafficItem::class], version = 1, exportSchema = false)
+@Database(entities = arrayOf(TrafficItem::class), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class TrafficItemDatabase : RoomDatabase() {
@@ -28,12 +28,11 @@ abstract class TrafficItemDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     TrafficItemDatabase::class.java,
-                    "off_database"
+                    "traffic_item_database"
                 ).build()
                 INSTANCE = instance
                 return instance
             }
         }
     }
-
 }
