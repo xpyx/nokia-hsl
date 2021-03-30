@@ -76,7 +76,7 @@ class ListFragment : Fragment(){
         // Button
         refreshButton = view.findViewById(R.id.traffic_refresh_button)
 
-        hereTrafficApiKey = requireContext().getString(R.string.here_maps_api_key)
+        hereTrafficApiKey = ${{ secrets.HERE_MAPS_API_KEY }}
 
         viewModel.getTrafficData(hereTrafficApiKey)
         viewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
