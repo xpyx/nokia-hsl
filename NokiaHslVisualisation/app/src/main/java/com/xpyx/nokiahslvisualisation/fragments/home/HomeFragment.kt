@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
             intArrayOf(-android.R.attr.state_enabled) // disabled
         )
         val colors = intArrayOf(
-            Color.parseColor("#545AA7"), // enabled color
+            Color.parseColor("#FF3700B3"), // enabled color
             Color.parseColor("#E6E6FA") // disabled color
         )
         val colorStates = ColorStateList(states,colors)
