@@ -18,7 +18,7 @@ jobs:
       - name: Access HERE_MAPS_API_KEY
         env: 
           HERE_MAPS_API_KEY: ${{ secrets.HERE_MAPS_API_KEY }}
-        run: echo HERE_MAPS_API_KEY=\"$HERE_MAPS_API_KEY\" > ./local.properties
+        run: echo HERE_MAPS_API_KEY=\"$HERE_MAPS_API_KEY\" > cd NokiaHslVisualisation && ./local.properties
 
       - name: Print contents in current directory
         run: ls -la
