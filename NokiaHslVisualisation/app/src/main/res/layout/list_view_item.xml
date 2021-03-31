@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/warning_icon"
             app:tint="@color/black"
-            android:contentDescription="@string/bus_icon_content_description" />
+            android:contentDescription="@string/warning_icon_content_description" />
 
         <TextView
             android:id="@+id/title_text_view"
@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/problem_text_view"
+            android:id="@+id/description_text_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"

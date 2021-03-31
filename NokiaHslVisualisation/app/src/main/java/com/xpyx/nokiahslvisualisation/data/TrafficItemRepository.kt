@@ -9,7 +9,7 @@ class TrafficItemRepository(private val trafficItemDao: TrafficItemDao) {
         trafficItemDao.addTrafficItem(trafficItem)
     }
 
-    suspend fun getTrafficItem(id: Int): TrafficItem {
+    suspend fun getTrafficItem(id: Long): TrafficItem {
         return trafficItemDao.getTrafficItem(id)
     }
 

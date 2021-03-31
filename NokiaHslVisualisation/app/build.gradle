@@ -25,8 +25,15 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    // Setting up local properties for API key
+    def localProperties = new Properties()
+    localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
     buildTypes {
+        debug {
+            resValue("string", "here_maps_api_key", localProperties['HERE_MAPS_API_KEY'])
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -134,6 +141,8 @@ def debugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug",
 
 // Source code directory
 def mainSrc = "$project.projectDir/src/main/java"
+
+
 
 // Task declaration
 task jacocoTestReport(type: JacocoReport) {

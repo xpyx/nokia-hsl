@@ -15,6 +15,6 @@ interface TrafficItemDao {
     @Query("SELECT * FROM trafficitems ORDER BY idRoomDatabase DESC")
     fun readAllData(): LiveData<List<TrafficItem>>
 
-    @Query("SELECT * FROM trafficitems WHERE idRoomDatabase = :id")
-    suspend fun getTrafficItem(id: Int): TrafficItem
+    @Query("SELECT * FROM trafficitems WHERE traffic_item_id = :id")
+    suspend fun getTrafficItem(id: Long): TrafficItem
 }

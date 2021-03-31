@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,20 +17,17 @@ import com.xpyx.nokiahslvisualisation.data.TrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.Json4Kotlin_Base
 import com.xpyx.nokiahslvisualisation.model.traffic.TRAFFIC_ITEM
-import com.xpyx.nokiahslvisualisation.model.traffic.TRAFFIC_ITEMS
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.FileInputStream
+import java.util.*
 
 class ListFragment : Fragment(){
 
-    private val trafficInfoList = mutableListOf<TRAFFIC_ITEM>()
 
-    private val bus1 = FakeBus("Line 200","Late 10 minutes because of traffic.")
-    private val bus2 = FakeBus("Line 41 HKI","Missing one bus on line, 3 missed launches.")
-    private val busList = mutableListOf<FakeBus>(bus1, bus2)
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshButton: Button
     private lateinit var mTrafficViewModel: TrafficItemViewModel
@@ -47,7 +43,7 @@ class ListFragment : Fragment(){
         val view = inflater.inflate(R.layout.fragment_list, container, false)
 
 
-        val adapter = context?.let { BusListAdapter()}
+        val adapter = context?.let { TrafficListAdapter(requireContext())}
 
         // Recycler view
         recyclerView = view.findViewById(R.id.bus_recycler_view)
@@ -76,7 +72,7 @@ class ListFragment : Fragment(){
         // Button
         refreshButton = view.findViewById(R.id.traffic_refresh_button)
 
-        hereTrafficApiKey = requireContext().getString(R.string.here_maps_api_key)
+        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
 
         viewModel.getTrafficData(hereTrafficApiKey)
         viewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->

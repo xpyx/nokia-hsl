@@ -24,7 +24,7 @@ class TrafficItemViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    suspend fun getTrafficItem(id: Int): TrafficItem {
+    suspend fun getTrafficItem(id: Long): TrafficItem {
         lateinit var trafficItem: TrafficItem
         val job = viewModelScope.launch(Dispatchers.IO) {
             trafficItem = repository.getTrafficItem(id)

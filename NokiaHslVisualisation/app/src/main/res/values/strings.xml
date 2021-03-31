@@ -11,10 +11,12 @@
     // List view
     <string name="button_text">Refresh</string>
     // Content descriptions
-    <string name="bus_icon_content_description">Bus Icon</string>
+    <string name="warning_icon_content_description">Warning icon</string>
+
+    // Traffic list adapter
+    <string name="warning_description">Start: %1$s, End: %2$s, Type: %3$s</string>
 
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 
