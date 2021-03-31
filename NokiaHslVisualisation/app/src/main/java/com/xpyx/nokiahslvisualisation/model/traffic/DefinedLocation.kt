@@ -2,7 +2,7 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class DefinedOrigin (
+data class DefinedLocation (
     @SerializedName("ROADWAY")
     val roadway: DirectionClass? = null,
 

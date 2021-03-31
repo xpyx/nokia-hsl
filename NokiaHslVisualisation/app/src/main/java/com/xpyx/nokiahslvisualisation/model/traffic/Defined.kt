@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName
 data class Defined (
 
 	@SerializedName("ORIGIN")
-	val origin: DefinedOrigin? = null,
+	val origin: DefinedLocation? = null,
 	@SerializedName("TO")
-	val to: DefinedOrigin? = null
+	val to: DefinedLocation? = null
 )

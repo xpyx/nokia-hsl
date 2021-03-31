@@ -97,6 +97,7 @@ class ListFragment : Fragment(){
                     val verified = item.verified
                     val rds_tmc_locations = item.rds_tmcLocations
                     val location = item.location
+                    Log.d("DBG_ITEM",item.location.toString())
                     val traffic_item_detail = item.trafficItemDetail
                     val traffic_item_description = item.trafficItemDescriptionElement
 
