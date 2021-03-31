@@ -2,7 +2,7 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class RDSTmcOrigin (
+data class RDSTmcLocation (
     @SerializedName("EBU_COUNTRY_CODE") val ebuCountryCode: String? = null,
     @SerializedName("TABLE_ID") val tableID: Long? = null,
     @SerializedName("LOCATION_ID") val locationID: String? = null,

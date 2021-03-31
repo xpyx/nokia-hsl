@@ -14,7 +14,7 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class Geoloc (
-	@SerializedName("ORIGIN") val geolocOrigin : GeolocOrigin? = null,
-	@SerializedName("TO") val geolocTo : List<GeolocOrigin>? = null,
+	@SerializedName("ORIGIN") val geolocOrigin : GeolocLocation? = null,
+	@SerializedName("TO") val geolocTo : List<GeolocLocation>? = null,
 	@SerializedName("GEOMETRY") val geometry: Geometry? = null
 )

@@ -14,8 +14,8 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class RDSTmc (
-	@SerializedName("ORIGIN") val origin: RDSTmcOrigin? = null,
-	@SerializedName("TO") val to: RDSTmcOrigin? = null,
+	@SerializedName("ORIGIN") val origin: RDSTmcLocation? = null,
+	@SerializedName("TO") val to: RDSTmcLocation? = null,
 	@SerializedName("DIRECTION") val direction: String? = null,
 	@SerializedName("ALERTC") val alertc: RDSTmcAlertC? = null,
 	@SerializedName("LENGTH") val length: Double? = null,
