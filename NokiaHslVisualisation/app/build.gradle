@@ -5,6 +5,9 @@ plugins {
     id "kotlin-kapt"
     id("com.apollographql.apollo")
     id 'jacoco'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
+
 
 }
 
@@ -26,6 +29,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
+
     buildTypes {
         release {
             minifyEnabled false
@@ -45,6 +50,16 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
+
+    apollo {
+        // instruct the compiler to generate Kotlin models
+        generateKotlinModels.set(true)
     }
 
     tasks.withType(Test) {
@@ -75,12 +90,25 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    // Lifecycle Runtime
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
+
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation "androidx.legacy:legacy-support-v4:$legacy_support_v4_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_compiler_version"
+
+    // Coroutine Image Loader
+    implementation "io.coil-kt:coil:1.1.1"
+
     // Mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
 
     // Apollo
-    implementation("com.apollographql.apollo:apollo-runtime:2.5.4")
+    implementation("com.apollographql.apollo:apollo-runtime:$apollo_version")
+    implementation "com.apollographql.apollo:apollo-coroutines-support:$apollo_version"
 
     // Kotlin
     def nav_version = "2.3.3"

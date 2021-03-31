@@ -65,22 +65,22 @@ class HomeFragment : Fragment() {
         val alertText = view.findViewById<TextView>(R.id.textView)
         alertText.movementMethod = ScrollingMovementMethod()
         val apollo = ApolloClient()
-        btnAlerts.setOnClickListener{
-            apollo.client.query(
-                GetAlertsQuery.builder().build()
-            ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
-
-                override fun onFailure(e: ApolloException) {
-                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
-                }
-
-                override fun onResponse(response: Response<GetAlertsQuery.Data>) {
-                    Log.d("DBG, on response", response.data.toString())
-                    alertText.text = response.data.toString()
-
-                }
-            })
-        }
+//        btnAlerts.setOnClickListener{
+//            apollo.client.query(
+//                GetAlertsQuery.builder().build()
+//            ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
+//
+//                override fun onFailure(e: ApolloException) {
+//                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
+//                }
+//
+//                override fun onResponse(response: Response<GetAlertsQuery.Data>) {
+//                    Log.d("DBG, on response", response.data.toString())
+//                    alertText.text = response.data.toString()
+//
+//                }
+//            })
+//        }
 
         // Get HSL Vehicle positions with MQTT
         // Connect to HSL MQTT broker
