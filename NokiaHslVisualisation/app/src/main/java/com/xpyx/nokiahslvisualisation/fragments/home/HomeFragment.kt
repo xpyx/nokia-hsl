@@ -16,7 +16,7 @@ import android.widget.TextView
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
-import com.xpyx.nokiahslvisualisation.GetAlertsQuery
+import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import android.text.method.ScrollingMovementMethod

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
-import com.xpyx.nokiahslvisualisation.GetAlertsQuery
+import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.view.ViewState
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,11 +24,11 @@ class AlertsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _alertsList by lazy {
-        MutableLiveData<ViewState<Response<GetAlertsQuery.Data>>>()
+        MutableLiveData<ViewState<Response<AlertsListQuery.Data>>>()
     }
 
     val alertsList:
-            LiveData<ViewState<Response<GetAlertsQuery.Data>>>
+            LiveData<ViewState<Response<AlertsListQuery.Data>>>
         get() = _alertsList
 
     fun queryAlertsList() = viewModelScope.launch {
