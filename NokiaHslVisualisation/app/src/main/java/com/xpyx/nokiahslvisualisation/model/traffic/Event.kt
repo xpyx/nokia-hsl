@@ -13,7 +13,8 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class RDS_TMC_LOCATIONS (
+data class Event (
+	@SerializedName("EVENT_ITEM_CANCELLED") val eventItemCancelled: Boolean? = null,
 
-	@SerializedName("RDS-TMC") val rds_tmc : List<RDS_TMC>
+	@SerializedName("SCHEDULED_CONSTRUCTION_EVENT") val scheduledConstructionEvent: ScheduledConstructionEvent? = null
 )

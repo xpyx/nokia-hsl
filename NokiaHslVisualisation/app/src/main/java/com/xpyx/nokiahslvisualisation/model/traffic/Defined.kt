@@ -13,8 +13,10 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class EVENT (
+data class Defined (
 
-	@SerializedName("EVENT_ITEM_CANCELLED") val event_item_cancelled : Boolean,
-	@SerializedName("SCHEDULED_CONSTRUCTION_EVENT") val scheduler_construction_event : SCHEDULED_CONSTRUCTION_EVENT
+	@SerializedName("ORIGIN")
+	val origin: DefinedOrigin? = null,
+	@SerializedName("TO")
+	val to: DefinedOrigin? = null
 )

@@ -13,17 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.ApiViewModel
 import com.xpyx.nokiahslvisualisation.api.ApiViewModelFactory
-import com.xpyx.nokiahslvisualisation.data.TrafficItem
+import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
-import com.xpyx.nokiahslvisualisation.model.traffic.Json4Kotlin_Base
-import com.xpyx.nokiahslvisualisation.model.traffic.TRAFFIC_ITEM
+import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import java.io.FileInputStream
-import java.util.*
 
 class ListFragment : Fragment(){
 
@@ -85,42 +82,44 @@ class ListFragment : Fragment(){
 
     }
 
-    private fun insertToTrafficDatabase(response: Response<Json4Kotlin_Base>) {
+    private fun insertToTrafficDatabase(response: Response<TrafficData>) {
         Log.d("Traffic", response.body()!!.toString())
-        val trafficItemList = response.body()!!.traffic_items
-        for (item: TRAFFIC_ITEM in trafficItemList.traffic_item) {
-            GlobalScope.launch(context = Dispatchers.IO) {
-                val traffic_item_id = item.traffic_item_id
-                val traffic_item_status_short_desc = item.traffic_item_status_short_desc
-                val traffic_item_type_desc = item.traffic_item_type_desc
-                val start_time = item.start_time
-                val end_time = item.end_time
-                val criticality = item.criticality
-                val verified = item.verified
-                val rds_tmc_locations = item.rds_tmc_locations
-                val location = item.location
-                val traffic_item_detail = item.traffic_item_detail
-                val traffic_item_description = item.traffic_item_description
+        val trafficItemList = response.body()!!.trafficItems
+        if (trafficItemList != null) {
+            for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
+                GlobalScope.launch(context = Dispatchers.IO) {
+                    val traffic_item_id = item.trafficItemId
+                    val traffic_item_status_short_desc = item.trafficItemStatusShortDesc
+                    val traffic_item_type_desc = item.trafficItemTypeDesc
+                    val start_time = item.startTime
+                    val end_time = item.endTime
+                    val criticality = item.criticality
+                    val verified = item.verified
+                    val rds_tmc_locations = item.rds_tmcLocations
+                    val location = item.location
+                    val traffic_item_detail = item.trafficItemDetail
+                    val traffic_item_description = item.trafficItemDescriptionElement
 
-                val traffic = TrafficItem(
-                    0,
-                    traffic_item_id,
-                    traffic_item_status_short_desc,
-                    traffic_item_type_desc,
-                    start_time,
-                    end_time,
-                    criticality,
-                    verified,
-                    //rds_tmc_locations,
-                    //location,
-                    //traffic_item_detail,
-                    //traffic_item_description
-                )
+                    val traffic = DataTrafficItem(
+                        0,
+                        traffic_item_id,
+                        traffic_item_status_short_desc,
+                        traffic_item_type_desc,
+                        start_time,
+                        end_time,
+                        criticality,
+                        verified,
+                        rds_tmc_locations,
+                        //location,
+                        //traffic_item_detail,
+                        traffic_item_description
+                    )
 
-                mTrafficViewModel.addTrafficData(traffic)
+                    mTrafficViewModel.addTrafficData(traffic)
 
-                Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
+                    Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
 
+                }
             }
         }
     }

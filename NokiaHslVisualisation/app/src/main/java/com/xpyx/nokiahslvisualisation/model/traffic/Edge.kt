@@ -13,8 +13,6 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class ROADWAY (
-
-	@SerializedName("DESCRIPTION") val description : List<DESCRIPTION>,
-	@SerializedName("ID") val id : Int
+data class Edge (
+	@SerializedName("EDGE_ID") val edgeID : List<String>? = null
 )

@@ -13,8 +13,8 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class SCHEDULED_CONSTRUCTION_EVENT (
+data class TrafficItemDescriptionElement (
 
-	@SerializedName("SCHEDULED_CONSTRUCTION_TYPE_DESC") val scheduled_construction_type_desc : String,
-	@SerializedName("SCHEDULED_CONSTRUCTION_DETAIL") val scheduled_construction_detail : String
+	@SerializedName("value") val value : String?,
+	@SerializedName("TYPE") val type : String
 )

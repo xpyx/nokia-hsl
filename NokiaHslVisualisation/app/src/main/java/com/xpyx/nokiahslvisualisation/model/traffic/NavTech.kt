@@ -13,9 +13,7 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-
-data class CRITICALITY (
-
-	@SerializedName("ID") val id : Int,
-	@SerializedName("DESCRIPTION") val description : String
+data class NavTech (
+	@SerializedName("EDGE") val edge : Edge,
+	@SerializedName("VERSION_ID") val versionID : Int
 )

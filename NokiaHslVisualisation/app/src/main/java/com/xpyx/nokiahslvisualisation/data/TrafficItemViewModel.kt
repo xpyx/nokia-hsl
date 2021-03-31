@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class TrafficItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    val readAllData: LiveData<List<TrafficItem>>
+    val readAllData: LiveData<List<DataTrafficItem>>
     private val repository: TrafficItemRepository
 
     init {
@@ -18,14 +18,14 @@ class TrafficItemViewModel(application: Application) : AndroidViewModel(applicat
         readAllData = repository.readAllData
     }
 
-    fun addTrafficData(trafficItem: TrafficItem){
+    fun addTrafficData(trafficItem: DataTrafficItem){
         viewModelScope.launch(Dispatchers.IO) {
             repository.addTrafficItem(trafficItem)
         }
     }
 
-    suspend fun getTrafficItem(id: Long): TrafficItem {
-        lateinit var trafficItem: TrafficItem
+    suspend fun getTrafficItem(id: Long): DataTrafficItem {
+        lateinit var trafficItem: DataTrafficItem
         val job = viewModelScope.launch(Dispatchers.IO) {
             trafficItem = repository.getTrafficItem(id)
         }

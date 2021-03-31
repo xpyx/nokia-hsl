@@ -10,11 +10,11 @@ import androidx.room.Query
 interface TrafficItemDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun addTrafficItem(traffic: TrafficItem)
+    suspend fun addTrafficItem(traffic: DataTrafficItem)
 
     @Query("SELECT * FROM trafficitems ORDER BY idRoomDatabase DESC")
-    fun readAllData(): LiveData<List<TrafficItem>>
+    fun readAllData(): LiveData<List<DataTrafficItem>>
 
     @Query("SELECT * FROM trafficitems WHERE traffic_item_id = :id")
-    suspend fun getTrafficItem(id: Long): TrafficItem
+    suspend fun getTrafficItem(id: Long): DataTrafficItem
 }

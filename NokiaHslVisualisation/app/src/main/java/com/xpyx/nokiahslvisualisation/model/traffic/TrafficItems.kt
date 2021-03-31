@@ -13,7 +13,7 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class TRAFFIC_ITEMS (
+data class TrafficItems (
 
-	@SerializedName("TRAFFIC_ITEM") val traffic_item : List<TRAFFIC_ITEM>
+	@SerializedName("TRAFFIC_ITEM") val trafficItem : List<TrafficItem>? = null
 )

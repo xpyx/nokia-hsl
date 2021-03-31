@@ -13,11 +13,6 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class LOCATION (
-
-    @SerializedName("DEFINED") val defined : DEFINED,
-    @SerializedName("GEOLOC") val geoloc : GEOLOC,
-    @SerializedName("TPEGOpenLRBase64") val tPegOpenLrBase64 : String,
-    @SerializedName("NAVTECH") val navtech : NAVTECH,
-    @SerializedName("LENGTH") val length : Double
+data class RDSTmcLocations (
+	@SerializedName("RDS-TMC") val rds_tmc : List<RDSTmc>? = null
 )

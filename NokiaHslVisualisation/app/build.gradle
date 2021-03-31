@@ -5,7 +5,7 @@ plugins {
     id "kotlin-kapt"
     id("com.apollographql.apollo")
     id 'jacoco'
-
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
 }
 
 apply plugin: 'jacoco'
@@ -26,13 +26,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    // Setting up local properties for API key
-    def localProperties = new Properties()
-    localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 
     buildTypes {
         debug {
-            resValue("string", "here_maps_api_key", localProperties['HERE_MAPS_API_KEY'])
+            resValue("string", "here_maps_api_key", getApiKey())
         }
 
         release {
@@ -68,9 +66,9 @@ android {
 
 String getApiKey() {
     def propFile = rootProject.file("./local.properties")
-    def properties = new Properties()
-    properties.load(new FileInputStream(propFile))
-    return properties['HERE_MAPS_API_KEY']
+    def localProperties = new Properties()
+    localProperties.load(new FileInputStream(propFile))
+    return localProperties['HERE_MAPS_API_KEY']
 }
 
 dependencies {

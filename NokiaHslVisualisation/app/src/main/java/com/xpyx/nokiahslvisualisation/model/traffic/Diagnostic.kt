@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Diagnostic (
 
-	@SerializedName("info") val info : String,
-	@SerializedName("sfile") val sfile : String,
-	@SerializedName("pdd") val pdd : String
+	val info : String? = null,
+	val sfile : String? = null,
+	val pdd : String? = null
 )

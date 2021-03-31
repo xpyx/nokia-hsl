@@ -13,8 +13,8 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class NAVTECH (
-
-	@SerializedName("EDGE") val edge : EDGE,
-	@SerializedName("VERSION_ID") val version_id : Int
+data class Geoloc (
+	@SerializedName("ORIGIN") val geolocOrigin : GeolocOrigin? = null,
+	@SerializedName("TO") val geolocTo : List<GeolocOrigin>? = null,
+	@SerializedName("GEOMETRY") val geometry: Geometry? = null
 )

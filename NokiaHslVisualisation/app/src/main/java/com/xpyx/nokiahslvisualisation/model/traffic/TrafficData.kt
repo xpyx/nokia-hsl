@@ -13,7 +13,13 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 
 import com.google.gson.annotations.SerializedName
 
-data class ALERTC (
 
-	@SerializedName("EVENT_CODE") val event_code : Int
+data class TrafficData (
+
+	@SerializedName("TIMESTAMP") val timestamp : String? = null,
+	@SerializedName("VERSION") val version : Double? = null,
+	@SerializedName("TRAFFIC_ITEMS") val trafficItems : TrafficItems? = null,
+	val diagnostic : Diagnostic? = null,
+	@SerializedName("TIMESTAMP2") val timestamp2 : String? = null,
+	@SerializedName("EXTENDED_COUNTRY_CODE") val extendedCountryCode : String? = null
 )
