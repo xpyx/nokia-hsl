@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
-import com.xpyx.nokiahslvisualisation.view.ViewState
+import com.xpyx.nokiahslvisualisation.view.state.ViewState
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

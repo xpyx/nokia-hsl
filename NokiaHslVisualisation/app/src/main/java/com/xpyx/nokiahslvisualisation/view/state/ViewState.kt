@@ -1,4 +1,4 @@
-package com.xpyx.nokiahslvisualisation.view
+package com.xpyx.nokiahslvisualisation.view.state
 
 sealed class ViewState<T>(
     val value: T? = null,
