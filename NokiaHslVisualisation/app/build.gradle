@@ -22,6 +22,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        buildConfigField ("String", "HERE_MAPS_API_KEY", getApiKey())
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,6 +64,13 @@ android {
     testOptions {
         unitTests.includeAndroidResources = true
     }
+}
+
+String getApiKey() {
+    def propFile = rootProject.file("./local.properties")
+    def properties = new Properties()
+    properties.load(new FileInputStream(propFile))
+    return properties['HERE_MAPS_API_KEY']
 }
 
 dependencies {
