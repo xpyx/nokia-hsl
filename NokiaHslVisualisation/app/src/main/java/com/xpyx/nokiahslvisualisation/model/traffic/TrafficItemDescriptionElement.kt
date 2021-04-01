@@ -15,6 +15,6 @@ import com.google.gson.annotations.SerializedName
 
 data class TrafficItemDescriptionElement (
 
-	@SerializedName("value") val value : String?,
-	@SerializedName("TYPE") val type : String
+	@SerializedName("value") val value : String? = null,
+	@SerializedName("TYPE") val type : String? = null
 )

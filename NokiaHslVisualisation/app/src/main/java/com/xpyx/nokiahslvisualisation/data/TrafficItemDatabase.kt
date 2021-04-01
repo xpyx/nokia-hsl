@@ -9,7 +9,6 @@ import com.xpyx.nokiahslvisualisation.utils.Converters
 
 @Database(entities = arrayOf(DataTrafficItem::class), version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
-
 abstract class TrafficItemDatabase : RoomDatabase() {
 
     // Get DAO

@@ -14,6 +14,6 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class NavTech (
-	@SerializedName("EDGE") val edge : Edge,
-	@SerializedName("VERSION_ID") val versionID : Int
+	@SerializedName("EDGE") val edge : Edge? = null,
+	@SerializedName("VERSION_ID") val versionID : Int? = null
 )

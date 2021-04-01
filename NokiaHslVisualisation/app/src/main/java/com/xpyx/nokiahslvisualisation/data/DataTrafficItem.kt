@@ -4,8 +4,8 @@ import androidx.room.*
 import com.xpyx.nokiahslvisualisation.model.traffic.*
 import com.xpyx.nokiahslvisualisation.utils.Converters
 
-@TypeConverters(Converters::class)
 @Entity(tableName = "trafficitems")
+@TypeConverters(Converters::class)
 data class DataTrafficItem (
     @PrimaryKey(autoGenerate = true) val idRoomDatabase: Int,
     val traffic_item_id: Long?,
