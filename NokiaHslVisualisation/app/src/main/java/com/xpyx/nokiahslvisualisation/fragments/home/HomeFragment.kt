@@ -16,14 +16,19 @@ import android.widget.TextView
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
-import com.xpyx.nokiahslvisualisation.GetAlertsQuery
+//import com.xpyx.nokiahslvisualisation.GetAlertsQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import android.text.method.ScrollingMovementMethod
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.xpyx.nokiahslvisualisation.fragments.list.BusListAdapter
+import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
+import com.xpyx.nokiahslvisualisation.fragments.list.FakeBus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +43,12 @@ class HomeFragment : Fragment() {
     private lateinit var editText: EditText
     private lateinit var busLineValue: Editable
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
+    private lateinit var recyclerView: RecyclerView
 
+    // Fake data
+    private val alert1 = FakeAlert("Line 200","Late 10 minutes because of traffic.")
+    private val alert2 = FakeAlert("Line 41 HKI","Missing one bus on line, 3 missed launches.")
+    private val alertList = mutableListOf(alert1, alert2)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,28 +69,33 @@ class HomeFragment : Fragment() {
         )
         val colorStates = ColorStateList(states,colors)
 
-        // Get HSL Alerts
-        val btnAlerts = view.findViewById<Button>(R.id.btn_alerts)
-        btnAlerts.backgroundTintList = colorStates
-        val alertText = view.findViewById<TextView>(R.id.textView)
-        alertText.movementMethod = ScrollingMovementMethod()
-        val apollo = ApolloClient()
-        btnAlerts.setOnClickListener{
-            apollo.client.query(
-                GetAlertsQuery.builder().build()
-            ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
+        // RECYCLER VIEW
+        recyclerView = view.findViewById(R.id.alert_recycler_view)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = AlertListAdapter( alertList)
 
-                override fun onFailure(e: ApolloException) {
-                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
-                }
 
-                override fun onResponse(response: Response<GetAlertsQuery.Data>) {
-                    Log.d("DBG, on response", response.data.toString())
-                    alertText.text = response.data.toString()
+//        val alertText = view.findViewById<TextView>(R.id.textView)
+//        alertText.movementMethod = ScrollingMovementMethod()
 
-                }
-            })
-        }
+//        val apollo = ApolloClient()
+//        btnAlerts.setOnClickListener{
+//            apollo.client.query(
+//                GetAlertsQuery.builder().build()
+//            ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
+//
+//                override fun onFailure(e: ApolloException) {
+//                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
+//                }
+//
+//                override fun onResponse(response: Response<GetAlertsQuery.Data>) {
+//                    Log.d("DBG, on response", response.data.toString())
+//                    alertText.text = response.data.toString()
+//
+//                }
+//            })
+//        }
 
         // Get HSL Vehicle positions with MQTT
         // Connect to HSL MQTT broker

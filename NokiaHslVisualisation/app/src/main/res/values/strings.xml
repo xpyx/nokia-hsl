@@ -6,6 +6,7 @@
     <string name="menu_list">List View</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Bus details</string>
+    <string name="alert_details_view">Alert details</string>
     <string name="menu_ar">AR View</string>
 
     // List view
@@ -15,6 +16,9 @@
 
     // Traffic list adapter
     <string name="warning_description">Start: %1$s, End: %2$s, Type: %3$s</string>
+    <string name="bus_icon_content_description">Bus Icon</string>
+    <string name="alert_icon_content_description">Alert Icon</string>
+
 
 
 
