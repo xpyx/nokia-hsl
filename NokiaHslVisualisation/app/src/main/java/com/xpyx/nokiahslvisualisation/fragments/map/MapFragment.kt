@@ -9,21 +9,11 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.sources.RasterSource
-import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -31,8 +21,6 @@ import org.osmdroid.util.GeoPoint
 
 
 class MapFragment : Fragment(),SeekBar.OnSeekBarChangeListener {
-
-    private var mapView: MapView? = null
 
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
@@ -62,7 +50,7 @@ class MapFragment : Fragment(),SeekBar.OnSeekBarChangeListener {
         val ctx = requireActivity().applicationContext
         //important! set your user agent to prevent getting banned from the osm servers
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
-         
+
 
         mTransparencyBar = activity?.findViewById(R.id.transparencySeekBar)
         mTransparencyBar?.max = TRANSPARENCY_MAX
