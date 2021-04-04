@@ -6,7 +6,7 @@
 This repository contains:
 
 - Android client for displaying realtime public transport data
-- Node Express server for connecting to HSL GTFS-RT feed and to a SQL Server in Azure cloud
+- Node Express server for connecting to HSL GTFS-RT feed and to a (slow) SQL Server in Azure cloud
 
 Used libraries:
 
