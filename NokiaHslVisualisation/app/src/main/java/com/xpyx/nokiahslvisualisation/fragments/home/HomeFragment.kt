@@ -69,6 +69,7 @@ class HomeFragment : Fragment() {
         )
         val colorStates = ColorStateList(states,colors)
 
+
         // RECYCLER VIEW
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -80,6 +81,7 @@ class HomeFragment : Fragment() {
 //        alertText.movementMethod = ScrollingMovementMethod()
 
 //        val apollo = ApolloClient()
+
 //        btnAlerts.setOnClickListener{
 //            apollo.client.query(
 //                GetAlertsQuery.builder().build()

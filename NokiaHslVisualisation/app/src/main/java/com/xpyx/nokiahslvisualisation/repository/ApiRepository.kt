@@ -11,4 +11,5 @@ class ApiRepository {
         return RetrofitInstance.trafficApi.getTraffic(apiKey)
 
     }
+
 }
