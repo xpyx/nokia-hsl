@@ -20,8 +20,8 @@
 
 
     // Home fragment
-    <string name="btn_alerts">Get Alerts</string>
-    <string name="btn_start_mqtt">Start MQTT</string>
+    <string name="btn_alerts">Show Alerts</string>
+    <string name="btn_start_mqtt">Get MQTT</string>
     <string name="btn_stop_mqtt">Stop MQTT</string>
 
 
