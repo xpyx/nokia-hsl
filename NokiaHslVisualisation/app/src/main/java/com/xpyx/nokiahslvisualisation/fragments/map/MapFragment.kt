@@ -46,22 +46,12 @@ class MapFragment : Fragment(),SeekBar.OnSeekBarChangeListener {
     private var width = 900
     private lateinit var apa: LinearLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        context?.let {
-            Mapbox.getInstance(
-                it.applicationContext,
-                getString(R.string.mapbox_access_token)
-            )
-        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
@@ -72,7 +62,7 @@ class MapFragment : Fragment(),SeekBar.OnSeekBarChangeListener {
         val ctx = requireActivity().applicationContext
         //important! set your user agent to prevent getting banned from the osm servers
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
-         //   activity?.setContentView(R.layout.activity_main)
+         
 
         mTransparencyBar = activity?.findViewById(R.id.transparencySeekBar)
         mTransparencyBar?.max = TRANSPARENCY_MAX
