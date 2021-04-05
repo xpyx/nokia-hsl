@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,6 +67,12 @@ class HomeFragment : Fragment() {
             Color.parseColor("#E6E6FA") // disabled color
         )
         val colorStates = ColorStateList(states,colors)
+
+        // RECYCLER VIEW
+        recyclerView = view.findViewById(R.id.alert_recycler_view)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = AlertListAdapter( alertList)
 
 
         // RECYCLER VIEW
