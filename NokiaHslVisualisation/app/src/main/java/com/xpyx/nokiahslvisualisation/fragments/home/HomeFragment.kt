@@ -75,6 +75,7 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = AlertListAdapter( alertList)
 
 
+
 //        val alertText = view.findViewById<TextView>(R.id.textView)
 //        alertText.movementMethod = ScrollingMovementMethod()
 
