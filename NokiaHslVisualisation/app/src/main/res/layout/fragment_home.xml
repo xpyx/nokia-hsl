@@ -37,6 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/alert_recycler_view" />
 
+
     <Button
         android:id="@+id/btn_positions_stop"
         android:layout_width="wrap_content"

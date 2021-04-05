@@ -26,9 +26,7 @@ import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.xpyx.nokiahslvisualisation.fragments.list.BusListAdapter
 import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
-import com.xpyx.nokiahslvisualisation.fragments.list.FakeBus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,6 +79,7 @@ class HomeFragment : Fragment() {
 //        alertText.movementMethod = ScrollingMovementMethod()
 
 //        val apollo = ApolloClient()
+
 
 //        btnAlerts.setOnClickListener{
 //            apollo.client.query(
