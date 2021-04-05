@@ -17,7 +17,7 @@ class AlertListAdapter(private val alertList: MutableList<FakeAlert>) : Recycler
     class BusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusViewHolder {
-        return BusViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_view_item, parent, false))
+        return BusViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.alert_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: BusViewHolder, position: Int) {
