@@ -60,8 +60,8 @@ class HomeFragment : Fragment() {
         val colorStates = ColorStateList(states,colors)
 
 
-        val alertText = view.findViewById<TextView>(R.id.textView)
-        alertText.movementMethod = ScrollingMovementMethod()
+//        val alertText = view.findViewById<TextView>(R.id.textView)
+//        alertText.movementMethod = ScrollingMovementMethod()
 
 //        val apollo = ApolloClient()
 //        btnAlerts.setOnClickListener{
