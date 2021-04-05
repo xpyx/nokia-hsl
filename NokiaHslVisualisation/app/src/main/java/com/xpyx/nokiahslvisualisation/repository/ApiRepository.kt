@@ -21,22 +21,21 @@ class ApiRepository {
 //    }
 
 
-    suspend fun queryAlertList(): Response<AlertsListQuery.Data> {
-
-            apolloClient.query(
-                AlertsListQuery.builder().build()
-            ).enqueue(object : ApolloCall.Callback<AlertsListQuery.Data>() {
-
-                override fun onFailure(e: ApolloException) {
-                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
-                }
-
-                override fun onResponse(response: Response<AlertsListQuery.Data>) {
-                    Log.d("DBG, on response", response.data.toString())
-                    return response
-                }
-            })
-    }
+//    suspend fun queryAlertList(): Response<AlertsListQuery.Data> {
+//
+//            apolloClient.query(
+//                AlertsListQuery.builder().build()
+//            ).enqueue(object : ApolloCall.Callback<AlertsListQuery.Data>() {
+//
+//                override fun onFailure(e: ApolloException) {
+//                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
+//                }
+//
+//                override fun onResponse(response: Response<AlertsListQuery.Data>) {
+//                    Log.d("DBG, on response", response.data.toString())
+//                }
+//            })
+//    }
 
     companion object {
 

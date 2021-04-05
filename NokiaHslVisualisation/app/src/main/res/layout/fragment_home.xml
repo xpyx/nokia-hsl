@@ -35,7 +35,7 @@
         app:layout_constraintBottom_toTopOf="@+id/textViewMsgPayload"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+        app:layout_constraintTop_toBottomOf="@+id/alert_recycler_view" />
 
     <Button
         android:id="@+id/btn_positions_stop"
@@ -79,7 +79,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/alert_recycler_view"
         android:layout_width="362dp"
         android:layout_height="476dp"
         android:layout_marginTop="16dp"
