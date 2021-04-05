@@ -59,12 +59,11 @@ class HomeFragment : Fragment() {
         )
         val colorStates = ColorStateList(states,colors)
 
-        // Get HSL Alerts
-        val btnAlerts = view.findViewById<Button>(R.id.btn_alerts)
-        btnAlerts.backgroundTintList = colorStates
+
         val alertText = view.findViewById<TextView>(R.id.textView)
         alertText.movementMethod = ScrollingMovementMethod()
-        val apollo = ApolloClient()
+
+//        val apollo = ApolloClient()
 //        btnAlerts.setOnClickListener{
 //            apollo.client.query(
 //                GetAlertsQuery.builder().build()
