@@ -27,7 +27,10 @@ class AlertListAdapter(private val alertList: MutableList<FakeAlert>) : Recycler
         val problemTextView = holder.itemView.findViewById<TextView>(R.id.alert_desc)
         problemTextView.text = alert.problem
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
+<<<<<<< HEAD
 
+=======
+>>>>>>> 36eed06... add nav from home to details
     }
 
     override fun getItemCount(): Int {
