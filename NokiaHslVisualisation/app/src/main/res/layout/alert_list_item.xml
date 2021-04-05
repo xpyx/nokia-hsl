@@ -14,38 +14,34 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="84dp"
+            android:layout_height="114dp"
+            android:contentDescription="@string/alert_icon_content_description"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/bus_icon_image_view_black"
-            app:tint="@color/black"
-            android:contentDescription="@string/bus_icon_content_description" />
+            app:srcCompat="@drawable/ic_baseline_error_24"
+            app:tint="@color/black" />
 
         <TextView
-            android:id="@+id/title_text_view"
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:textSize="24sp"
+            android:id="@+id/alert_title"
+            android:layout_width="291dp"
+            android:layout_height="35dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="TextView"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/problem_text_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:id="@+id/alert_desc"
+            android:layout_width="291dp"
+            android:layout_height="29dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:text="TextView"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@+id/title_text_view" />
+            app:layout_constraintStart_toEndOf="@+id/imageView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

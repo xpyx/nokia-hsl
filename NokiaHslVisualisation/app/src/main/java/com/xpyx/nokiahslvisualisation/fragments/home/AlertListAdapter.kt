@@ -22,9 +22,9 @@ class AlertListAdapter(private val alertList: MutableList<FakeAlert>) : Recycler
 
     override fun onBindViewHolder(holder: BusViewHolder, position: Int) {
         val alert: FakeAlert = alertList[position]
-        val titleTextView = holder.itemView.findViewById<TextView>(R.id.title_text_view)
+        val titleTextView = holder.itemView.findViewById<TextView>(R.id.alert_title)
         titleTextView.text = alert.title
-        val problemTextView = holder.itemView.findViewById<TextView>(R.id.problem_text_view)
+        val problemTextView = holder.itemView.findViewById<TextView>(R.id.alert_desc)
         problemTextView.text = alert.problem
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
     }
