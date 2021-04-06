@@ -2,7 +2,7 @@ package com.xpyx.nokiahslvisualisation.networking
 
 import android.os.Looper
 import com.apollographql.apollo.ApolloClient
-import com.xpyx.nokiahslvisualisation.Constants.Companion.ALERT_API
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.ALERT_API
 import okhttp3.OkHttpClient
 
 class AlertsApi {
