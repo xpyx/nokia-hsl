@@ -23,11 +23,6 @@ class Converters {
     @TypeConverter
     fun rDSTMCToList(value: String) = Gson().fromJson(value, Array<RDSTmc>::class.java).toMutableList()
 
-    /*@TypeConverter
-    fun descriptionToJson(value: MutableList<TrafficItemDescriptionElement>?) = Gson().toJson(value)
-    @TypeConverter
-    fun descriptionToList(value: String) = Gson().fromJson(value, Array<TrafficItemDescriptionElement>::class.java).toMutableList()*/
-
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }

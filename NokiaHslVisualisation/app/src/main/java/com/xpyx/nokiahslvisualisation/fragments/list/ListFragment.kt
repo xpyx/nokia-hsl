@@ -111,8 +111,8 @@ class ListFragment : Fragment(){
                         criticality,
                         verified,
                         rds_tmc_locations,
-                        location,
-                        traffic_item_detail,
+                        //location,
+                        //traffic_item_detail,
                         traffic_item_description
                     )
 
