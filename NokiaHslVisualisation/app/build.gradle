@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
     id "org.jetbrains.kotlin.kapt"
     id "kotlin-kapt"
-    id("com.apollographql.apollo")
+    id("com.apollographql.apollo").version("2.5.5")
     id 'jacoco'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
 }
@@ -106,9 +106,11 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
 
     // Apollo
-    implementation("com.apollographql.apollo:apollo-runtime:2.5.4")
+    implementation 'com.apollographql.apollo:apollo-runtime:2.5.5'
+    implementation 'com.apollographql.apollo:apollo-coroutines-support:2.5.5'
+
     // Apollo RxJava3 support
-    implementation "com.apollographql.apollo:apollo-rx3-support:2.5.4"
+    implementation "com.apollographql.apollo:apollo-rx3-support:2.5.5"
 
     // RxJava
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'

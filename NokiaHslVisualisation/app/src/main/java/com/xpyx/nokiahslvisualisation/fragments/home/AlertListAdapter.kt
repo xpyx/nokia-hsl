@@ -6,26 +6,27 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
 import org.w3c.dom.Text
 
-class AlertListAdapter(private val alertList: MutableList<FakeAlert>) : RecyclerView.Adapter<AlertListAdapter.BusViewHolder>() {
+class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>) : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>() {
 
 
-    class BusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusViewHolder {
         return BusViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.alert_list_item, parent, false))
 
     }
 
-    override fun onBindViewHolder(holder: BusViewHolder, position: Int) {
-        val alert: FakeAlert = alertList[position]
+    override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
+        val alert: AlertsListQuery.Alert = alertList[position]
         val titleTextView = holder.itemView.findViewById<TextView>(R.id.alert_title)
-        titleTextView.text = alert.title
+        titleTextView.text = alert.alertHeaderText()
         val problemTextView = holder.itemView.findViewById<TextView>(R.id.alert_desc)
-        problemTextView.text = alert.problem
+        problemTextView.text = alert.alertDescriptionText()
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
 
     }
