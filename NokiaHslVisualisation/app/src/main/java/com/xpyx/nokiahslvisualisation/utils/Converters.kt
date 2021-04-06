@@ -47,6 +47,10 @@ class Converters {
     @TypeConverter
     fun shapesToList(value: String) = Gson().fromJson(value, Array<Shape>::class.java).toMutableList()
 
+    @TypeConverter
+    fun alertCToElement(value: MutableList<AlertCElement>?) = Gson().toJson(value)
+    @TypeConverter
+    fun alertCToList(value: String) = Gson().fromJson(value, Array<AlertCElement>::class.java).toMutableList()
 
 
 
