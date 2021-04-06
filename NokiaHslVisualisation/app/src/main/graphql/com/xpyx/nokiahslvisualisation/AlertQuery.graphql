@@ -1,4 +1,4 @@
-query AlertsList {
+query GetAlerts {
 
     alerts {
         alertHeaderText

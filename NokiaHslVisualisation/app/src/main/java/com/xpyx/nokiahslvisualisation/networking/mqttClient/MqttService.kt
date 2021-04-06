@@ -1,6 +1,7 @@
 package com.xpyx.nokiahslvisualisation.networking.mqttClient
 
 import android.app.IntentService
+import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
