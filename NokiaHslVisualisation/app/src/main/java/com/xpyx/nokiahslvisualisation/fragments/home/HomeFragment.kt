@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
+import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
@@ -77,35 +78,29 @@ class HomeFragment : Fragment() {
         )
         val colorStates = ColorStateList(states, colors)
 
-
-        val apollo = ApolloClient()
-
-//        apollo.client.query(
-//            AlertsListQuery.builder().build()
-//        ).enqueue(object : ApolloCall.Callback<AlertsListQuery.Data>() {
-//
-//            override fun onFailure(e: ApolloException) {
-//                Log.d("DBG, on failure", e.localizedMessage ?: "Error")
-//            }
-//
-//            override fun onResponse(response: Response<AlertsListQuery.Data>) {
-//                Log.d("DBG, on response", response.data.toString())
-//            }
-//        })
-
-
-        lifecycleScope.launchWhenResumed {
-            val response = apollo.client.query(AlertsListQuery()).await()
-
-            Log.d("LaunchList", "Success ${response?.data}")
-        }
-
-
         // RECYCLER VIEW
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = AlertListAdapter(alertList)
+
+        val apollo = ApolloClient()
+        lifecycleScope.launchWhenResumed {
+
+            val response = try {
+                apollo.client.query(AlertsListQuery()).await()
+            } catch (e: ApolloException) {
+                Log.d("AlertList", "Failure", e)
+                null
+            }
+
+            val alerts = response?.data?.alerts()?.filterNotNull()
+            if (alerts != null && !response.hasErrors()) {
+                recyclerView.adapter = AlertListAdapter(alerts as MutableList<AlertsListQuery.Alert>)
+
+            }
+        }
+
+
 
 
 //        // API viewmodel setup
