@@ -70,8 +70,7 @@ class ListFragment : Fragment(){
         // Button
         refreshButton = view.findViewById(R.id.traffic_refresh_button)
 
-//        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
-        hereTrafficApiKey = ""
+        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
         viewModel.getTrafficData(hereTrafficApiKey)
         viewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
