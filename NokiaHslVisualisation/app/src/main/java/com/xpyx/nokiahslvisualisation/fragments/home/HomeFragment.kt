@@ -7,24 +7,22 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
-//import com.xpyx.nokiahslvisualisation.GetAlertsQuery
-import com.xpyx.nokiahslvisualisation.R
-import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
-import android.text.method.ScrollingMovementMethod
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
 
@@ -33,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
+
 
 class HomeFragment : Fragment() {
 
@@ -45,9 +44,12 @@ class HomeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
 
     // Fake data
-    private val alert1 = FakeAlert("Line 200","Late 10 minutes because of traffic.")
-    private val alert2 = FakeAlert("Line 41 HKI","Missing one bus on line, 3 missed launches.")
+    private val alert1 = FakeAlert("Line 200", "Late 10 minutes because of traffic.")
+    private val alert2 = FakeAlert("Line 41 HKI", "Missing one bus on line, 3 missed launches.")
     private val alertList = mutableListOf(alert1, alert2)
+
+    private lateinit var viewModel: ApiViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,13 +68,37 @@ class HomeFragment : Fragment() {
             Color.parseColor("#FF3700B3"), // enabled color
             Color.parseColor("#E6E6FA") // disabled color
         )
-        val colorStates = ColorStateList(states,colors)
+        val colorStates = ColorStateList(states, colors)
+
+
+        val apollo = ApolloClient()
+
+//        apollo.client.query(
+//            AlertsListQuery.builder().build()
+//        ).enqueue(object : ApolloCall.Callback<AlertsListQuery.Data>() {
+//
+//            override fun onFailure(e: ApolloException) {
+//                Log.d("DBG, on failure", e.localizedMessage ?: "Error")
+//            }
+//
+//            override fun onResponse(response: Response<AlertsListQuery.Data>) {
+//                Log.d("DBG, on response", response.data.toString())
+//            }
+//        })
+
+
+        lifecycleScope.launchWhenResumed {
+            val response = apollo.client.query(AlertsListQuery()).await()
+
+            Log.d("LaunchList", "Success ${response?.data}")
+        }
+
 
         // RECYCLER VIEW
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = AlertListAdapter( alertList)
+        recyclerView.adapter = AlertListAdapter(alertList)
 
 
         // RECYCLER VIEW
@@ -169,8 +195,12 @@ class HomeFragment : Fragment() {
         return view
     }
 
-    fun connect(applicationContext : Context) {
-        mqttAndroidClient = MqttAndroidClient ( context?.applicationContext,"tcp://mqtt.hsl.fi:1883","YOUR CLIENT ID" )
+    fun connect(applicationContext: Context) {
+        mqttAndroidClient = MqttAndroidClient(
+            context?.applicationContext,
+            "tcp://mqtt.hsl.fi:1883",
+            "YOUR CLIENT ID"
+        )
         try {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
@@ -201,6 +231,7 @@ class HomeFragment : Fragment() {
                     // Give your callback on Subscription here
                     Log.i("Connection", "subscribe success ")
                 }
+
                 override fun onFailure(
                     asyncActionToken: IMqttToken,
                     exception: Throwable
@@ -222,6 +253,7 @@ class HomeFragment : Fragment() {
                 //connectionStatus = false
                 // Give your callback on failure here
             }
+
             override fun messageArrived(topic: String, message: MqttMessage) {
                 val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
                 val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
@@ -241,6 +273,7 @@ class HomeFragment : Fragment() {
                     // Give your callback on error here
                 }
             }
+
             override fun deliveryComplete(token: IMqttDeliveryToken) {
                 // Acknowledgement on delivery complete
             }

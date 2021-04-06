@@ -107,6 +107,12 @@ dependencies {
 
     // Apollo
     implementation("com.apollographql.apollo:apollo-runtime:2.5.4")
+    // Apollo RxJava3 support
+    implementation "com.apollographql.apollo:apollo-rx3-support:2.5.4"
+
+    // RxJava
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.7'
 
     // Kotlin
     def nav_version = "2.3.4"
@@ -144,7 +150,10 @@ dependencies {
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
+<<<<<<< HEAD
 
+=======
+>>>>>>> 97a7523... try implemeting apollo
 }
 
 // Files with such regex patterns are to be excluded

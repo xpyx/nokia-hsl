@@ -1,6 +1,7 @@
 package com.xpyx.nokiahslvisualisation.api
 
 import com.apollographql.apollo.ApolloClient
+import com.xpyx.nokiahslvisualisation.networking.AlertsApi
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -18,5 +19,9 @@ object GraphQLInstance {
             )
             .build()
     }
+
+//    val alertsApi: AlertsApi by lazy {
+//        ApolloClient.create(AlertsApi::class.java)
+//    }
 
 }
