@@ -4,13 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
-import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
-import org.w3c.dom.Text
+
 
 class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>) :
     RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>() {
@@ -18,9 +16,10 @@ class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>
 
     class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusViewHolder {
-        return BusViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.alert_list_item, parent, false))
-
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
+        return AlertViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.alert_list_item, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
@@ -33,7 +32,6 @@ class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>
         dateTextView.text = "$start - $end"
 //        val bundle = bundleOf("alert" to alertList[position])
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
-
     }
 
     override fun getItemCount(): Int {

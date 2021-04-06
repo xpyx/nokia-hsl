@@ -24,7 +24,8 @@ class AlertDetailsFragment : Fragment() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
-                    requireView().findNavController().navigate(R.id.action_action_bus_to_action_list)
+
+                    requireView().findNavController().navigate(R.id.action_alertDetailsFragment_to_action_home)
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
@@ -40,7 +41,6 @@ class AlertDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val toolbar = (activity as AppCompatActivity).supportActionBar
-
         toolbar?.title = getString(R.string.alert_details_view)
 
 

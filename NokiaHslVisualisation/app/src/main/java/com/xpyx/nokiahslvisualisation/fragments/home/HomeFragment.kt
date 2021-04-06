@@ -22,8 +22,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
 import com.google.android.material.button.MaterialButton
-import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
-
+import com.xpyx.nokiahslvisualisation.AlertsListQuery
+import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,6 +61,7 @@ class HomeFragment : Fragment() {
         )
         val colorStates = ColorStateList(states, colors)
 
+
         // RecyclerView init
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -83,39 +85,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-
-
-
-        // RECYCLER VIEW
-        recyclerView = view.findViewById(R.id.alert_recycler_view)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = AlertListAdapter( alertList)
-
-
-
-//        val alertText = view.findViewById<TextView>(R.id.textView)
-//        alertText.movementMethod = ScrollingMovementMethod()
-
-//        val apollo = ApolloClient()
-
-
-//        btnAlerts.setOnClickListener{
-//            apollo.client.query(
-//                GetAlertsQuery.builder().build()
-//            ).enqueue(object : ApolloCall.Callback<GetAlertsQuery.Data>() {
-//
-//                override fun onFailure(e: ApolloException) {
-//                    Log.d("DBG, on failure", e.localizedMessage ?: "Error")
-//                }
-//
-//                override fun onResponse(response: Response<GetAlertsQuery.Data>) {
-//                    Log.d("DBG, on response", response.data.toString())
-//                    alertText.text = response.data.toString()
-//
-//                }
-//            })
-//        }
 
         // Get HSL Vehicle positions with MQTT
         // Connect to HSL MQTT broker
