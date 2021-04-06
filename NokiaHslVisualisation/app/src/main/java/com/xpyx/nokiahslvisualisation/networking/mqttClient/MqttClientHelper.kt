@@ -2,11 +2,11 @@ package com.xpyx.nokiahslvisualisation.networking.mqttClient
 
 import android.util.Log
 import android.content.Context
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_CLEAN_SESSION
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_KEEP_ALIVE_INTERVAL
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_RECONNECT
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_CONNECTION_TIMEOUT
-import com.xpyx.nokiahslvisualisation.Constants.Companion.HSL_MQTT_HOST
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CONNECTION_CLEAN_SESSION
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CONNECTION_KEEP_ALIVE_INTERVAL
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CONNECTION_RECONNECT
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CONNECTION_TIMEOUT
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.MqttClient

@@ -19,7 +19,10 @@ Used libraries:
 
 #### To run the Android app
 
-Open NokiaHslVisualisation directory in Android Studio and run the app.
+1. Open NokiaHslVisualisation directory in Android Studio
+2. Add here maps APIkey to local.properties
+    - row should look like:
+    `HERE_MAPS_API_KEY="<API KEY>"`
 
 #### To run the Realtime Transport Updates API server
 
