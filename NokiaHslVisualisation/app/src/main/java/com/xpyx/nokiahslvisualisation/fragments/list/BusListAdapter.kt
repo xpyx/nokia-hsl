@@ -26,7 +26,6 @@ class BusListAdapter(private val busList: MutableList<FakeBus>) : RecyclerView.A
         val problemTextView = holder.itemView.findViewById<TextView>(R.id.problem_text_view)
         problemTextView.text = bus.problem
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_list_to_action_bus))
-
     }
 
     override fun getItemCount(): Int {

@@ -16,24 +16,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
-import com.xpyx.nokiahslvisualisation.ApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.R
-import com.xpyx.nokiahslvisualisation.api.ApiViewModel
-import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
-import com.xpyx.nokiahslvisualisation.repository.ApiRepository
-import io.reactivex.rxjava3.annotations.NonNull
-import io.reactivex.rxjava3.observers.DisposableObserver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,14 +42,6 @@ class HomeFragment : Fragment() {
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
     private lateinit var recyclerView: RecyclerView
 
-    // Fake data
-    private val alert1 = FakeAlert("Line 200", "Late 10 minutes because of traffic.")
-    private val alert2 = FakeAlert("Line 41 HKI", "Missing one bus on line, 3 missed launches.")
-    private val alertList = mutableListOf(alert1, alert2)
-
-    private lateinit var viewModel: ApiViewModel
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,7 +50,7 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-        // create a color state list programmatically
+        // Create a color state list programmatically for BUTTONS
         val states = arrayOf(
             intArrayOf(android.R.attr.state_enabled), // enabled
             intArrayOf(-android.R.attr.state_enabled) // disabled
@@ -78,14 +61,14 @@ class HomeFragment : Fragment() {
         )
         val colorStates = ColorStateList(states, colors)
 
-        // RECYCLER VIEW
+        // RecyclerView init
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // Init Apollo and try to get response
         val apollo = ApolloClient()
         lifecycleScope.launchWhenResumed {
-
             val response = try {
                 apollo.client.query(AlertsListQuery()).await()
             } catch (e: ApolloException) {
@@ -93,20 +76,13 @@ class HomeFragment : Fragment() {
                 null
             }
 
+            // When response successfull, pass list of alerts to adapter
             val alerts = response?.data?.alerts()?.filterNotNull()
             if (alerts != null && !response.hasErrors()) {
-                recyclerView.adapter = AlertListAdapter(alerts as MutableList<AlertsListQuery.Alert>)
-
+                recyclerView.adapter =
+                    AlertListAdapter(alerts as MutableList<AlertsListQuery.Alert>)
             }
         }
-
-
-
-
-//        // API viewmodel setup
-//        val repository = ApiRepository()
-//        val viewModelFactory = ApiViewModelFactory(repository)
-//        viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
 
 
         // Get HSL Vehicle positions with MQTT
@@ -126,14 +102,13 @@ class HomeFragment : Fragment() {
         // Listen to editText, clear editText and hide keyboard
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-
                 return@OnEditorActionListener true
             }
             false
         })
 
         // Subscribe
-        btnPositions.setOnClickListener{
+        btnPositions.setOnClickListener {
             scope.launch {
                 topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
                 Log.d("DBG", topic)
@@ -157,7 +132,7 @@ class HomeFragment : Fragment() {
             isEnabled = true
             isClickable = true
         }
-        btnStop.setOnClickListener{
+        btnStop.setOnClickListener {
             scope.launch {
                 unSubscribe(topic)
                 runOnUiThread {
@@ -174,18 +149,19 @@ class HomeFragment : Fragment() {
 
     fun connect(applicationContext: Context) {
         mqttAndroidClient = MqttAndroidClient(
-            context?.applicationContext,
+            applicationContext,
             "tcp://mqtt.hsl.fi:1883",
             "YOUR CLIENT ID"
         )
         try {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken)                        {
+                override fun onSuccess(asyncActionToken: IMqttToken) {
                     Log.i("Connection", "success ")
                     //connectionStatus = true
                     // Give your callback on connection established here
                 }
+
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
                     //connectionStatus = false
                     Log.i("Connection", "failure")
@@ -266,6 +242,7 @@ class HomeFragment : Fragment() {
                     Log.i("Connection", "Unsubscribe success ")
 
                 }
+
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
                     // Give your callback on failure here
                 }
