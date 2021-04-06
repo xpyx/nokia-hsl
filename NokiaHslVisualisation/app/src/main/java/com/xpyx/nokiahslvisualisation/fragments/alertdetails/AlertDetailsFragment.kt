@@ -1,13 +1,13 @@
 package com.xpyx.nokiahslvisualisation.fragments.alertdetails
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.xpyx.nokiahslvisualisation.R
 
@@ -29,6 +29,10 @@ class AlertDetailsFragment : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+//        val alert = arguments?.getString("alert")
+//
+//        Log.d("ALERT", alert)
+
         return view
     }
 
@@ -38,6 +42,8 @@ class AlertDetailsFragment : Fragment() {
         val toolbar = (activity as AppCompatActivity).supportActionBar
 
         toolbar?.title = getString(R.string.alert_details_view)
+
+
     }
 
 }

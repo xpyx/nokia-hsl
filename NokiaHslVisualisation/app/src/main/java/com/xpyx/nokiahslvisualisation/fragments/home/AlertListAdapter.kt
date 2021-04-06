@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
@@ -11,7 +12,8 @@ import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.fragments.list.FakeAlert
 import org.w3c.dom.Text
 
-class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>) : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>() {
+class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>) :
+    RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>() {
 
 
     class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -25,8 +27,11 @@ class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>
         val alert: AlertsListQuery.Alert = alertList[position]
         val titleTextView = holder.itemView.findViewById<TextView>(R.id.alert_title)
         titleTextView.text = alert.alertHeaderText()
-        val problemTextView = holder.itemView.findViewById<TextView>(R.id.alert_desc)
-        problemTextView.text = alert.alertDescriptionText()
+        val start = alert.effectiveStartDate().toString()
+        val end = alert.effectiveEndDate().toString()
+        val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
+        dateTextView.text = "$start - $end"
+//        val bundle = bundleOf("alert" to alertList[position])
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
 
     }
