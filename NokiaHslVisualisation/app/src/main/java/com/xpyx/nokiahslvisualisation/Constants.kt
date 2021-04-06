@@ -10,5 +10,7 @@ class Constants {
         const val HSL_CONNECTION_KEEP_ALIVE_INTERVAL = 15
         const val HSL_CONNECTION_CLEAN_SESSION = true
         const val HSL_CONNECTION_RECONNECT = true
+        const val ALERT_API = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql"
+
     }
 }
