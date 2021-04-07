@@ -26,7 +26,10 @@ class AlertListAdapter :
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
         val alert = alertList[position]
         val titleTextView = holder.itemView.findViewById<TextView>(R.id.alert_title)
-        titleTextView.text = alert.alertDescriptionText
+        val descTextView = holder.itemView.findViewById<TextView>(R.id.alert_desc)
+
+        titleTextView.text = alert.alertHeaderText
+        descTextView.text = alert.alertDescriptionText
         val start = alert.effectiveStartDate.toString()
         val end = alert.effectiveEndDate.toString()
         val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
