@@ -29,7 +29,6 @@ import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
-import com.xpyx.nokiahslvisualisation.fragments.list.TrafficListAdapter
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,22 +57,19 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-//        val adapter = context?.let { AlertListAdapter(requireContext()) }
-
+        val adapter = context?.let { AlertListAdapter() }
 
         // RecyclerView init
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//        recyclerView.adapter = adapter
+        recyclerView.adapter = adapter
 
 
         mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
-//        mAlertViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
-//            adapter?.setData(traffic)
-//        })
-
-
+        mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
+            adapter?.setData(alerts)
+        })
 
         return view
     }
@@ -99,7 +95,7 @@ class HomeFragment : Fragment() {
             val response = try {
                 apollo.client.query(AlertsListQuery()).await()
             } catch (e: ApolloException) {
-                Log.d("AlertList", "Failure", e)
+                Log.e("AlertList", "Failure", e)
                 null
             }
 
@@ -112,8 +108,7 @@ class HomeFragment : Fragment() {
 
             Log.d("DBG", alerts.toString())
             if (alerts != null && !response.hasErrors()) {
-                recyclerView.adapter =
-                    AlertListAdapter(alerts as MutableList<AlertsListQuery.Alert>)
+
             }
         }
 
@@ -310,7 +305,7 @@ class HomeFragment : Fragment() {
                     Log.d("Connection", data)
                     counter++
                     runOnUiThread {
-                        textViewNumMsgs?.text = "Number of MQTT messages: " + counter.toString()
+                        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
                         textViewMsgPayload?.text = data
                     }
 
