@@ -36,7 +36,9 @@ const client = async (server, config, dayServiceInterval = 60000, nightServiceIn
 			});
 			if (response.status === 200) {
 				feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(response.data);
-				feed = await filterFeed(feed);
+				console.log('FeedMessage data: ', response.data)
+				//feed = await filterFeed(feed);
+				console.log('Realtime feed: ', feed)
 				console.log('Successful GTFS-R response...');
 			}
 		} catch (error) {

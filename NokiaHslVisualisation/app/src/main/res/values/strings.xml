@@ -1,19 +1,36 @@
 <resources>
     <string name="app_name">NokiaHslVisualisation</string>
 
-    // Menu Items
+    // Fragment titles
     <string name="menu_home">Home</string>
     <string name="menu_list">List View</string>
     <string name="menu_map">Map</string>
+    <string name="details_view">Bus details</string>
+    <string name="alert_details_view">Alert details</string>
+    <string name="menu_ar">AR View</string>
 
     // List view
     <string name="button_text">Refresh</string>
     // Content descriptions
+    <string name="warning_icon_content_description">Warning icon</string>
+
+    // Traffic list adapter
+    <string name="warning_description">Start: %1$s, End: %2$s, Type: %3$s</string>
     <string name="bus_icon_content_description">Bus Icon</string>
+    <string name="alert_icon_content_description">Alert Icon</string>
 
 
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
+
+
+    // Home fragment
+    <string name="btn_alerts">Show Alerts</string>
+    <string name="btn_start_mqtt">Get MQTT</string>
+    <string name="btn_stop_mqtt">Stop MQTT</string>
+
+
+    <string name="mapbox_access_token">pk.eyJ1IjoiZGVkYXNzZSIsImEiOiJja21sejhvbW4wMm9oMnZwZWxlNjZ3Y2Q2In0.lvdWT_LNNIlwM-AxY0m7UA</string>
+    <string name="hello_blank_fragment">hello</string>
 </resources>
