@@ -79,6 +79,7 @@ class HomeFragment : Fragment() {
 
             // When response successfull, pass list of alerts to adapter
             val alerts = response?.data?.alerts()?.filterNotNull()
+            Log.d("DBG", alerts.toString())
             if (alerts != null && !response.hasErrors()) {
                 recyclerView.adapter =
                     AlertListAdapter(alerts as MutableList<AlertsListQuery.Alert>)

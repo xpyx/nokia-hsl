@@ -22,13 +22,22 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        buildConfigField("String", "HERE_MAPS_API_KEY", getApiKey())
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+                arg("room.incremental", "true")
+                arg("room.expandProjection", "true")
+            }
+        }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
 
     buildTypes {
-
+        debug {
+            resValue("string", "here_maps_api_key", getApiKey())
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -57,6 +66,15 @@ android {
 
     testOptions {
         unitTests.includeAndroidResources = true
+    }
+
+}
+
+    String getApiKey() {
+        def propFile = rootProject.file("./local.properties")
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(propFile))
+        return localProperties['HERE_MAPS_API_KEY']
     }
 
 
@@ -169,4 +187,3 @@ android {
                 'outputs/code_coverage/debugAndroidTest/connected/*.ec'
         ])
     }
-}
