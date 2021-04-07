@@ -10,6 +10,7 @@ plugins {
 
 apply plugin: 'jacoco'
 apply plugin: 'com.google.ar.sceneform.plugin'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 
 android {
