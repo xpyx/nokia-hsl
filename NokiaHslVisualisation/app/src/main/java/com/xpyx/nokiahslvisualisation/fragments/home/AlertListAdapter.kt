@@ -30,7 +30,6 @@ class AlertListAdapter(private val alertList: MutableList<AlertsListQuery.Alert>
         val end = alert.effectiveEndDate().toString()
         val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
         dateTextView.text = "$start - $end"
-//        val bundle = bundleOf("alert" to alertList[position])
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
     }
 

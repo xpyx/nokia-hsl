@@ -10,4 +10,8 @@ class AlertItemRepository(private val alertItemDao: AlertItemDao) {
         alertItemDao.addAlertItem(alertItem)
     }
 
+    suspend fun checkIfExists(text: String): Boolean {
+        return alertItemDao.productExists(text)
+    }
+
 }

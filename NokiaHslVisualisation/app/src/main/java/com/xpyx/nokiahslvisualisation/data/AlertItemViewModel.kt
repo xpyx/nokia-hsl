@@ -24,4 +24,14 @@ class AlertItemViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    // Check if exists by Ean code
+    suspend fun checkIfExists(alertHeaderText: String): Boolean {
+        var exists = false
+        val job = viewModelScope.launch(Dispatchers.IO) {
+            exists = repository.checkIfExists(alertHeaderText)
+        }
+        job.join()
+        return exists
+    }
+
 }

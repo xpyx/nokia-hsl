@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +29,7 @@ import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
+import com.xpyx.nokiahslvisualisation.fragments.list.TrafficListAdapter
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +58,30 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
+//        val adapter = context?.let { AlertListAdapter(requireContext()) }
+
+
+        // RecyclerView init
+        recyclerView = view.findViewById(R.id.alert_recycler_view)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+//        recyclerView.adapter = adapter
+
+
+        mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
+//        mAlertViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
+//            adapter?.setData(traffic)
+//        })
+
+
+
+        return view
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         // Create a color state list programmatically for BUTTONS
         val states = arrayOf(
             intArrayOf(android.R.attr.state_enabled), // enabled
@@ -66,19 +92,6 @@ class HomeFragment : Fragment() {
             Color.parseColor("#E6E6FA") // disabled color
         )
         val colorStates = ColorStateList(states, colors)
-
-
-
-        // RecyclerView init
-        recyclerView = view.findViewById(R.id.alert_recycler_view)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-
-        mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
-//        mAlertViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
-//            adapter?.setData(traffic)
-//        })
 
         // Init Apollo and try to get response
         val apollo = ApolloClient()
@@ -164,39 +177,67 @@ class HomeFragment : Fragment() {
             }
         }
 
-        return view
+
     }
 
     private fun insertToTrafficDatabase(response: Response<AlertsListQuery.Data>) {
+
+        var exists: Boolean
+
         Log.d("Traffic", response.toString())
         val alertItemList = response.data?.alerts()
         if (alertItemList != null) {
             for (item in alertItemList) {
+
                 GlobalScope.launch(context = Dispatchers.IO) {
-                    val alertHeaderText = item.alertHeaderText()
-                    val alertDescriptionText = item.alertDescriptionText()
-                    val effectiveStartDate = item.effectiveStartDate().toString()
-                    val effectiveEndDate = item.effectiveEndDate().toString()
-                    val alertUrl = item.alertUrl()
 
-                    val alert = AlertItem(
-                        0,
-                        alertHeaderText,
-                        alertDescriptionText,
-                        effectiveStartDate,
-                        effectiveEndDate,
-                        alertUrl
-                    )
+                    exists =
+                        item.alertHeaderText()?.let { mAlertViewModel.checkIfExists(it) } == true
 
-                    mAlertViewModel.addAlertItem(alert)
+                    if (exists) {
 
-                    Log.d("ALERT", "Successfully added alert item: $id")
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Alert already in local database",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
 
+
+                        val alertHeaderText = item.alertHeaderText()
+                        val alertDescriptionText = item.alertDescriptionText()
+                        val effectiveStartDate = item.effectiveStartDate().toString()
+                        val effectiveEndDate = item.effectiveEndDate().toString()
+                        val alertUrl = item.alertUrl()
+
+                        val alert = AlertItem(
+                            0,
+                            alertHeaderText,
+                            alertDescriptionText,
+                            effectiveStartDate,
+                            effectiveEndDate,
+                            alertUrl
+                        )
+
+                        mAlertViewModel.addAlertItem(alert)
+
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Alert added to database",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                        }
+
+
+                    }
                 }
             }
         }
     }
-
 
 
     fun connect(applicationContext: Context) {
