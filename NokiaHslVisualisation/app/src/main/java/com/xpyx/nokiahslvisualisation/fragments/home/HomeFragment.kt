@@ -16,17 +16,22 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.data.AlertItem
+import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
@@ -41,6 +46,7 @@ class HomeFragment : Fragment() {
     private lateinit var busLineValue: Editable
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
     private lateinit var recyclerView: RecyclerView
+    private lateinit var mAlertViewModel: AlertItemViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,10 +68,17 @@ class HomeFragment : Fragment() {
         val colorStates = ColorStateList(states, colors)
 
 
+
         // RecyclerView init
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+
+        mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
+//        mAlertViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
+//            adapter?.setData(traffic)
+//        })
 
         // Init Apollo and try to get response
         val apollo = ApolloClient()
@@ -79,6 +92,12 @@ class HomeFragment : Fragment() {
 
             // When response successfull, pass list of alerts to adapter
             val alerts = response?.data?.alerts()?.filterNotNull()
+
+            if (response != null) {
+                insertToTrafficDatabase(response)
+            }
+
+            Log.d("DBG", alerts.toString())
             if (alerts != null && !response.hasErrors()) {
                 recyclerView.adapter =
                     AlertListAdapter(alerts as MutableList<AlertsListQuery.Alert>)
@@ -147,6 +166,38 @@ class HomeFragment : Fragment() {
 
         return view
     }
+
+    private fun insertToTrafficDatabase(response: Response<AlertsListQuery.Data>) {
+        Log.d("Traffic", response.toString())
+        val alertItemList = response.data?.alerts()
+        if (alertItemList != null) {
+            for (item in alertItemList) {
+                GlobalScope.launch(context = Dispatchers.IO) {
+                    val alertHeaderText = item.alertHeaderText()
+                    val alertDescriptionText = item.alertDescriptionText()
+                    val effectiveStartDate = item.effectiveStartDate().toString()
+                    val effectiveEndDate = item.effectiveEndDate().toString()
+                    val alertUrl = item.alertUrl()
+
+                    val alert = AlertItem(
+                        0,
+                        alertHeaderText,
+                        alertDescriptionText,
+                        effectiveStartDate,
+                        effectiveEndDate,
+                        alertUrl
+                    )
+
+                    mAlertViewModel.addAlertItem(alert)
+
+                    Log.d("ALERT", "Successfully added alert item: $id")
+
+                }
+            }
+        }
+    }
+
+
 
     fun connect(applicationContext: Context) {
         mqttAndroidClient = MqttAndroidClient(
