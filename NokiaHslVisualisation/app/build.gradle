@@ -3,13 +3,13 @@ plugins {
     id 'kotlin-android'
     id "org.jetbrains.kotlin.kapt"
     id "kotlin-kapt"
-    id("com.apollographql.apollo").version("2.5.5")
     id 'jacoco'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
 }
 
 apply plugin: 'jacoco'
 apply plugin: 'com.google.ar.sceneform.plugin'
+apply plugin: 'com.apollographql.apollo'
 
 
 android {
