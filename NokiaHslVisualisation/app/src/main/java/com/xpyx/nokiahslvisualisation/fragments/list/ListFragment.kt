@@ -84,20 +84,20 @@ class ListFragment : Fragment(){
 
     private fun insertToTrafficDatabase(response: Response<TrafficData>) {
         Log.d("Traffic", response.body()!!.toString())
-        val trafficItemList = response.body()!!.trafficItems
+        val trafficItemList = response.body()!!.trafficDataTrafficItems
         if (trafficItemList != null) {
             for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
                 GlobalScope.launch(context = Dispatchers.IO) {
                     val traffic_item_id = item.trafficItemId
                     val traffic_item_status_short_desc = item.trafficItemStatusShortDesc
                     val traffic_item_type_desc = item.trafficItemTypeDesc
-                    val start_time = item.startTime
-                    val end_time = item.endTime
-                    val criticality = item.criticality
-                    val verified = item.verified
-                    val rds_tmc_locations = item.rds_tmcLocations
-                    val location = item.location
-                    Log.d("DBG_ITEM",item.location.toString())
+                    val start_time = item.trafficItemStartTime
+                    val end_time = item.trafficItemEndTime
+                    val criticality = item.trafficItemCriticality
+                    val verified = item.trafficItemVerified
+                    val rds_tmc_locations = item.trafficitemRDSTmclocations
+                    val location = item.trafficItemLocation
+                    Log.d("DBG_ITEM",item.trafficItemLocation.toString())
                     val traffic_item_detail = item.trafficItemDetail
                     val traffic_item_description = item.trafficItemDescriptionElement
 
@@ -112,7 +112,7 @@ class ListFragment : Fragment(){
                         verified,
                         rds_tmc_locations,
                         //location,
-                        //traffic_item_detail,
+                        traffic_item_detail,
                         traffic_item_description
                     )
 

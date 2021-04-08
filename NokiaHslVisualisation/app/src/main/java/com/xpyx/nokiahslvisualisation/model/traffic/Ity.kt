@@ -16,6 +16,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Ity (
 
-	@SerializedName("ID") val id : String? = null,
-	@SerializedName("DESCRIPTION") val description : String? = null
+	@SerializedName("ID") val ityId : String? = null,
+	@SerializedName("DESCRIPTION") val ityDescription : String? = null
 )

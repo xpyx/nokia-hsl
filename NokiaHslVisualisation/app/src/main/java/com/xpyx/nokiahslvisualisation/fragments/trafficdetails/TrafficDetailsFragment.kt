@@ -63,8 +63,8 @@ class TrafficDetailsFragment : Fragment() {
             Log.d("TEST", trafficItem.toString())
 
             trafficTitleTV.text = trafficItem.traffic_item_type_desc
-            trafficTimeTV.text = getString(R.string.traffic_time, trafficItem.criticality?.description, trafficItem.start_time, trafficItem.end_time)
-            trafficDescriptionTV.text = trafficItem.trafficItemDescriptionElement?.get(0)?.value.toString()
+            trafficTimeTV.text = getString(R.string.traffic_time, trafficItem.criticality?.ityDescription, trafficItem.start_time, trafficItem.end_time)
+            trafficDescriptionTV.text = trafficItem.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue.toString()
 
         }
 

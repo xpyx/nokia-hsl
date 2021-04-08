@@ -26,7 +26,7 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
     override fun onBindViewHolder(holder: TrafficViewHolder, position: Int) {
         val traffic = trafficList[position]
         val titleTextView = holder.itemView.findViewById<TextView>(R.id.title_text_view)
-        titleTextView.text = traffic.trafficItemDescriptionElement?.get(0)!!.value
+        titleTextView.text = traffic.trafficItemDescriptionElement?.get(0)!!.trafficItemDescriptionElementValue
         val problemTextView = holder.itemView.findViewById<TextView>(R.id.description_text_view)
         problemTextView.text = context.getString(R.string.warning_description, traffic.start_time, traffic.end_time, traffic.traffic_item_type_desc)
         val trafficId = traffic.traffic_item_id
