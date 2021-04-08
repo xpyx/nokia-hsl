@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName
 
 data class TrafficItemDetail (
 	@SerializedName("ROAD_CLOSED") val trafficItemDetailRoadClosed: Boolean? = null,
-	@SerializedName("EVENT") val trafficItemDetailEvent: Event? = null,
-	@SerializedName("INCIDENT") val trafficItemDetailIncident: Incident? = null,
+	@SerializedName("EVENT") val trafficItemDetailEvent: Event?,
+	@SerializedName("INCIDENT") val trafficItemDetailIncident: Incident?,
 	@SerializedName("ALERTC") val trafficItemDetailAlertc: List<AlertCElement>? = null
 )

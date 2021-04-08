@@ -15,6 +15,7 @@ import androidx.navigation.fragment.navArgs
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import com.xpyx.nokiahslvisualisation.model.traffic.Defined
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -64,7 +65,21 @@ class TrafficDetailsFragment : Fragment() {
 
             trafficTitleTV.text = trafficItem.traffic_item_type_desc
             trafficTimeTV.text = getString(R.string.traffic_time, trafficItem.criticality?.ityDescription, trafficItem.start_time, trafficItem.end_time)
-            trafficDescriptionTV.text = trafficItem.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue.toString()
+            var defined: Defined? = null
+            defined = trafficItem.location?.locationDefined
+
+            var locationText: String
+            if (defined != null) {
+                if (defined.definedOrigin?.definedLocationDirection != null) {
+                    locationText = "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin?.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                } else {
+                    locationText = "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                }
+            } else {
+                locationText = ""
+            }
+
+            trafficDescriptionTV.text = locationText
 
         }
 

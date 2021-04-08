@@ -83,7 +83,6 @@ class ListFragment : Fragment(){
     }
 
     private fun insertToTrafficDatabase(response: Response<TrafficData>) {
-        Log.d("Traffic", response.body()!!.toString())
         val trafficItemList = response.body()!!.trafficDataTrafficItems
         if (trafficItemList != null) {
             for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
@@ -97,7 +96,6 @@ class ListFragment : Fragment(){
                     val verified = item.trafficItemVerified
                     val rds_tmc_locations = item.trafficitemRDSTmclocations
                     val location = item.trafficItemLocation
-                    Log.d("DBG_ITEM",item.trafficItemLocation.toString())
                     val traffic_item_detail = item.trafficItemDetail
                     val traffic_item_description = item.trafficItemDescriptionElement
 
@@ -111,14 +109,18 @@ class ListFragment : Fragment(){
                         criticality,
                         verified,
                         rds_tmc_locations,
-                        //location,
+                        location,
                         traffic_item_detail,
                         traffic_item_description
                     )
 
-                    mTrafficViewModel.addTrafficData(traffic)
+                    if (criticality != null) {
+                        if (criticality.ityDescription.equals("critical")) {
+                            mTrafficViewModel.addTrafficData(traffic)
+                            Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
+                        }
+                    }
 
-                    Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
 
                 }
             }
