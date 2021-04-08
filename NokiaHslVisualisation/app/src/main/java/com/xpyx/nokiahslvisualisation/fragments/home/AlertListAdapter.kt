@@ -1,5 +1,7 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +37,15 @@ class AlertListAdapter :
         val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
         "$start - $end".also { dateTextView.text = it }
         holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
+
+        // Make the holder clickable and show the alertUrl web page, if not null
+        if (alert.alertUrl !== null) {
+            holder.itemView.setOnClickListener {
+                val i = Intent(Intent.ACTION_VIEW, Uri.parse(alert.alertUrl))
+                holder.itemView.context.startActivity(i)
+            }
+        }
+
     }
 
     override fun getItemCount(): Int {
