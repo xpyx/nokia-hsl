@@ -27,8 +27,7 @@
             android:id="@+id/traffic_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="32sp"
-            />
+            android:textSize="32sp" />
 
         <TextView
             android:id="@+id/traffic_time"
