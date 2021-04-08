@@ -61,22 +61,19 @@ class TrafficDetailsFragment : Fragment() {
         GlobalScope.launch(context = Dispatchers.IO) {
             val trafficID = arguments?.getLong("TRAFFIC") ?: 0
             trafficItem = trafficItemViewModel.getTrafficItem(trafficID)
-            Log.d("TEST", trafficItem.toString())
 
             trafficTitleTV.text = trafficItem.traffic_item_type_desc
             trafficTimeTV.text = getString(R.string.traffic_time, trafficItem.criticality?.ityDescription, trafficItem.start_time, trafficItem.end_time)
-            var defined: Defined? = null
-            defined = trafficItem.location?.locationDefined
+            val defined = trafficItem.location?.locationDefined
 
-            var locationText: String
-            if (defined != null) {
+            val locationText: String = if (defined != null) {
                 if (defined.definedOrigin?.definedLocationDirection != null) {
-                    locationText = "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin?.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                    "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin?.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 } else {
-                    locationText = "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                    "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 }
             } else {
-                locationText = ""
+                ""
             }
 
             trafficDescriptionTV.text = locationText
