@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -57,15 +56,14 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val adapter = context?.let { AlertListAdapter() }
-
         // RecyclerView init
+        val adapter = context?.let { AlertListAdapter() }
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-
+        // ViewModel init
         mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
         mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
             adapter?.setData(alerts)
@@ -111,7 +109,6 @@ class HomeFragment : Fragment() {
 
             }
         }
-
 
         // Get HSL Vehicle positions with MQTT
         // Connect to HSL MQTT broker
@@ -183,24 +180,12 @@ class HomeFragment : Fragment() {
         val alertItemList = response.data?.alerts()
         if (alertItemList != null) {
             for (item in alertItemList) {
-
                 GlobalScope.launch(context = Dispatchers.IO) {
-
                     exists =
                         item.alertHeaderText()?.let { mAlertViewModel.checkIfExists(it) } == true
-
                     if (exists) {
-
-                        launch(Dispatchers.Main) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Alert already in local database",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                        Log.d("DBG", "Alert exists in database already")
                     } else {
-
-
                         val alertHeaderText = item.alertHeaderText()
                         val alertDescriptionText = item.alertDescriptionText()
                         val effectiveStartDate = item.effectiveStartDate().toString()
@@ -215,25 +200,13 @@ class HomeFragment : Fragment() {
                             effectiveEndDate,
                             alertUrl
                         )
-
                         mAlertViewModel.addAlertItem(alert)
-
-                        launch(Dispatchers.Main) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Alert added to database",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                        }
-
-
+                        Log.d("DBG", "Alert added to database")
                     }
                 }
             }
         }
     }
-
 
     fun connect(applicationContext: Context) {
         mqttAndroidClient = MqttAndroidClient(
@@ -262,7 +235,6 @@ class HomeFragment : Fragment() {
             e.printStackTrace()
         }
     }
-
 
     fun subscribe(topic: String) {
         val qos = 2 // Mention your qos value
