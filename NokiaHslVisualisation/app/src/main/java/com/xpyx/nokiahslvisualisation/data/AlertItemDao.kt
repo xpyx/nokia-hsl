@@ -15,7 +15,7 @@ interface AlertItemDao {
     @Query("SELECT * FROM alertitems ORDER BY id DESC")
     fun readAllData(): LiveData<List<AlertItem>>
 
-    @Query("SELECT EXISTS (SELECT 1 FROM alertitems WHERE alertHeaderText = :text)")
-    suspend fun productExists(text: String): Boolean
+    @Query("SELECT EXISTS (SELECT 1 FROM alertitems WHERE alertId = :alertId)")
+    suspend fun productExists(alertId: String): Boolean
 
 }

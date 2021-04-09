@@ -1,15 +1,18 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.content.Intent
+import android.icu.text.DateFormat.getDateInstance
 import android.net.Uri
+import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.AlertItem
+import java.text.SimpleDateFormat
 
 class AlertListAdapter :
     RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>() {
@@ -34,8 +37,15 @@ class AlertListAdapter :
         val alertSeverity = holder.itemView.findViewById<TextView>(R.id.alert_severity)
         val alertCause = holder.itemView.findViewById<TextView>(R.id.alert_cause)
         val alertEffect = holder.itemView.findViewById<TextView>(R.id.alert_effect)
-        val start = alert.effectiveStartDate.toString()
-        val end = alert.effectiveEndDate.toString()
+
+        Log.d("DATE", alert.effectiveStartDate)
+
+        val startStampLong = alert.effectiveStartDate?.toLong()
+        val endStampLong = alert.effectiveEndDate?.toLong()
+
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val start = simpleDateFormat.format(startStampLong)
+        val end = simpleDateFormat.format(endStampLong)
 
         "Date: $start - $end".also { dateTextView.text = it }
         "${alert.alertHeaderText}".also { titleTextView.text =  it }
@@ -43,10 +53,6 @@ class AlertListAdapter :
         "Severity: ${alert.alertSeverityLevel}".also { alertSeverity.text =  it }
         "Cause: ${alert.alertCause}".also { alertCause.text =  it }
         "Effect: ${alert.alertEffect}".also { alertEffect.text =  it }
-
-        holder.itemView.setOnClickListener(
-            Navigation.createNavigateOnClickListener(
-                R.id.action_action_home_to_alertDetailsFragment))
 
         // Make the holder clickable and show the alertUrl web page, if not null
         if (alert.alertUrl !== null) {

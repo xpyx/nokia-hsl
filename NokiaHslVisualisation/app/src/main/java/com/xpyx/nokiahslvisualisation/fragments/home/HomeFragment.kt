@@ -45,10 +45,10 @@ import org.eclipse.paho.client.mqttv3.*
 
 class HomeFragment : Fragment() {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+//    private val scope = CoroutineScope(Dispatchers.IO)
     private var counter: Int = 0
-    private lateinit var editText: EditText
-    private lateinit var busLineValue: Editable
+//    private lateinit var editText: EditText
+//    private lateinit var busLineValue: Editable
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
@@ -112,70 +112,70 @@ class HomeFragment : Fragment() {
                 insertToAlertDatabase(response)
             }
         }
-
-        // Get HSL Vehicle positions with MQTT
-        // First init the helper class
-        val mqtt = MqttHelper(this)
-
-        // Connect to HSL MQTT broker
-        mqtt.connect(view.context)
-        val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-
-        // Set button background tint
-        btnPositions.backgroundTintList = colorStates
-
-        // Initialize 'num msgs received' field in the view
-        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
-        textViewNumMsgs.text = counter.toString()
-
-        // Get editText value
-        editText = view.findViewById(R.id.editText)
-        busLineValue = editText.text
-
-        // Listen to editText, clear editText and hide keyboard
-        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                return@OnEditorActionListener true
-            }
-            false
-        })
-
-        // Subscribe button
-        btnPositions.setOnClickListener {
-            scope.launch {
-                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
-                Log.d("DBG", topic)
-                mqtt.subscribe(topic)
-                mqtt.receiveMessages()
-                runOnUiThread {
-                    editText.text.clear()
-                    hideKeyboard()
-                    (it as MaterialButton).apply {
-                        isEnabled = false
-                        isClickable = false
-                    }
-                }
-            }
-        }
-
-        // Unsubscribe button
-        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
-        btnStop.backgroundTintList = colorStates
-        (btnStop as MaterialButton).apply {
-            isEnabled = true
-            isClickable = true
-        }
-        btnStop.setOnClickListener {
-            scope.launch {
-                mqtt.unSubscribe(topic)
-                runOnUiThread {
-                    (btnPositions as MaterialButton).apply {
-                        isEnabled = true
-                        isClickable = true
-                    }
-                }
-            }
-        }
+//
+//        // Get HSL Vehicle positions with MQTT
+//        // First init the helper class
+//        val mqtt = MqttHelper(this)
+//
+//        // Connect to HSL MQTT broker
+//        mqtt.connect(view.context)
+//        val btnPositions = view.findViewById<Button>(R.id.btn_positions)
+//
+//        // Set button background tint
+//        btnPositions.backgroundTintList = colorStates
+//
+//        // Initialize 'num msgs received' field in the view
+//        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
+//        textViewNumMsgs.text = counter.toString()
+//
+//        // Get editText value
+//        editText = view.findViewById(R.id.editText)
+//        busLineValue = editText.text
+//
+//        // Listen to editText, clear editText and hide keyboard
+//        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                return@OnEditorActionListener true
+//            }
+//            false
+//        })
+//
+//        // Subscribe button
+//        btnPositions.setOnClickListener {
+//            scope.launch {
+//                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
+//                Log.d("DBG", topic)
+//                mqtt.subscribe(topic)
+//                mqtt.receiveMessages()
+//                runOnUiThread {
+//                    editText.text.clear()
+//                    hideKeyboard()
+//                    (it as MaterialButton).apply {
+//                        isEnabled = false
+//                        isClickable = false
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Unsubscribe button
+//        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
+//        btnStop.backgroundTintList = colorStates
+//        (btnStop as MaterialButton).apply {
+//            isEnabled = true
+//            isClickable = true
+//        }
+//        btnStop.setOnClickListener {
+//            scope.launch {
+//                mqtt.unSubscribe(topic)
+//                runOnUiThread {
+//                    (btnPositions as MaterialButton).apply {
+//                        isEnabled = true
+//                        isClickable = true
+//                    }
+//                }
+//            }
+//        }
 
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
@@ -283,11 +283,11 @@ class HomeFragment : Fragment() {
     }
 
     fun updateUI(data: String) {
-        counter++
-        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
-        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
-        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
-        textViewMsgPayload?.text = data
+//        counter++
+//        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
+//        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
+//        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
+//        textViewMsgPayload?.text = data
     }
 
     // For running on UI thread
