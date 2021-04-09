@@ -10,17 +10,17 @@ This repository contains:
 
 Used libraries:
 
-- Jetbox Navigation
-- Apollo Graphql
-- Paho Mqtt
-- Mapbox
-- Jacoco
-- Room DB
-- Retrofit
-- ViewMode
-- LiveData
-- OsmDroid
-- Coroutines
+- Jetbox Navigation 2.3.3
+- Apollo Graphql 2.5.5 
+- Paho Mqtt 
+- Mapbox 9.6.1
+- Jacoco 0.8.5
+- Room DB 2.2.6
+- Retrofit 2.9.0
+- Lifecycle 2.3.0
+- OsmDroid 6.1.6
+- Coroutines 1.4.2
+- AR Sceneform 1.17.1
 
 #### To run the Android app
 
