@@ -45,10 +45,10 @@ import org.eclipse.paho.client.mqttv3.*
 
 class HomeFragment : Fragment() {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+//    private val scope = CoroutineScope(Dispatchers.IO)
     private var counter: Int = 0
-    private lateinit var editText: EditText
-    private lateinit var busLineValue: Editable
+//    private lateinit var editText: EditText
+//    private lateinit var busLineValue: Editable
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
@@ -96,16 +96,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Create a color state list programmatically for BUTTONS
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_enabled), // enabled
-            intArrayOf(-android.R.attr.state_enabled) // disabled
-        )
-        val colors = intArrayOf(
-            Color.parseColor("#FF3700B3"), // enabled color
-            Color.parseColor("#E6E6FA") // disabled color
-        )
-        val colorStates = ColorStateList(states, colors)
+//        // Create a color state list programmatically for BUTTONS
+//        val states = arrayOf(
+//            intArrayOf(android.R.attr.state_enabled), // enabled
+//            intArrayOf(-android.R.attr.state_enabled) // disabled
+//        )
+//        val colors = intArrayOf(
+//            Color.parseColor("#FF3700B3"), // enabled color
+//            Color.parseColor("#E6E6FA") // disabled color
+//        )
+//        val colorStates = ColorStateList(states, colors)
 
         // Init Apollo and try to get response
         val apollo = ApolloClient()
@@ -121,70 +121,70 @@ class HomeFragment : Fragment() {
                 insertToAlertDatabase(response)
             }
         }
-
-        // Get HSL Vehicle positions with MQTT
-        // First init the helper class
-        val mqtt = MqttHelper(this)
-
-        // Connect to HSL MQTT broker
-        mqtt.connect(view.context)
-        val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-
-        // Set button background tint
-        btnPositions.backgroundTintList = colorStates
-
-        // Initialize 'num msgs received' field in the view
-        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
-        textViewNumMsgs.text = counter.toString()
-
-        // Get editText value
-        editText = view.findViewById(R.id.editText)
-        busLineValue = editText.text
-
-        // Listen to editText, clear editText and hide keyboard
-        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                return@OnEditorActionListener true
-            }
-            false
-        })
-
-        // Subscribe button
-        btnPositions.setOnClickListener {
-            scope.launch {
-                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
-                Log.d("DBG", topic)
-                mqtt.subscribe(topic)
-                mqtt.receiveMessages()
-                runOnUiThread {
-                    editText.text.clear()
-                    hideKeyboard()
-                    (it as MaterialButton).apply {
-                        isEnabled = false
-                        isClickable = false
-                    }
-                }
-            }
-        }
-
-        // Unsubscribe button
-        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
-        btnStop.backgroundTintList = colorStates
-        (btnStop as MaterialButton).apply {
-            isEnabled = true
-            isClickable = true
-        }
-        btnStop.setOnClickListener {
-            scope.launch {
-                mqtt.unSubscribe(topic)
-                runOnUiThread {
-                    (btnPositions as MaterialButton).apply {
-                        isEnabled = true
-                        isClickable = true
-                    }
-                }
-            }
-        }
+//
+//        // Get HSL Vehicle positions with MQTT
+//        // First init the helper class
+//        val mqtt = MqttHelper(this)
+//
+//        // Connect to HSL MQTT broker
+//        mqtt.connect(view.context)
+//        val btnPositions = view.findViewById<Button>(R.id.btn_positions)
+//
+//        // Set button background tint
+//        btnPositions.backgroundTintList = colorStates
+//
+//        // Initialize 'num msgs received' field in the view
+//        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
+//        textViewNumMsgs.text = counter.toString()
+//
+//        // Get editText value
+//        editText = view.findViewById(R.id.editText)
+//        busLineValue = editText.text
+//
+//        // Listen to editText, clear editText and hide keyboard
+//        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                return@OnEditorActionListener true
+//            }
+//            false
+//        })
+//
+//        // Subscribe button
+//        btnPositions.setOnClickListener {
+//            scope.launch {
+//                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
+//                Log.d("DBG", topic)
+//                mqtt.subscribe(topic)
+//                mqtt.receiveMessages()
+//                runOnUiThread {
+//                    editText.text.clear()
+//                    hideKeyboard()
+//                    (it as MaterialButton).apply {
+//                        isEnabled = false
+//                        isClickable = false
+//                    }
+//                }
+//            }
+//        }
+//
+//        // Unsubscribe button
+//        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
+//        btnStop.backgroundTintList = colorStates
+//        (btnStop as MaterialButton).apply {
+//            isEnabled = true
+//            isClickable = true
+//        }
+//        btnStop.setOnClickListener {
+//            scope.launch {
+//                mqtt.unSubscribe(topic)
+//                runOnUiThread {
+//                    (btnPositions as MaterialButton).apply {
+//                        isEnabled = true
+//                        isClickable = true
+//                    }
+//                }
+//            }
+//        }
 
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
@@ -268,32 +268,37 @@ class HomeFragment : Fragment() {
     }
 
     private fun insertToAlertDatabase(response: Response<AlertsListQuery.Data>) {
-
         var exists: Boolean
-
-        Log.d("Traffic", response.toString())
-        val alertItemList = response.data?.alerts()
-        if (alertItemList != null) {
-            for (item in alertItemList) {
+        if (response.data?.alerts() != null) {
+            response.data?.alerts()!!.forEach { item ->
                 GlobalScope.launch(context = Dispatchers.IO) {
-                    exists =
-                        item.alertHeaderText()?.let { mAlertViewModel.checkIfExists(it) } == true
+
+                    exists = mAlertViewModel.checkIfExists(item.id())
+
                     if (exists) {
                         Log.d("DBG", "Alert exists in database already")
                     } else {
+                        val alertId = item.id()
                         val alertHeaderText = item.alertHeaderText()
                         val alertDescriptionText = item.alertDescriptionText()
                         val effectiveStartDate = item.effectiveStartDate().toString()
                         val effectiveEndDate = item.effectiveEndDate().toString()
                         val alertUrl = item.alertUrl()
+                        val alertSeverityLevel = item.alertSeverityLevel().toString()
+                        val alertCause = item.alertCause().toString()
+                        val alertEffect = item.alertEffect().toString()
 
                         val alert = AlertItem(
                             0,
+                            alertId,
                             alertHeaderText,
                             alertDescriptionText,
                             effectiveStartDate,
                             effectiveEndDate,
-                            alertUrl
+                            alertUrl,
+                            alertSeverityLevel,
+                            alertCause,
+                            alertEffect
                         )
                         mAlertViewModel.addAlertItem(alert)
                         Log.d("DBG", "Alert added to database")
@@ -304,11 +309,11 @@ class HomeFragment : Fragment() {
     }
 
     fun updateUI(data: String) {
-        counter++
-        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
-        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
-        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
-        textViewMsgPayload?.text = data
+//        counter++
+//        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
+//        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
+//        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
+//        textViewMsgPayload?.text = data
     }
 
     // For running on UI thread

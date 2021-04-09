@@ -3,6 +3,8 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 import android.content.Context
 import android.util.Log
 import com.xpyx.nokiahslvisualisation.fragments.home.HomeFragment
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
+import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
@@ -16,8 +18,8 @@ class MqttHelper(homeFragment: HomeFragment) {
 
         mqttAndroidClient = MqttAndroidClient(
             applicationContext,
-            "tcp://mqtt.hsl.fi:1883",
-            "YOUR CLIENT ID"
+            HSL_MQTT_HOST,
+            HSL_CLIENT_USER_NAME
         )
         try {
             val token = mqttAndroidClient.connect()

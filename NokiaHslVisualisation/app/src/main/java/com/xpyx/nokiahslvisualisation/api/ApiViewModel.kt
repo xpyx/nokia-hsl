@@ -14,20 +14,10 @@ class ApiViewModel(private val apiRepository: ApiRepository): ViewModel() {
     val myTrafficApiResponse: MutableLiveData<Response<TrafficData>> = MutableLiveData()
     val myAlertApiResponse: MutableLiveData<Response<AlertsListQuery.Alert>> = MutableLiveData()
 
-
     fun getTrafficData(apiKey: String) {
         viewModelScope.launch {
             val response = apiRepository.getTrafficData(apiKey)
             myTrafficApiResponse.value = response
         }
     }
-
-//    fun getAlertData() {
-//        viewModelScope.launch {
-//            val response = apiRepository.getAlertData()
-//            myAlertApiResponse.value = response
-//        }
-//    }
-
-
 }
