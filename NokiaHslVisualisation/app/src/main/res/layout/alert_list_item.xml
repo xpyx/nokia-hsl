@@ -9,6 +9,7 @@
     android:checkable="true"
     android:clickable="true"
     android:focusable="true"
+    app:cardElevation="5dp"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,32 +20,37 @@
         android:layout_marginTop="16dp"
         android:layout_width="match_parent">
 
-        <TextView
-            android:id="@+id/alert_title"
-            android:layout_gravity="fill"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/alert_date" />
 
         <TextView
             android:id="@+id/alert_date"
             android:layout_gravity="fill"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/alert_title"
+            android:layout_gravity="fill"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/alert_date" />
+
+        <TextView
             android:id="@+id/alert_desc"
             android:layout_gravity="fill"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,6 +61,8 @@
             android:layout_gravity="fill"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,6 +73,7 @@
             android:layout_gravity="fill"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,6 +84,7 @@
             android:layout_gravity="fill"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"

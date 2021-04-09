@@ -25,10 +25,10 @@ class AlertItemViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // Check if exists by alertHeaderText
-    suspend fun checkIfExists(alertHeaderText: String): Boolean {
+    suspend fun checkIfExists(alertId: String): Boolean {
         var exists = false
         val job = viewModelScope.launch(Dispatchers.IO) {
-            exists = repository.checkIfExists(alertHeaderText)
+            exists = repository.checkIfExists(alertId)
         }
         job.join()
         return exists

@@ -1,10 +1,7 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.content.Intent
-import android.icu.text.DateFormat.getDateInstance
 import android.net.Uri
-import android.text.format.DateFormat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,16 +35,14 @@ class AlertListAdapter :
         val alertCause = holder.itemView.findViewById<TextView>(R.id.alert_cause)
         val alertEffect = holder.itemView.findViewById<TextView>(R.id.alert_effect)
 
-        Log.d("DATE", alert.effectiveStartDate)
+        val startStampLong = alert.effectiveStartDate?.toLong()?.times(1000L)?.let {java.util.Date(it) }
+        val endStampLong = alert.effectiveEndDate?.toLong()?.times(1000L)?.let { java.util.Date(it) }
 
-        val startStampLong = alert.effectiveStartDate?.toLong()
-        val endStampLong = alert.effectiveEndDate?.toLong()
-
-        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy")
         val start = simpleDateFormat.format(startStampLong)
         val end = simpleDateFormat.format(endStampLong)
 
-        "Date: $start - $end".also { dateTextView.text = it }
+        "Alert effective: $start - $end".also { dateTextView.text = it }
         "${alert.alertHeaderText}".also { titleTextView.text =  it }
         "${alert.alertDescriptionText}".also { descTextView.text = it }
         "Severity: ${alert.alertSeverityLevel}".also { alertSeverity.text =  it }

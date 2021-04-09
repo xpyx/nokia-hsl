@@ -87,16 +87,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Create a color state list programmatically for BUTTONS
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_enabled), // enabled
-            intArrayOf(-android.R.attr.state_enabled) // disabled
-        )
-        val colors = intArrayOf(
-            Color.parseColor("#FF3700B3"), // enabled color
-            Color.parseColor("#E6E6FA") // disabled color
-        )
-        val colorStates = ColorStateList(states, colors)
+//        // Create a color state list programmatically for BUTTONS
+//        val states = arrayOf(
+//            intArrayOf(android.R.attr.state_enabled), // enabled
+//            intArrayOf(-android.R.attr.state_enabled) // disabled
+//        )
+//        val colors = intArrayOf(
+//            Color.parseColor("#FF3700B3"), // enabled color
+//            Color.parseColor("#E6E6FA") // disabled color
+//        )
+//        val colorStates = ColorStateList(states, colors)
 
         // Init Apollo and try to get response
         val apollo = ApolloClient()
@@ -239,16 +239,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun insertToAlertDatabase(response: Response<AlertsListQuery.Data>) {
-
         var exists: Boolean
-
-        Log.d("Traffic", response.toString())
-        val alertItemList = response.data?.alerts()
-        if (alertItemList != null) {
-            for (item in alertItemList) {
+        if (response.data?.alerts() != null) {
+            response.data?.alerts()!!.forEach { item ->
                 GlobalScope.launch(context = Dispatchers.IO) {
-                    exists =
-                        item.alertHeaderText()?.let { mAlertViewModel.checkIfExists(it) } == true
+
+                    exists = mAlertViewModel.checkIfExists(item.id())
+
                     if (exists) {
                         Log.d("DBG", "Alert exists in database already")
                     } else {
