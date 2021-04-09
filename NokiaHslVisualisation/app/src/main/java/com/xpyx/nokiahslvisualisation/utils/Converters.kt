@@ -9,11 +9,6 @@ import java.util.*
 class Converters {
 
     @TypeConverter
-    fun stringListToJson(value: MutableList<String>?) = Gson().toJson(value)
-    @TypeConverter
-    fun jsonToStringList(value: String) = Gson().fromJson(value, Array<String>::class.java).toMutableList()
-
-    @TypeConverter
     fun trafficItemDescsToJson(value: MutableList<TrafficItemDescriptionElement>?) = Gson().toJson(value)
     @TypeConverter
     fun trafficItemDescsToList(value: String) = Gson().fromJson(value, Array<TrafficItemDescriptionElement>::class.java).toMutableList()
@@ -22,15 +17,6 @@ class Converters {
     fun rDSTMCToJson(value: MutableList<RDSTmc>?) = Gson().toJson(value)
     @TypeConverter
     fun rDSTMCToList(value: String) = Gson().fromJson(value, Array<RDSTmc>::class.java).toMutableList()
-
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
-    }
 
     @TypeConverter
     fun geolocToToJson(value: MutableList<GeolocLocation>?) = Gson().toJson(value)
@@ -47,19 +33,41 @@ class Converters {
     @TypeConverter
     fun alertCToList(value: String) = Gson().fromJson(value, Array<AlertCElement>::class.java).toMutableList()
 
-
-
+    // Location.kt
+    @TypeConverter
+    fun definedToString(value: Defined?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToDefined(value: String) = Gson().fromJson(value, Defined::class.java)
 
     @TypeConverter
-    fun fromTrafficItemsList(trafficList: List<TrafficItem?>?): String? {
-        val type = object : TypeToken<List<TrafficItem>>() {}.type
-        return Gson().toJson(trafficList, type)
-    }
+    fun intersectionToString(value: Intersection?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToIntersection(value: String) = Gson().fromJson(value, Intersection::class.java)
 
     @TypeConverter
-    fun toTrafficItemsList(trafficListString: String?): List<TrafficItem?>? {
-        val type = object : TypeToken<List<TrafficItem>>() {}.type
-        return Gson().fromJson<List<TrafficItem>>(trafficListString, type)
-    }
+    fun geolocToString(value: Geoloc?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToGeoloc(value: String) = Gson().fromJson(value, Geoloc::class.java)
+
+    @TypeConverter
+    fun navTechToString(value: NavTech?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToNavTech(value: String) = Gson().fromJson(value, NavTech::class.java)
+
+    @TypeConverter
+    fun politicalBoundaryToString(value: PoliticalBoundary?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToPoliticalBoundary(value: String) = Gson().fromJson(value, PoliticalBoundary::class.java)
+
+    // TrafficItemDetail.kt
+    @TypeConverter
+    fun eventToString(value: Event?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToEvent(value: String) = Gson().fromJson(value, Event::class.java)
+
+    @TypeConverter
+    fun incidentToString(value: Incident?) = Gson().toJson(value)
+    @TypeConverter
+    fun stringToIncident(value: String) = Gson().fromJson(value, Incident::class.java)
 
 }

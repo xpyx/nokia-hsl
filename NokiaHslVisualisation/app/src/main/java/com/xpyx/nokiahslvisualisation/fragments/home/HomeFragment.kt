@@ -26,9 +26,15 @@ import com.apollographql.apollo.exception.ApolloException
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.api.ApiViewModel
+import com.xpyx.nokiahslvisualisation.api.ApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
+import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
+import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
+import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -47,6 +53,10 @@ class HomeFragment : Fragment() {
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
+
+    private lateinit var hereTrafficViewModel: ApiViewModel
+    private lateinit var hereTrafficApiKey: String
+    private lateinit var mTrafficViewModel: TrafficItemViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +78,9 @@ class HomeFragment : Fragment() {
         mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
             adapter?.setData(alerts)
         })
+
+        // Set up traffic view model
+        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
 
         return view
     }
@@ -101,7 +114,7 @@ class HomeFragment : Fragment() {
             val alerts = response?.data?.alerts()?.filterNotNull()
 
             if (response != null) {
-                insertToTrafficDatabase(response)
+                insertToAlertDatabase(response)
             }
 
             Log.d("DBG", alerts.toString())
@@ -170,9 +183,68 @@ class HomeFragment : Fragment() {
         }
 
 
+        // HERE MAPS TRAFFIC API view model setup
+        val repository = ApiRepository()
+        val viewModelFactory = ApiViewModelFactory(repository)
+        hereTrafficViewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
+
+        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
+        hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
+        hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                insertToTrafficDatabase(response)
+            } else {
+                Log.d("DBG", response.errorBody().toString())
+            }
+        })
+
+    }
+    private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
+        val trafficItemList = response.body()!!.trafficDataTrafficItems
+        if (trafficItemList != null) {
+            for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
+                GlobalScope.launch(context = Dispatchers.IO) {
+                    val traffic_item_id = item.trafficItemId
+                    val traffic_item_status_short_desc = item.trafficItemStatusShortDesc
+                    val traffic_item_type_desc = item.trafficItemTypeDesc
+                    val start_time = item.trafficItemStartTime
+                    val end_time = item.trafficItemEndTime
+                    val criticality = item.trafficItemCriticality
+                    val verified = item.trafficItemVerified
+                    val rds_tmc_locations = item.trafficitemRDSTmclocations
+                    val location = item.trafficItemLocation
+                    val traffic_item_detail = item.trafficItemDetail
+                    val traffic_item_description = item.trafficItemDescriptionElement
+
+                    val traffic = DataTrafficItem(
+                            0,
+                            traffic_item_id,
+                            traffic_item_status_short_desc,
+                            traffic_item_type_desc,
+                            start_time,
+                            end_time,
+                            criticality,
+                            verified,
+                            rds_tmc_locations,
+                            location,
+                            traffic_item_detail,
+                            traffic_item_description
+                    )
+
+                    if (criticality != null) {
+                        if (criticality.ityDescription.equals("critical")) {
+                            mTrafficViewModel.addTrafficData(traffic)
+                            Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
+                        }
+                    }
+
+
+                }
+            }
+        }
     }
 
-    private fun insertToTrafficDatabase(response: Response<AlertsListQuery.Data>) {
+    private fun insertToAlertDatabase(response: Response<AlertsListQuery.Data>) {
 
         var exists: Boolean
 

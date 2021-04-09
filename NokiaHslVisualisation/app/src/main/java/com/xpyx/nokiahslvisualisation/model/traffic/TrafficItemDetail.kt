@@ -14,8 +14,8 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class TrafficItemDetail (
-	@SerializedName("ROAD_CLOSED") val roadClosed: Boolean? = null,
-	@SerializedName("EVENT") val event: Event? = null,
-	@SerializedName("ALERTC") val alertc: List<AlertCElement>? = null,
-	@SerializedName("INCIDENT") val incident: Incident? = null
+	@SerializedName("ROAD_CLOSED") val trafficItemDetailRoadClosed: Boolean? = null,
+	@SerializedName("EVENT") val trafficItemDetailEvent: Event?,
+	@SerializedName("INCIDENT") val trafficItemDetailIncident: Incident?,
+	@SerializedName("ALERTC") val trafficItemDetailAlertc: List<AlertCElement>? = null
 )

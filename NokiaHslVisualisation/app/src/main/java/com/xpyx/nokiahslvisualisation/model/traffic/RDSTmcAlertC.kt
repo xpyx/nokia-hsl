@@ -14,15 +14,15 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class RDSTmcAlertC (
-	@SerializedName("TRAFFIC_CODE") val trafficCode: Long? = null,
-	@SerializedName("QUANTIFIERS") val quantifiers: Long? = null,
-	@SerializedName("DESCRIPTION") val description: String? = null,
-	@SerializedName("ALERTC_DURATION") val alertcDuration: String? = null,
-	@SerializedName("ALERTC_DIRECTION") val alertcDirection: Long? = null,
-	@SerializedName("UPDATE_CLASS") val updateClass: Long? = null,
-	@SerializedName("PHRASE_CODE") val phraseCode: String? = null,
-	@SerializedName("EXTENT") val extent: String? = null,
-	@SerializedName("DURATION") val duration: Long? = null,
-	@SerializedName("ALERTC_Q_BINARY") val alertcQBinary: String? = null,
-	@SerializedName("URGENCY") val urgency: String? = null
+	@SerializedName("TRAFFIC_CODE") val rDSTmcAlertCTrafficCode: Long? = null,
+	@SerializedName("QUANTIFIERS") val rDSTmcAlertCQuantifiers: Long? = null,
+	@SerializedName("DESCRIPTION") val rDSTmcAlertCDescription: String? = null,
+	@SerializedName("ALERTC_DURATION") val rDSTmcAlertCAlertcDuration: String? = null,
+	@SerializedName("ALERTC_DIRECTION") val rDSTmcAlertCAlertcDirection: Long? = null,
+	@SerializedName("UPDATE_CLASS") val rDSTmcAlertCUpdateClass: Long? = null,
+	@SerializedName("PHRASE_CODE") val rDSTmcAlertCPhraseCode: String? = null,
+	@SerializedName("EXTENT") val rDSTmcAlertCExtent: String? = null,
+	@SerializedName("DURATION") val rDSTmcAlertCDuration: Long? = null,
+	@SerializedName("ALERTC_Q_BINARY") val rDSTmcAlertCAlertcQBinary: String? = null,
+	@SerializedName("URGENCY") val rDSTmcAlertCUrgency: String? = null
 )
