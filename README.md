@@ -15,7 +15,12 @@ Used libraries:
 - Paho Mqtt
 - Mapbox
 - Jacoco
-
+- Room DB
+- Retrofit
+- ViewMode
+- LiveData
+- OsmDroid
+- Coroutines
 
 #### To run the Android app
 
