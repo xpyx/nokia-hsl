@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 
-
 class AlertListAdapter :
     RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>() {
 
@@ -48,7 +47,6 @@ class AlertListAdapter :
                 holder.itemView.context.startActivity(i)
             }
         }
-
     }
 
     override fun getItemCount(): Int {
