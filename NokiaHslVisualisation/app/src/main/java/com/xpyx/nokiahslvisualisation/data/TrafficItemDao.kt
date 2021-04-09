@@ -17,4 +17,10 @@ interface TrafficItemDao {
 
     @Query("SELECT * FROM trafficitems WHERE traffic_item_id = :id")
     suspend fun getTrafficItem(id: Long): DataTrafficItem
+
+    @Query("SELECT EXISTS (SELECT 1 FROM trafficitems WHERE traffic_item_id = :item_id)")
+    suspend fun productExists(item_id: Long): Boolean
+
+    @Query("DELETE FROM trafficitems WHERE traffic_item_id = :item_id")
+    suspend fun removeProduct(item_id: Long)
 }

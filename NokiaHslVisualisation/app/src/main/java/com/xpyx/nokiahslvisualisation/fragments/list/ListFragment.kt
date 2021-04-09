@@ -23,7 +23,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class ListFragment : Fragment(){
+class ListFragment : Fragment() {
 
 
     private lateinit var recyclerView: RecyclerView
@@ -38,7 +38,7 @@ class ListFragment : Fragment(){
         val view = inflater.inflate(R.layout.fragment_list, container, false)
 
 
-        val adapter = context?.let { TrafficListAdapter(requireContext())}
+        val adapter = context?.let { TrafficListAdapter(requireContext()) }
 
         // Recycler view
         recyclerView = view.findViewById(R.id.bus_recycler_view)
@@ -54,15 +54,4 @@ class ListFragment : Fragment(){
 
         return view
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-
-    }
-
-
-
-
 }

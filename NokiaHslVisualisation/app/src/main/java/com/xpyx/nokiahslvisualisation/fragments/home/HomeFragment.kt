@@ -57,6 +57,8 @@ class HomeFragment : Fragment() {
     private lateinit var hereTrafficViewModel: ApiViewModel
     private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
+    private val trafficIdRoomList = mutableListOf<Long>()
+    private val trafficIdApiList = mutableListOf<Long>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,6 +83,13 @@ class HomeFragment : Fragment() {
 
         // Set up traffic view model
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
+
+        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
+        mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
+            for (item in traffic) {
+                trafficIdRoomList.add(item.traffic_item_id!!)
+            }
+        })
 
         return view
     }
@@ -200,48 +209,68 @@ class HomeFragment : Fragment() {
 
     }
     private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
+        var exists: Boolean
         val trafficItemList = response.body()!!.trafficDataTrafficItems
         if (trafficItemList != null) {
             for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
-                GlobalScope.launch(context = Dispatchers.IO) {
-                    val traffic_item_id = item.trafficItemId
-                    val traffic_item_status_short_desc = item.trafficItemStatusShortDesc
-                    val traffic_item_type_desc = item.trafficItemTypeDesc
-                    val start_time = item.trafficItemStartTime
-                    val end_time = item.trafficItemEndTime
-                    val criticality = item.trafficItemCriticality
-                    val verified = item.trafficItemVerified
-                    val rds_tmc_locations = item.trafficitemRDSTmclocations
-                    val location = item.trafficItemLocation
-                    val traffic_item_detail = item.trafficItemDetail
-                    val traffic_item_description = item.trafficItemDescriptionElement
+                trafficIdApiList.add(item.trafficItemId!!)
 
-                    val traffic = DataTrafficItem(
+                GlobalScope.launch(context = Dispatchers.IO) {
+                    exists = mTrafficViewModel.checkIfExists(item.trafficItemId)
+
+                    if (!exists) {
+
+                        val trafficItemId = item.trafficItemId
+                        val trafficItemStatusShortDesc = item.trafficItemStatusShortDesc
+                        val trafficItemTypeDesc = item.trafficItemTypeDesc
+                        val startTime = item.trafficItemStartTime
+                        val endTime = item.trafficItemEndTime
+                        val criticality = item.trafficItemCriticality
+                        val verified = item.trafficItemVerified
+                        val rdsTmcLocations = item.trafficitemRDSTmclocations
+                        val location = item.trafficItemLocation
+                        val trafficItemDetail = item.trafficItemDetail
+                        val trafficItemDescriptionElement = item.trafficItemDescriptionElement
+
+                        val traffic = DataTrafficItem(
                             0,
-                            traffic_item_id,
-                            traffic_item_status_short_desc,
-                            traffic_item_type_desc,
-                            start_time,
-                            end_time,
+                            trafficItemId,
+                            trafficItemStatusShortDesc,
+                            trafficItemTypeDesc,
+                            startTime,
+                            endTime,
                             criticality,
                             verified,
-                            rds_tmc_locations,
+                            rdsTmcLocations,
                             location,
-                            traffic_item_detail,
-                            traffic_item_description
-                    )
+                            trafficItemDetail,
+                            trafficItemDescriptionElement
+                        )
 
-                    if (criticality != null) {
-                        if (criticality.ityDescription.equals("critical")) {
-                            mTrafficViewModel.addTrafficData(traffic)
-                            Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
+                        if (criticality != null) {
+                            if (criticality.ityDescription.equals("critical")) {
+                                mTrafficViewModel.addTrafficData(traffic)
+                                Log.d("TRAFFIC", "Successfully added traffic item: $trafficItemId")
+                            }
                         }
                     }
-
 
                 }
             }
         }
+
+        // Remove ended traffic items
+        if (trafficIdApiList.isNotEmpty() && trafficIdRoomList.isNotEmpty()) {
+            for (item in trafficIdRoomList){
+                if (trafficIdApiList.contains(item)){
+                    GlobalScope.launch(context = Dispatchers.IO) {
+                        mTrafficViewModel.removeIfNotExists(item)
+                        Log.d("REMOVED_ITEM","Removed item with id: $item")
+                    }
+                }
+            }
+        }
+
     }
 
     private fun insertToAlertDatabase(response: Response<AlertsListQuery.Data>) {
