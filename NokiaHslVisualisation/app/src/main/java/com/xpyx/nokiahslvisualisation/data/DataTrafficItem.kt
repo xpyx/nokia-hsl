@@ -1,6 +1,5 @@
 package com.xpyx.nokiahslvisualisation.data
 
-import androidx.annotation.NonNull
 import androidx.room.*
 import com.xpyx.nokiahslvisualisation.model.traffic.*
 import com.xpyx.nokiahslvisualisation.utils.Converters
@@ -20,6 +19,4 @@ data class DataTrafficItem (
         @Embedded val location: Location?,
         @Embedded val traffic_item_detail: TrafficItemDetail?,
         val trafficItemDescriptionElement: List<TrafficItemDescriptionElement>?
-) /*{
-    constructor(idRoomDatabase: Int, traffic_item_id: Long?, traffic_item_status_short_desc: String?, traffic_item_type_desc: String?, start_time: String?, end_time: String?, criticality: CRITICALITY?, verified: Boolean, traffic_item_description: List<TRAFFIC_ITEM_DESCRIPTION?>) : this(idRoomDatabase, traffic_item_id, traffic_item_status_short_desc, traffic_item_type_desc, start_time, end_time, criticality, verified, traffic_item_description)
-}*/
+)

@@ -27,10 +27,7 @@ class ListFragment : Fragment(){
 
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var refreshButton: Button
     private lateinit var mTrafficViewModel: TrafficItemViewModel
-    private lateinit var viewModel: ApiViewModel
-    private lateinit var hereTrafficApiKey: String
 
 
     override fun onCreateView(
@@ -61,71 +58,11 @@ class ListFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // API view model setup
-        val repository = ApiRepository()
-        val viewModelFactory = ApiViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
 
-
-        // Button
-        refreshButton = view.findViewById(R.id.traffic_refresh_button)
-
-        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
-        viewModel.getTrafficData(hereTrafficApiKey)
-        viewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response.isSuccessful) {
-                insertToTrafficDatabase(response)
-            } else {
-                Log.d("DBG", response.errorBody().toString())
-            }
-        })
 
     }
 
-    private fun insertToTrafficDatabase(response: Response<TrafficData>) {
-        val trafficItemList = response.body()!!.trafficDataTrafficItems
-        if (trafficItemList != null) {
-            for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
-                GlobalScope.launch(context = Dispatchers.IO) {
-                    val traffic_item_id = item.trafficItemId
-                    val traffic_item_status_short_desc = item.trafficItemStatusShortDesc
-                    val traffic_item_type_desc = item.trafficItemTypeDesc
-                    val start_time = item.trafficItemStartTime
-                    val end_time = item.trafficItemEndTime
-                    val criticality = item.trafficItemCriticality
-                    val verified = item.trafficItemVerified
-                    val rds_tmc_locations = item.trafficitemRDSTmclocations
-                    val location = item.trafficItemLocation
-                    val traffic_item_detail = item.trafficItemDetail
-                    val traffic_item_description = item.trafficItemDescriptionElement
 
-                    val traffic = DataTrafficItem(
-                        0,
-                        traffic_item_id,
-                        traffic_item_status_short_desc,
-                        traffic_item_type_desc,
-                        start_time,
-                        end_time,
-                        criticality,
-                        verified,
-                        rds_tmc_locations,
-                        location,
-                        traffic_item_detail,
-                        traffic_item_description
-                    )
-
-                    if (criticality != null) {
-                        if (criticality.ityDescription.equals("critical")) {
-                            mTrafficViewModel.addTrafficData(traffic)
-                            Log.d("TRAFFIC", "Successfully added traffic item: $traffic_item_id")
-                        }
-                    }
-
-
-                }
-            }
-        }
-    }
 
 
 }
