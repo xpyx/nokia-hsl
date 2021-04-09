@@ -20,7 +20,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 
 
-class MapFragment : Fragment(),SeekBar.OnSeekBarChangeListener {
+class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
@@ -75,7 +75,7 @@ class MapFragment : Fragment(),SeekBar.OnSeekBarChangeListener {
             .setView(requireContext(), R.layout.mymap)
             .build()
             .thenAcceptAsync {
-                //load apa as container of map to get size controll
+                //load apa as container of map to get size control
                 apa = it.view as LinearLayout
                 map = it.view.findViewById<org.osmdroid.views.MapView>(R.id.map)
                 map.setTileSource(TileSourceFactory.MAPNIK)
