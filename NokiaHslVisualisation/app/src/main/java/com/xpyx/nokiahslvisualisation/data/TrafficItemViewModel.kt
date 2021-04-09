@@ -33,4 +33,20 @@ class TrafficItemViewModel(application: Application) : AndroidViewModel(applicat
         return trafficItem
     }
 
+    suspend fun checkIfExists(item_id: Long): Boolean {
+        var exists = false
+        val job = viewModelScope.launch(Dispatchers.IO) {
+            exists = repository.checkIfExists(item_id)
+        }
+        job.join()
+        return exists
+    }
+
+    suspend fun removeIfNotExists(item_id: Long) {
+        val job = viewModelScope.launch(Dispatchers.IO) {
+            repository.removeProductIfNotExists(item_id)
+        }
+        job.join()
+    }
+
 }
