@@ -15,6 +15,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Abbreviation (
 
-	@SerializedName("SHORT_DESC") val short_desc : String? = null,
-	@SerializedName("DESCRIPTION") val description : String? = null
+		@SerializedName("SHORT_DESC") val abbreviationShortDesc : String? = null,
+		@SerializedName("DESCRIPTION") val abbreviationDescription : String? = null
 )

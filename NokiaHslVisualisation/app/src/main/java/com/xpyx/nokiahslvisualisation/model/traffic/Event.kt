@@ -15,6 +15,5 @@ import com.google.gson.annotations.SerializedName
 
 data class Event (
 	@SerializedName("EVENT_ITEM_CANCELLED") val eventItemCancelled: Boolean? = null,
-
-	@SerializedName("SCHEDULED_CONSTRUCTION_EVENT") val scheduledConstructionEvent: ScheduledConstructionEvent? = null
+	@SerializedName("SCHEDULED_CONSTRUCTION_EVENT") val eventScheduledConstructionEvent: ScheduledConstructionEvent? = null
 )

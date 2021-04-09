@@ -21,9 +21,12 @@
         android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
         android:label="@string/menu_list"
         tools:layout="@layout/fragment_list">
+        <argument
+            android:name="TRAFFIC"
+            app:argType="long" />
         <action
             android:id="@+id/action_action_list_to_action_bus"
-            app:destination="@id/action_bus" />
+            app:destination="@id/action_traffic" />
     </fragment>
     <fragment
         android:id="@+id/action_map"
@@ -31,11 +34,14 @@
         android:label="@string/menu_map"
         tools:layout="@layout/fragment_map" />
     <fragment
-        android:id="@+id/action_bus"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.busdetails.BusDetailsFragment"
+        android:id="@+id/action_traffic"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.trafficdetails.TrafficDetailsFragment"
         android:label="@string/details_view"
-        tools:layout="@layout/fragment_bus_details"
+        tools:layout="@layout/fragment_traffic_details"
         >
+        <argument
+            android:name="TRAFFIC"
+            app:argType="long" />
         <action
             android:id="@+id/action_action_bus_to_action_list"
             app:destination="@id/action_list" />

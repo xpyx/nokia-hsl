@@ -5,7 +5,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_list">List View</string>
     <string name="menu_map">Map</string>
-    <string name="details_view">Bus details</string>
+    <string name="details_view">Traffic details</string>
     <string name="alert_details_view">Alert details</string>
     <string name="menu_ar">AR View</string>
 
@@ -19,11 +19,8 @@
     <string name="bus_icon_content_description">Bus Icon</string>
     <string name="alert_icon_content_description">Alert Icon</string>
 
-
-
-
-
-
+    // Traffic details
+    <string name="traffic_time">Criticality: %1$s\nStart: %2$s\nEnd: %3$s</string>
 
     // Home fragment
     <string name="btn_alerts">Show Alerts</string>
