@@ -252,19 +252,27 @@ class HomeFragment : Fragment() {
                     if (exists) {
                         Log.d("DBG", "Alert exists in database already")
                     } else {
+                        val alertId = item.id()
                         val alertHeaderText = item.alertHeaderText()
                         val alertDescriptionText = item.alertDescriptionText()
                         val effectiveStartDate = item.effectiveStartDate().toString()
                         val effectiveEndDate = item.effectiveEndDate().toString()
                         val alertUrl = item.alertUrl()
+                        val alertSeverityLevel = item.alertSeverityLevel().toString()
+                        val alertCause = item.alertCause().toString()
+                        val alertEffect = item.alertEffect().toString()
 
                         val alert = AlertItem(
                             0,
+                            alertId,
                             alertHeaderText,
                             alertDescriptionText,
                             effectiveStartDate,
                             effectiveEndDate,
-                            alertUrl
+                            alertUrl,
+                            alertSeverityLevel,
+                            alertCause,
+                            alertEffect
                         )
                         mAlertViewModel.addAlertItem(alert)
                         Log.d("DBG", "Alert added to database")

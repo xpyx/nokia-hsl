@@ -26,16 +26,24 @@ class AlertListAdapter :
     }
 
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
+
         val alert = alertList[position]
         val titleTextView = holder.itemView.findViewById<TextView>(R.id.alert_title)
         val descTextView = holder.itemView.findViewById<TextView>(R.id.alert_desc)
-
-        titleTextView.text = alert.alertHeaderText
-        descTextView.text = alert.alertDescriptionText
+        val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
+        val alertSeverity = holder.itemView.findViewById<TextView>(R.id.alert_severity)
+        val alertCause = holder.itemView.findViewById<TextView>(R.id.alert_cause)
+        val alertEffect = holder.itemView.findViewById<TextView>(R.id.alert_effect)
         val start = alert.effectiveStartDate.toString()
         val end = alert.effectiveEndDate.toString()
-        val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
-        "$start - $end".also { dateTextView.text = it }
+
+        "Date: $start - $end".also { dateTextView.text = it }
+        "${alert.alertHeaderText}".also { titleTextView.text =  it }
+        "${alert.alertDescriptionText}".also { descTextView.text = it }
+        "Severity: ${alert.alertSeverityLevel}".also { alertSeverity.text =  it }
+        "Cause: ${alert.alertCause}".also { alertCause.text =  it }
+        "Effect: ${alert.alertEffect}".also { alertEffect.text =  it }
+
         holder.itemView.setOnClickListener(
             Navigation.createNavigateOnClickListener(
                 R.id.action_action_home_to_alertDetailsFragment))
