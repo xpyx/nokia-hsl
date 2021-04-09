@@ -34,18 +34,17 @@ import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
+import com.xpyx.nokiahslvisualisation.networking.mqttHelper.MqttHelper
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
 
 class HomeFragment : Fragment() {
 
-    private lateinit var mqttAndroidClient: MqttAndroidClient
     private val scope = CoroutineScope(Dispatchers.IO)
     private var counter: Int = 0
     private lateinit var editText: EditText
@@ -53,7 +52,6 @@ class HomeFragment : Fragment() {
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
-
     private lateinit var hereTrafficViewModel: ApiViewModel
     private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
@@ -79,7 +77,7 @@ class HomeFragment : Fragment() {
             adapter?.setData(alerts)
         })
 
-        // Set up traffic view model
+        // Set up Room DB Traffic view model
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
 
         return view
@@ -109,27 +107,24 @@ class HomeFragment : Fragment() {
                 Log.e("AlertList", "Failure", e)
                 null
             }
-
             // When response successfull, pass list of alerts to adapter
-            val alerts = response?.data?.alerts()?.filterNotNull()
-
-            if (response != null) {
+            if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
-            }
-
-            Log.d("DBG", alerts.toString())
-            if (alerts != null && !response.hasErrors()) {
-
             }
         }
 
         // Get HSL Vehicle positions with MQTT
+        // First init the helper class
+        val mqtt = MqttHelper(this)
+
         // Connect to HSL MQTT broker
-        connect(view.context)
+        mqtt.connect(view.context)
         val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-        // set button background tint
+
+        // Set button background tint
         btnPositions.backgroundTintList = colorStates
-        // initialize 'num msgs received' field in the view
+
+        // Initialize 'num msgs received' field in the view
         val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
         textViewNumMsgs.text = counter.toString()
 
@@ -145,13 +140,13 @@ class HomeFragment : Fragment() {
             false
         })
 
-        // Subscribe
+        // Subscribe button
         btnPositions.setOnClickListener {
             scope.launch {
                 topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
                 Log.d("DBG", topic)
-                subscribe(topic)
-                receiveMessages()
+                mqtt.subscribe(topic)
+                mqtt.receiveMessages()
                 runOnUiThread {
                     editText.text.clear()
                     hideKeyboard()
@@ -163,7 +158,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Unsubscribe
+        // Unsubscribe button
         val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
         btnStop.backgroundTintList = colorStates
         (btnStop as MaterialButton).apply {
@@ -172,7 +167,7 @@ class HomeFragment : Fragment() {
         }
         btnStop.setOnClickListener {
             scope.launch {
-                unSubscribe(topic)
+                mqtt.unSubscribe(topic)
                 runOnUiThread {
                     (btnPositions as MaterialButton).apply {
                         isEnabled = true
@@ -181,7 +176,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
 
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
@@ -280,112 +274,16 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun connect(applicationContext: Context) {
-        mqttAndroidClient = MqttAndroidClient(
-            applicationContext,
-            "tcp://mqtt.hsl.fi:1883",
-            "YOUR CLIENT ID"
-        )
-        try {
-            val token = mqttAndroidClient.connect()
-            token.actionCallback = object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Log.i("Connection", "success ")
-                    //connectionStatus = true
-                    // Give your callback on connection established here
-                }
-
-                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    //connectionStatus = false
-                    Log.i("Connection", "failure")
-                    // Give your callback on connection failure here
-                    exception.printStackTrace()
-                }
-            }
-        } catch (e: MqttException) {
-            // Give your callback on connection failure here
-            e.printStackTrace()
-        }
+    fun updateUI(data: String) {
+        counter++
+        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
+        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
+        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
+        textViewMsgPayload?.text = data
     }
 
-    fun subscribe(topic: String) {
-        val qos = 2 // Mention your qos value
-        try {
-            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on Subscription here
-                    Log.i("Connection", "subscribe success ")
-                }
-
-                override fun onFailure(
-                    asyncActionToken: IMqttToken,
-                    exception: Throwable
-                ) {
-                    // Give your subscription failure callback here
-                    Log.i("Connection", "subscribe failure")
-
-                }
-            })
-        } catch (e: MqttException) {
-            // Give your subscription failure callback here
-        }
-    }
-
-    fun receiveMessages() {
-
-        mqttAndroidClient.setCallback(object : MqttCallback {
-            override fun connectionLost(cause: Throwable) {
-                //connectionStatus = false
-                // Give your callback on failure here
-            }
-
-            override fun messageArrived(topic: String, message: MqttMessage) {
-                val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
-                val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
-                try {
-                    val data = String(message.payload, charset("UTF-8"))
-                    // data is the desired received message
-                    // Give your callback on message received here
-                    Log.d("Connection", data)
-                    counter++
-                    runOnUiThread {
-                        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
-                        textViewMsgPayload?.text = data
-                    }
-
-
-                } catch (e: Exception) {
-                    // Give your callback on error here
-                }
-            }
-
-            override fun deliveryComplete(token: IMqttDeliveryToken) {
-                // Acknowledgement on delivery complete
-            }
-        })
-    }
-
-    fun unSubscribe(topic: String) {
-        try {
-            val unsubToken = mqttAndroidClient.unsubscribe(topic)
-            unsubToken.actionCallback = object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on unsubscribing here
-                    Log.i("Connection", "Unsubscribe success ")
-
-                }
-
-                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    // Give your callback on failure here
-                }
-            }
-        } catch (e: MqttException) {
-            // Give your callback on failure here
-        }
-    }
-
-
-    fun Fragment?.runOnUiThread(action: () -> Unit) {
+    // For running on UI thread
+    private fun Fragment?.runOnUiThread(action: () -> Unit) {
         this ?: return
         if (!isAdded) return // Fragment not attached to an Activity
         activity?.runOnUiThread(action)
@@ -401,5 +299,4 @@ class HomeFragment : Fragment() {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
-
 }
