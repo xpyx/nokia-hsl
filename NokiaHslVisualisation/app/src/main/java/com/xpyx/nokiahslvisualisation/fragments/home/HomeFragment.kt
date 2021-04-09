@@ -255,7 +255,8 @@ class HomeFragment : Fragment() {
                 }
             })
         } catch (e: MqttException) {
-            // Give your subscription failure callback here
+            System.err.println("Exception whilst subscribing to topic '$topic'")
+            e.printStackTrace()
         }
     }
 
@@ -310,6 +311,11 @@ class HomeFragment : Fragment() {
         } catch (e: MqttException) {
             // Give your callback on failure here
         }
+    }
+
+    fun destroy() {
+        mqttAndroidClient.unregisterResources()
+        mqttAndroidClient.disconnect()
     }
 
 
