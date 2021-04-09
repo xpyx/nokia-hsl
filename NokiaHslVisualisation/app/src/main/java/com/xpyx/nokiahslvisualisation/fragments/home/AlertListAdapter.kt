@@ -21,7 +21,8 @@ class AlertListAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
         return AlertViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.alert_list_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.alert_list_item, parent, false)
         )
     }
 
@@ -36,7 +37,9 @@ class AlertListAdapter :
         val end = alert.effectiveEndDate.toString()
         val dateTextView = holder.itemView.findViewById<TextView>(R.id.alert_date)
         "$start - $end".also { dateTextView.text = it }
-        holder.itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_action_home_to_alertDetailsFragment))
+        holder.itemView.setOnClickListener(
+            Navigation.createNavigateOnClickListener(
+                R.id.action_action_home_to_alertDetailsFragment))
 
         // Make the holder clickable and show the alertUrl web page, if not null
         if (alert.alertUrl !== null) {
