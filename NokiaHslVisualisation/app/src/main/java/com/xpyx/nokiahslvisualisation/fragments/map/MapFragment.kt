@@ -9,15 +9,20 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
+import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import com.xpyx.nokiahslvisualisation.fragments.list.TrafficListAdapter
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 
 
 class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
@@ -27,6 +32,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     private var mTransparencyBar: SeekBar? = null
     private var mHeightBar: SeekBar? = null
     private var mWidthBar: SeekBar? = null
+
+    private lateinit var trafficList : List<DataTrafficItem>
+    private lateinit var mTrafficViewModel: TrafficItemViewModel
 
     private lateinit var map: org.osmdroid.views.MapView
     private var transparency = 0f
@@ -50,21 +58,16 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         val ctx = requireActivity().applicationContext
         //important! set your user agent to prevent getting banned from the osm servers
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
+        setSeekBars()
 
 
-        mTransparencyBar = activity?.findViewById(R.id.transparencySeekBar)
-        mTransparencyBar?.max = TRANSPARENCY_MAX
-        mTransparencyBar?.progress = 100
+        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
 
-        mHeightBar = activity?.findViewById(R.id.heightSeekBar)
-        mHeightBar?.max = HEIGHT_MAX
-        mHeightBar?.min = HEIGHT_MIN
-        mHeightBar?.progress = 2475
+        mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
+            trafficList = traffic
 
-        mWidthBar = activity?.findViewById(R.id.widthSeekBar)
-        mWidthBar?.max = WIDTH_MAX
-        mWidthBar?.min = WIDTH_MIN
-        mWidthBar?.progress = 2475
+        })
+
 
 
         arFrag = childFragmentManager.findFragmentById(
@@ -76,6 +79,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             .build()
             .thenAcceptAsync {
                 //load apa as container of map to get size control
+
                 apa = it.view as LinearLayout
                 map = it.view.findViewById<org.osmdroid.views.MapView>(R.id.map)
                 map.setTileSource(TileSourceFactory.MAPNIK)
@@ -106,8 +110,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             mTransparencyBar?.visibility = View.VISIBLE
             mHeightBar?.visibility = View.VISIBLE
             mWidthBar?.visibility = View.VISIBLE
+            setMapMarkers()
             viewNode.select()
-            Log.e("aaa", "$mTransparencyBar")
+
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
@@ -151,6 +156,40 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         private const val WIDTH_MIN = 200
     }
 
+    fun setSeekBars(){
+        mTransparencyBar = activity?.findViewById(R.id.transparencySeekBar)
+        mTransparencyBar?.max = TRANSPARENCY_MAX
+        mTransparencyBar?.progress = 100
 
+        mHeightBar = activity?.findViewById(R.id.heightSeekBar)
+        mHeightBar?.max = HEIGHT_MAX
+        mHeightBar?.min = HEIGHT_MIN
+        mHeightBar?.progress = 2475
+
+        mWidthBar = activity?.findViewById(R.id.widthSeekBar)
+        mWidthBar?.max = WIDTH_MAX
+        mWidthBar?.min = WIDTH_MIN
+        mWidthBar?.progress = 2475
+
+    }
+    fun setMapMarkers(){
+        for (item in trafficList){
+        val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
+        val trafficItemLongitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLongitude!!
+        addMarker(trafficItemLatitude, trafficItemLongitude)
+    }}
+    private fun addMarker(lat: Double,  lon: Double) {
+
+        // Custom markers if needed
+
+        val marker = Marker(map)
+        marker.position = GeoPoint(lat, lon)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        // Icon made by Freepik from www.flaticon.com
+        marker.icon = requireContext().resources.getDrawable(R.drawable.map_warning_icon)
+        marker.setInfoWindow(null)
+        map.overlays.add(marker)
+
+    }
 
 }
