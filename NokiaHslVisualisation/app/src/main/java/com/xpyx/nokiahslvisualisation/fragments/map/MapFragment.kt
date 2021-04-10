@@ -18,7 +18,6 @@ import com.google.ar.sceneform.ux.TransformableNode
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
-import com.xpyx.nokiahslvisualisation.fragments.list.TrafficListAdapter
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
