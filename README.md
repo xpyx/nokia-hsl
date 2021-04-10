@@ -6,6 +6,10 @@
 This repository contains:
 
 - Android client for displaying realtime public transport data
+    - Public transport vehicle positions via MQTT
+    - HSL alerts via Apollo GraphQL Client
+    - Traffic data from Here Maps API
+    - AR map 
 - Node Express server for connecting to HSL GTFS-RT feed and to a (slow) SQL Server in Azure cloud
 
 Used libraries:
