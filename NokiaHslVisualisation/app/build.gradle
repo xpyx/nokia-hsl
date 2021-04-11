@@ -99,61 +99,60 @@ dependencies {
     // Recyclerview
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
+    // OSMDroid
+    implementation 'org.osmdroid:osmdroid-android:6.1.6'
 
-        // OSMDroid
-        implementation 'org.osmdroid:osmdroid-android:6.1.6'
+    // Mapbox
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
 
-        // Mapbox
-        implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
-        implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
+    // Apollo
+    implementation 'com.apollographql.apollo:apollo-runtime:2.5.5'
+    implementation 'com.apollographql.apollo:apollo-coroutines-support:2.5.5'
 
-        // Apollo
-        implementation 'com.apollographql.apollo:apollo-runtime:2.5.5'
-        implementation 'com.apollographql.apollo:apollo-coroutines-support:2.5.5'
+    // Apollo RxJava3 support
+    implementation "com.apollographql.apollo:apollo-rx3-support:2.5.5"
 
-        // Apollo RxJava3 support
-        implementation "com.apollographql.apollo:apollo-rx3-support:2.5.5"
+    // RxJava
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.7'
 
-        // RxJava
-        implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
-        implementation 'io.reactivex.rxjava3:rxjava:3.0.7'
+    // Kotlin
+    def nav_version = "2.3.4"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
-        // Kotlin
-        def nav_version = "2.3.4"
-        implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-        implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    // Paho MQTT client
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
 
-        // Paho MQTT client
-        implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
-        implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    // Retrofit
+    final retrofit_version = '2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
 
-        // Retrofit
-        final retrofit_version = '2.9.0'
-        implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-        implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-        implementation 'com.google.code.gson:gson:2.8.6'
-        implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
-        implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
-        implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
-        implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    // Viewmodel + Livedata
+    final lifecycle_version = '2.3.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
-        // Viewmodel + Livedata
-        final lifecycle_version = '2.3.0'
-        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-        implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
-        implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-        implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    // Room DB
+    def room_version = "2.2.6"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
 
-        // Room DB
-        def room_version = "2.2.6"
-        implementation "androidx.room:room-runtime:$room_version"
-        kapt "androidx.room:room-compiler:$room_version"
-        implementation "androidx.room:room-ktx:$room_version"
-        androidTestImplementation "androidx.room:room-testing:$room_version"
-
-        // Coroutines
-        implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
-        implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
 
     }
 
