@@ -31,4 +31,37 @@
     <string name="mapbox_access_token">pk.eyJ1IjoiZGVkYXNzZSIsImEiOiJja21sejhvbW4wMm9oMnZwZWxlNjZ3Y2Q2In0.lvdWT_LNNIlwM-AxY0m7UA</string>
     <string name="hello_blank_fragment">hello</string>
     <string name="search">Search</string>
+
+    // Drawer
+    <string name="severity_level">Severity level</string>
+    <string name="UNKNOWN_SEVERITY">Unknown severity</string>
+    <string name="INFO">Info</string>
+    <string name="WARNING">Warning</string>
+    <string name="SEVERE">Severe</string>
+
+    <string name="alert_effect">Alert effect</string>
+    <string name="NO_SERVICE">No service</string>
+    <string name="REDUCED_SERVICE">Reduced service</string>
+    <string name="SIGNIFICANT_DELAYS">Significant delays</string>
+    <string name="DETOUR">Detour</string>
+    <string name="ADDITIONAL_SERVICE">Additional service</string>
+    <string name="MODIFIED_SERVICE">Modified service</string>
+    <string name="OTHER_EFFECT">Other effect</string>
+    <string name="UNKNOWN_EFFECT">Unknown effect</string>
+    <string name="STOP_MOVED">Stop moved</string>
+    <string name="NO_EFFECT">No effect</string>
+
+    <string name="alert_cause">Alert cause</string>
+    <string name="UNKNOWN_CAUSE">Unknow cause</string>
+    <string name="OTHER_CAUSE">Other cause</string>
+    <string name="TECHNICAL_PROBLEM">Technical problem</string>
+    <string name="STRIKE">Strike</string>
+    <string name="DEMONSTRATION">Demonstration</string>
+    <string name="ACCIDENT">Accident</string>
+    <string name="HOLIDAY">Holiday</string>
+    <string name="WEATHER">Weather</string>
+    <string name="MAINTENANCE">Maintenance</string>
+    <string name="CONSTRUCTION">Construction</string>
+    <string name="POLICE_ACTIVITY">Police activity</string>
+    <string name="MEDICAL_EMERGENCY">Medical emergency</string>
 </resources>
