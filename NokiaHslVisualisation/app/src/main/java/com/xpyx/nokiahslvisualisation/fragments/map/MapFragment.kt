@@ -20,6 +20,7 @@ import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 
@@ -84,7 +85,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 map.setTileSource(TileSourceFactory.MAPNIK)
                 map.setBuiltInZoomControls(true)
                 map.setMultiTouchControls(true)
-                map.controller.setZoom(17.0)
+                map.minZoomLevel = 10.0
+                map.zoomController
                 map.controller.setCenter(GeoPoint(60.17, 24.95))
                 viewRenderable = it
             }
@@ -109,9 +111,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             mTransparencyBar?.visibility = View.VISIBLE
             mHeightBar?.visibility = View.VISIBLE
             mWidthBar?.visibility = View.VISIBLE
-            setMapMarkers()
+
             viewNode.select()
 
+            setMapMarkers()
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
@@ -123,10 +126,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         when (seekBar){
             mTransparencyBar -> {
-                Log.e("AAA", "${seekBar}")
                 transparency = progress.toFloat() / TRANSPARENCY_MAX.toFloat()
                 map.alpha = transparency
-                Log.e("aaa", "$transparency")
             }
             mHeightBar -> {
                 height = progress
@@ -172,12 +173,34 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     }
     fun setMapMarkers(){
+        var lathigh = 0.0
+        var lgthigh = 0.0
+        var latlow = 90.0
+        var lgtlow = 90.0
+
+
         for (item in trafficList){
         val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
         val trafficItemLongitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLongitude!!
+            lathigh = Math.max(trafficItemLatitude, lathigh)
+            latlow = Math.min(trafficItemLatitude, latlow)
+            lgthigh = Math.max(trafficItemLongitude, lgthigh)
+            lgtlow = Math.min(trafficItemLongitude, lgtlow)
+
+
         addMarker(trafficItemLatitude, trafficItemLongitude)
-    }}
-    private fun addMarker(lat: Double,  lon: Double) {
+    }
+        val b= BoundingBox(lathigh, lgthigh, latlow, lgtlow)
+        map.post(Runnable {
+            map.zoomToBoundingBox(
+                b, true,100
+            )
+            map.setMinZoomLevel(10.0)
+        })
+
+        map.invalidate()
+    }
+    private fun addMarker(lat: Double, lon: Double) {
 
         // Custom markers if needed
 
@@ -187,6 +210,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // Icon made by Freepik from www.flaticon.com
         marker.icon = requireContext().resources.getDrawable(R.drawable.map_warning_icon)
         marker.setInfoWindow(null)
+
         map.overlays.add(marker)
 
     }
