@@ -1,5 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.map
 
+import android.location.Geocoder
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -182,13 +183,26 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         for (item in trafficList){
         val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
         val trafficItemLongitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLongitude!!
+            val trafficTitle = item.traffic_item_type_desc
+            val defined = item.location?.locationDefined
+
+            val locationText: String = if (defined != null) {
+                if (defined.definedOrigin?.definedLocationDirection != null) {
+                    "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin?.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                } else {
+                    "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                }
+            } else {
+                val address = getAddress(trafficItemLatitude, trafficItemLongitude)
+                "Problem: ${item.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue} Location: $address"
+            }
             lathigh = Math.max(trafficItemLatitude, lathigh)
             latlow = Math.min(trafficItemLatitude, latlow)
             lgthigh = Math.max(trafficItemLongitude, lgthigh)
             lgtlow = Math.min(trafficItemLongitude, lgtlow)
 
 
-        addMarker(trafficItemLatitude, trafficItemLongitude)
+        addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
     }
         val b= BoundingBox(lathigh, lgthigh, latlow, lgtlow)
         map.post(Runnable {
@@ -198,9 +212,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             map.setMinZoomLevel(10.0)
         })
 
-        map.invalidate()
+        //map.invalidate()
     }
-    private fun addMarker(lat: Double, lon: Double) {
+    private fun addMarker(lat: Double, lon: Double, trafficTitle: String?, locationText: String) {
 
         // Custom markers if needed
 
@@ -209,10 +223,17 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         // Icon made by Freepik from www.flaticon.com
         marker.icon = requireContext().resources.getDrawable(R.drawable.map_warning_icon)
-        marker.setInfoWindow(null)
+        marker.title = "$trafficTitle"
+        marker.subDescription = "$locationText"
+        //marker.setInfoWindow(null)
 
         map.overlays.add(marker)
 
     }
 
+    private fun getAddress(lat: Double?, lng: Double?): String {
+        val geoCoder = Geocoder(context)
+        val list = geoCoder.getFromLocation(lat ?: 0.0, lng ?: 0.0, 1)
+        return list[0].getAddressLine(0)
+    }
 }
