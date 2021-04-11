@@ -57,12 +57,12 @@ class HomeFragment : Fragment() {
     private val trafficIdRoomList = mutableListOf<Long>()
     private val trafficIdApiList = mutableListOf<Long>()
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.main_menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
 //        val item = menu.findItem(R.id.action_search)
-//        return super.onCreateOptionsMenu(menu, inflater)
-//    }
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,6 +94,8 @@ class HomeFragment : Fragment() {
                 trafficIdRoomList.add(item.traffic_item_id!!)
             }
         })
+
+        setHasOptionsMenu(true)
 
         return view
     }
