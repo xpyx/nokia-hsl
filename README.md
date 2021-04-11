@@ -14,17 +14,17 @@ This repository contains:
 
 Used libraries:
 
-- Jetbox Navigation 2.3.3
-- Apollo Graphql 2.5.5 
-- Paho Mqtt 
-- Mapbox 9.6.1
-- Jacoco 0.8.5
-- Room DB 2.2.6
-- Retrofit 2.9.0
-- Lifecycle 2.3.0
-- OsmDroid 6.1.6
-- Coroutines 1.4.2
-- AR Sceneform 1.17.1
+- Jetpack Navigation 2.3.3 [License](https://developer.android.com/license)
+- Apollo Graphql Client 2.5.5 [License](https://github.com/apollographql/apollo/blob/main/LICENSE)
+- Paho Mqtt Client 1.1.0 [License](https://www.eclipse.org/org/documents/epl-v10.php)
+- Mapbox 9.6.1 [Terms of service](https://www.mapbox.com/legal/tos)
+- Jacoco 0.8.5 [License](https://www.eclemma.org/jacoco/trunk/doc/license.html)
+- Room DB 2.2.6 [License](https://developer.android.com/license)
+- Retrofit 2.9.0 [License](https://github.com/square/retrofit/blob/master/LICENSE.txt)
+- Lifecycle 2.3.0 [License](https://developer.android.com/license)
+- OsmDroid 6.1.6 [License](https://github.com/osmdroid/osmdroid/blob/master/LICENSE)
+- Coroutines 1.4.2 [License](https://developer.android.com/license)
+- AR Sceneform 1.17.1 [License](https://github.com/google-ar/sceneform-android-sdk/blob/master/LICENSE)
 
 #### To run the Android app
 
