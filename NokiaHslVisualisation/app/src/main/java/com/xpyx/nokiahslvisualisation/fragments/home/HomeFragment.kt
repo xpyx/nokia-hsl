@@ -68,8 +68,6 @@ class HomeFragment : Fragment() {
 
         // Set up Room DB Traffic view model
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
-
-        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
         mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
             for (item in traffic) {
                 trafficIdRoomList.add(item.traffic_item_id!!)
