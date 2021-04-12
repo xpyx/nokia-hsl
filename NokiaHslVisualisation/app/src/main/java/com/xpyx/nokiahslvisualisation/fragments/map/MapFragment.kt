@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.HitResult
@@ -182,13 +183,13 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         for (item in trafficList){
         val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
-        val trafficItemLongitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLongitude!!
+        val trafficItemLongitude = item.location.locationGeoloc.geolocOrigin.geolocLocationLongitude!!
             val trafficTitle = item.traffic_item_type_desc
             val defined = item.location?.locationDefined
 
             val locationText: String = if (defined != null) {
                 if (defined.definedOrigin?.definedLocationDirection != null) {
-                    "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin?.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                    "From: ${defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 } else {
                     "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 }
@@ -209,7 +210,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             map.zoomToBoundingBox(
                 b, true,100
             )
-            map.setMinZoomLevel(10.0)
+            map.minZoomLevel = 10.0
         })
 
         //map.invalidate()
@@ -222,7 +223,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         marker.position = GeoPoint(lat, lon)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         // Icon made by Freepik from www.flaticon.com
-        marker.icon = requireContext().resources.getDrawable(R.drawable.map_warning_icon)
+        marker.icon = ResourcesCompat.getDrawable(resources,R.drawable.map_warning_icon, requireContext().theme)
         marker.title = "$trafficTitle"
         marker.subDescription = "$locationText"
         //marker.setInfoWindow(null)
