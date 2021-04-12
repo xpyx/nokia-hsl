@@ -185,11 +185,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
         val trafficItemLongitude = item.location.locationGeoloc.geolocOrigin.geolocLocationLongitude!!
             val trafficTitle = item.traffic_item_type_desc
-            val defined = item.location?.locationDefined
+            val defined = item.location.locationDefined
 
             val locationText: String = if (defined != null) {
                 if (defined.definedOrigin?.definedLocationDirection != null) {
-                    "From: ${defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                    "From: ${defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin.definedLocationDirection.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 } else {
                     "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 }

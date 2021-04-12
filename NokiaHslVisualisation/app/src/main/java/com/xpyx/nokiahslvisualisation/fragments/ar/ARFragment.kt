@@ -57,7 +57,7 @@ class ARFragment : Fragment() {
 
 
 
-                mapboxMap?.addMarker(
+                mapboxMap.addMarker(
                     MarkerOptions()
                         .position(LatLng(60.444, 24.0, 1.0))
                 )

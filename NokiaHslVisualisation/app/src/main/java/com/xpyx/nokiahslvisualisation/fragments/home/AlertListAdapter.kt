@@ -39,8 +39,8 @@ class AlertListAdapter :
         val endStampLong = alert.effectiveEndDate?.toLong()?.times(1000L)?.let { java.util.Date(it) }
 
         val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy")
-        val start = simpleDateFormat.format(startStampLong)
-        val end = simpleDateFormat.format(endStampLong)
+        val start = simpleDateFormat.format(startStampLong!!)
+        val end = simpleDateFormat.format(endStampLong!!)
 
         "Alert effective: $start - $end".also { dateTextView.text = it }
         "${alert.alertHeaderText}".also { titleTextView.text =  it }
