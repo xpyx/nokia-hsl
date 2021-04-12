@@ -2,16 +2,16 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
-import com.xpyx.nokiahslvisualisation.fragments.home.HomeFragment
+import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
-class MqttHelper(homeFragment: HomeFragment) {
+class MqttHelper(vehicleFragment: VehicleFragment) {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-    private var homeFragment: HomeFragment = homeFragment
+    private var vehicleFragment: VehicleFragment = vehicleFragment
 
 
     fun connect(applicationContext: Context) {
@@ -77,7 +77,7 @@ class MqttHelper(homeFragment: HomeFragment) {
                     // data is the desired received message
                     // Give your callback on message received here
                     Log.d("Connection", data)
-                    homeFragment.updateUI(data)
+                    vehicleFragment.updateUI(data)
 
                 } catch (e: Exception) {
                     // Give your callback on error here

@@ -29,4 +29,5 @@
         android:layout_gravity="start"
         android:background="@android:color/white"
         app:menu="@menu/drawer_view" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

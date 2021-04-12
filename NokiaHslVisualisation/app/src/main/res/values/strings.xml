@@ -2,7 +2,7 @@
     <string name="app_name">NokiaHslVisualisation</string>
 
     // Fragment titles
-    <string name="menu_home">Home</string>
+    <string name="menu_home">Alerts</string>
     <string name="menu_list">List View</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Traffic details</string>
@@ -64,4 +64,6 @@
     <string name="CONSTRUCTION">Construction</string>
     <string name="POLICE_ACTIVITY">Police activity</string>
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
+    <string name="menu_positions">Vehicles</string>
+    <string name="menu_vehicles">Vehicles</string>
 </resources>
