@@ -40,7 +40,7 @@ class VehicleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_vehicles, container, false)
         setHasOptionsMenu(true)
         return view
     }
@@ -58,6 +58,8 @@ class VehicleFragment : Fragment() {
             Color.parseColor("#E6E6FA") // disabled color
         )
         val colorStates = ColorStateList(states, colors)
+
+
 
         // Get HSL Vehicle positions with MQTT
         // First init the helper class
