@@ -12,10 +12,14 @@
         android:name="com.xpyx.nokiahslvisualisation.fragments.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_action_home_to_alertDetailsFragment"
-            app:destination="@id/alertDetailsFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/action_vehicles"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment"
+        android:label="@string/menu_vehicles"
+        tools:layout="@layout/fragment_vehicles" />
+
     <fragment
         android:id="@+id/action_list"
         android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
@@ -51,13 +55,5 @@
         android:name="com.xpyx.nokiahslvisualisation.fragments.ar.ARFragment"
         android:label="@string/menu_ar"
         tools:layout="@layout/ar_scene" />
-    <fragment
-        android:id="@+id/alertDetailsFragment"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.alertdetails.AlertDetailsFragment"
-        android:label="fragment_alert_details"
-        tools:layout="@layout/fragment_alert_details" >
-        <action
-            android:id="@+id/action_alertDetailsFragment_to_action_home"
-            app:destination="@id/action_home" />
-    </fragment>
+
 </navigation>

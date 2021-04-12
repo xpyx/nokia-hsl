@@ -20,4 +20,11 @@ class ApiViewModel(private val apiRepository: ApiRepository): ViewModel() {
             myTrafficApiResponse.value = response
         }
     }
+
+//    fun getAlertData() {
+//        viewModelScope.launch {
+//            val response = apiRepository.getAlertData()
+//            myAlertApiResponse.value = response
+//        }
+//    }
 }
