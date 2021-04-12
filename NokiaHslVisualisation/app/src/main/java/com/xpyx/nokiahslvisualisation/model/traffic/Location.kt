@@ -14,11 +14,11 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class Location (
-    @SerializedName("DEFINED") val defined : Defined? = null,
-    @SerializedName("GEOLOC") val geoloc : Geoloc? = null,
+    @SerializedName("DEFINED") val locationDefined : Defined? = null,
+    @SerializedName("INTERSECTION") val locationIntersection: Intersection? = null,
+    @SerializedName("GEOLOC") val locationGeoloc : Geoloc? = null,
     @SerializedName("TPEGOpenLRBase64") val tPegOpenLrBase64 : String? = null,
     @SerializedName("NAVTECH") val navTech : NavTech? = null,
-    @SerializedName("LENGTH") val length : Double? = null,
-    @SerializedName("INTERSECTION") val intersection: Intersection? = null,
-    @SerializedName("POLITICAL_BOUNDARY") val politicalBoundary: PoliticalBoundary? = null
+    @SerializedName("LENGTH") val locationLength : Double? = null,
+    @SerializedName("POLITICAL_BOUNDARY") val locationPoliticalBoundary: PoliticalBoundary? = null
 )

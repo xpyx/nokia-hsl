@@ -14,10 +14,10 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class RDSTmc (
-	@SerializedName("ORIGIN") val origin: RDSTmcLocation? = null,
-	@SerializedName("TO") val to: RDSTmcLocation? = null,
-	@SerializedName("DIRECTION") val direction: String? = null,
-	@SerializedName("ALERTC") val alertc: RDSTmcAlertC? = null,
-	@SerializedName("LENGTH") val length: Double? = null,
-	@SerializedName("PRIMARY_OFFSET") val primaryOffset: Double? = null
+	@SerializedName("ORIGIN") val rDSTmcOrigin: RDSTmcLocation? = null,
+	@SerializedName("TO") val rDSTmcTo: RDSTmcLocation? = null,
+	@SerializedName("DIRECTION") val rDSTmcDirection: String? = null,
+	@SerializedName("ALERTC") val rDSTmcAlertc: RDSTmcAlertC? = null,
+	@SerializedName("LENGTH") val rDSTmcLength: Double? = null,
+	@SerializedName("PRIMARY_OFFSET") val rDSTmcPrimaryOffset: Double? = null
 )

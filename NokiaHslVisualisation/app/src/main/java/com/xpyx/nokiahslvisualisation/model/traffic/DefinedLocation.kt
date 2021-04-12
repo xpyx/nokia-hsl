@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName
 
 data class DefinedLocation (
     @SerializedName("ROADWAY")
-    val roadway: DirectionClass? = null,
+    val definedLocationRoadway: DirectionClass? = null,
 
     @SerializedName("POINT")
-    val point: DirectionClass? = null,
+    val definedLocationPoint: DirectionClass? = null,
 
     @SerializedName("DIRECTION")
-    val direction: DirectionClass? = null,
+    val definedLocationDirection: DirectionClass? = null,
 
     @SerializedName("PROXIMITY")
-    val proximity: Ity? = null
+    val definedLocationProximity: Ity? = null
 )

@@ -5,8 +5,8 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 
 data class DirectionClass (
-    @SerializedName("DESCRIPTION") val description: List<TrafficItemDescriptionElement>? = null,
-    @SerializedName("ID") val id: Long? = null
+    @SerializedName("DESCRIPTION") val directionClassDescription: List<TrafficItemDescriptionElement>? = null,
+    @SerializedName("ID") val directionClassId: Long? = null
 ) {
     @TypeConverter
     fun trafficItemDescsToJson(value: List<TrafficItemDescriptionElement>?) = Gson().toJson(value)

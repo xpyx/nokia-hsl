@@ -14,5 +14,5 @@ package com.xpyx.nokiahslvisualisation.model.traffic
 import com.google.gson.annotations.SerializedName
 
 data class RDSTmcLocations (
-	@SerializedName("RDS-TMC") val rds_tmc : List<RDSTmc>? = null
+	@SerializedName("RDS-TMC") val rdsTmc : List<RDSTmc>? = null
 )

@@ -12,5 +12,12 @@ class TrafficItemRepository(private val trafficItemDao: TrafficItemDao) {
     suspend fun getTrafficItem(id: Long): DataTrafficItem {
         return trafficItemDao.getTrafficItem(id)
     }
+    suspend fun checkIfExists(item_id: Long): Boolean {
+        return trafficItemDao.productExists(item_id)
+    }
+
+    fun removeProductIfNotExists(item_id: Long){}
+
+
 
 }
