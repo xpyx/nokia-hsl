@@ -28,7 +28,9 @@ abstract class AlertItemDatabase : RoomDatabase() {
                     context.applicationContext,
                     AlertItemDatabase::class.java,
                     "alert_item_database"
-                ).build()
+                )
+                        .fallbackToDestructiveMigration()
+                        .build()
                 INSTANCE = instance
                 return instance
             }
