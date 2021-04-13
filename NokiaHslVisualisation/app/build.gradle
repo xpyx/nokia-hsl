@@ -106,6 +106,7 @@ dependencies {
 
     // OSMDroid
     implementation 'org.osmdroid:osmdroid-android:6.1.6'
+    implementation "androidx.preference:preference-ktx:1.1.1"
 
     // Mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
