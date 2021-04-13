@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -40,14 +42,30 @@ class HomeFragment : Fragment() {
     private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
+    private lateinit var adapter: AlertListAdapter
 
     private val trafficIdRoomList = mutableListOf<Long>()
     private val trafficIdApiList = mutableListOf<Long>()
 
+    // Set search at the top menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu, inflater)
+        val menuItem = menu.findItem(R.id.action_search)
+        val searchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+        searchView.setOnQueryTextListener(object: OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // do smthing
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return true
+            }
+        })
+
+
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onCreateView(
@@ -59,7 +77,7 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         // RecyclerView init
-        val adapter = context?.let { AlertListAdapter() }
+        adapter = context?.let { AlertListAdapter() }!!
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -239,4 +257,6 @@ class HomeFragment : Fragment() {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+
 }

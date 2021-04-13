@@ -74,16 +74,13 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
         notifyDataSetChanged()
     }
 
-    @ExperimentalStdlibApi
     override fun getFilter(): Filter {
         return searchFilter
     }
 
-
-    @ExperimentalStdlibApi
     private val searchFilter: Filter = object : Filter() {
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            alertList = results?.values as ArrayList<AlertItem>
+            alertList = results?.values as MutableList<AlertItem>
             notifyDataSetChanged()
         }
 
@@ -95,7 +92,7 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
 
             } else {
 
-                var filterPattern: String = constraint.toString().lowercase().trim()
+                var filterPattern: String = constraint.toString().toLowerCase().trim()
                 for (item in alertListFull) {
                     if (item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!) {
                         filteredAlertList.add(item)
@@ -103,7 +100,7 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
                 }
             }
             val results = FilterResults()
-            results.values = results
+            results.values = filteredAlertList
             return results
         }
     }
