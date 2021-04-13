@@ -2,17 +2,14 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
-import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
-class MqttHelper(vehicleFragment: VehicleFragment) {
+class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-    private var vehicleFragment: VehicleFragment = vehicleFragment
-
 
     fun connect(applicationContext: Context) {
 
@@ -26,6 +23,8 @@ class MqttHelper(vehicleFragment: VehicleFragment) {
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     Log.i("Connection", "success ")
+                    Log.i("Connection", mqttAndroidClient.isConnected.toString())
+
                     //connectionStatus = true
                     // Give your callback on connection established here
                 }
@@ -77,7 +76,7 @@ class MqttHelper(vehicleFragment: VehicleFragment) {
                     // data is the desired received message
                     // Give your callback on message received here
                     Log.d("Connection", data)
-                    vehicleFragment.updateUI(data)
+//                    vehicleFragment.updateUI(data)
 
                 } catch (e: Exception) {
                     // Give your callback on error here

@@ -14,26 +14,26 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.api.AlertViewModel
+import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
 import com.xpyx.nokiahslvisualisation.networking.mqttHelper.MqttHelper
+import com.xpyx.nokiahslvisualisation.repository.AlertRepository
+import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class VehicleFragment : Fragment() {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
     private var counter: Int = 0
-    private lateinit var editText: EditText
-    private lateinit var busLineValue: Editable
-    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu, inflater)
-    }
+    private lateinit var textViewNumMsgs: TextView
+    private lateinit var textViewMsgPayload: TextView
+    private lateinit var mMQTTViewModel: MQTTViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,99 +41,26 @@ class VehicleFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_vehicles, container, false)
-        setHasOptionsMenu(true)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Create a color state list programmatically for BUTTONS
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_enabled), // enabled
-            intArrayOf(-android.R.attr.state_enabled) // disabled
-        )
-        val colors = intArrayOf(
-            Color.parseColor("#FF3700B3"), // enabled color
-            Color.parseColor("#E6E6FA") // disabled color
-        )
-        val colorStates = ColorStateList(states, colors)
-
-
-
-        // Get HSL Vehicle positions with MQTT
-        // First init the helper class
-        val mqtt = MqttHelper(this)
-
-        // Connect to HSL MQTT broker
-        mqtt.connect(view.context)
-        val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-
-        // Set button background tint
-        btnPositions.backgroundTintList = colorStates
-
-        // Initialize 'num msgs received' field in the view
-        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
-        textViewNumMsgs.text = counter.toString()
-
-        // Get editText value
-        editText = view.findViewById(R.id.editText)
-        busLineValue = editText.text
-
-        // Listen to editText, clear editText and hide keyboard
-        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                return@OnEditorActionListener true
-            }
-            false
-        })
-
-        // Subscribe button
-        btnPositions.setOnClickListener {
-            scope.launch {
-                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
-                Log.d("DBG", topic)
-                mqtt.subscribe(topic)
-                mqtt.receiveMessages()
-                runOnUiThread {
-                    editText.text.clear()
-                    hideKeyboard()
-                    (it as MaterialButton).apply {
-                        isEnabled = false
-                        isClickable = false
-                    }
-                }
-            }
-        }
-
-        // Unsubscribe button
-        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
-        btnStop.backgroundTintList = colorStates
-        (btnStop as MaterialButton).apply {
-            isEnabled = true
-            isClickable = true
-        }
-        btnStop.setOnClickListener {
-            scope.launch {
-                mqtt.unSubscribe(topic)
-                runOnUiThread {
-                    (btnPositions as MaterialButton).apply {
-                        isEnabled = true
-                        isClickable = true
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    fun updateUI(data: String) {
         counter++
-        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
-        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
+        textViewNumMsgs = view?.findViewById(R.id.textViewNumMsgs)!!
+        textViewMsgPayload = view?.findViewById(R.id.textViewMsgPayload)!!
         ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
-        textViewMsgPayload?.text = data
+
+        // Alert viewmodel
+        val mqttRepository = MQTTRepository()
+        val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
+        mMQTTViewModel = ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
+        mMQTTViewModel.getMQTTData(view.context)
+        mMQTTViewModel.myMQTTResponse.observe(viewLifecycleOwner) { response ->
+            Log.d("DBG", response.toString())
+            textViewMsgPayload.text = response
+        }
     }
 
     // For running on UI thread
