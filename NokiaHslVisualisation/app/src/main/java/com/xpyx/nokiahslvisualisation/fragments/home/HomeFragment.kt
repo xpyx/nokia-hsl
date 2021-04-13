@@ -16,6 +16,8 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.api.AlertViewModel
+import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
 import com.xpyx.nokiahslvisualisation.api.ApiViewModel
 import com.xpyx.nokiahslvisualisation.api.ApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.AlertItem
@@ -24,6 +26,7 @@ import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
+import com.xpyx.nokiahslvisualisation.repository.AlertRepository
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -36,6 +39,8 @@ class HomeFragment : Fragment() {
     private lateinit var hereTrafficViewModel: ApiViewModel
     private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
+    private lateinit var mAlertApiViewModel: AlertViewModel
+
     private val trafficIdRoomList = mutableListOf<Long>()
     private val trafficIdApiList = mutableListOf<Long>()
 
@@ -83,26 +88,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Init Apollo and try to get response
-        val apollo = ApolloClient()
-        lifecycleScope.launchWhenResumed {
-            val response = try {
-                apollo.client.query(AlertsListQuery()).await()
-            } catch (e: ApolloException) {
-                Log.e("AlertList", "Failure", e)
-                null
-            }
-            // When response successfull, pass list of alerts to adapter
+        // Alert viewmodel
+        val alertRepository = AlertRepository()
+        val alertViewModelFactory = AlertViewModelFactory(alertRepository)
+        mAlertApiViewModel = ViewModelProvider(this, alertViewModelFactory).get(AlertViewModel::class.java)
+        mAlertApiViewModel.getAlertData()
+        mAlertApiViewModel.myAlertApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
+            } else {
+                Log.d("DBG", response.toString())
             }
-        }
+        })
 
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
         val viewModelFactory = ApiViewModelFactory(repository)
         hereTrafficViewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
-
         hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
         hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
         hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->

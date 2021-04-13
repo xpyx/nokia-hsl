@@ -1,9 +1,7 @@
 package com.xpyx.nokiahslvisualisation.repository
 
-import android.util.Log
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.exception.ApolloException
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import kotlinx.coroutines.Dispatchers
@@ -16,16 +14,9 @@ class AlertRepository {
         val apollo = ApolloClient()
         lateinit var alertItems: Response<AlertsListQuery.Data>
         val job = GlobalScope.launch(Dispatchers.IO) {
-            val alertItems = try {
-                apollo.client.query(AlertsListQuery()).await()
-            } catch (e: ApolloException) {
-                Log.e("AlertList", "Failure", e)
-                null
-            }
+            alertItems = apollo.client.query(AlertsListQuery()).await()
         }
         job.join()
         return alertItems
     }
-
-
 }
