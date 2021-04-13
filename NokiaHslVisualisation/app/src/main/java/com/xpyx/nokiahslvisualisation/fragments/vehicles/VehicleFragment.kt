@@ -48,9 +48,9 @@ class VehicleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         counter++
-        textViewNumMsgs = view?.findViewById(R.id.textViewNumMsgs)!!
-        textViewMsgPayload = view?.findViewById(R.id.textViewMsgPayload)!!
-        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
+        textViewNumMsgs = view.findViewById(R.id.textViewNumMsgs)
+        textViewMsgPayload = view.findViewById(R.id.textViewMsgPayload)
+        ("Number of MQTT messages: $counter").also { textViewNumMsgs.text = it }
 
         // Alert viewmodel
         val mqttRepository = MQTTRepository()
@@ -59,7 +59,11 @@ class VehicleFragment : Fragment() {
         mMQTTViewModel.getMQTTData(view.context)
         mMQTTViewModel.myMQTTResponse.observe(viewLifecycleOwner) { response ->
             Log.d("DBG", response.toString())
-            textViewMsgPayload.text = response
+
+            response.forEach {
+                textViewMsgPayload.text = it.toString()
+
+            }
         }
     }
 

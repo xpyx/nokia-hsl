@@ -2,6 +2,7 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
+import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -49,6 +50,8 @@ class MqttHelper {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on unsubscribing here
                     Log.i("Connection", "Unsubscribe success ")
+                    subscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
+                    receiveMessages()
 
                 }
 
@@ -76,7 +79,7 @@ class MqttHelper {
                     // data is the desired received message
                     // Give your callback on message received here
                     Log.d("Connection", data)
-//                    vehicleFragment.updateUI(data)
+
 
                 } catch (e: Exception) {
                     // Give your callback on error here
