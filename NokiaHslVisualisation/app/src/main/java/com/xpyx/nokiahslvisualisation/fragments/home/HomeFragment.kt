@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        // ViewModel init
+        // AlertViewModel init
         mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
         mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
             adapter?.setData(alerts)

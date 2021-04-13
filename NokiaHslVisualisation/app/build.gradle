@@ -11,7 +11,10 @@ apply plugin: 'jacoco'
 apply plugin: 'com.google.ar.sceneform.plugin'
 apply plugin: 'com.apollographql.apollo'
 apply plugin: "androidx.navigation.safeargs.kotlin"
-
+apply plugin: 'org.jetbrains.kotlin.android.extensions'
+androidExtensions {
+    experimental = true
+}
 
 android {
     compileSdkVersion 29
