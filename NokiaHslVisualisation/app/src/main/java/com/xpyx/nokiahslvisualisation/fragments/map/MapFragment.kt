@@ -18,6 +18,7 @@ import com.google.ar.sceneform.ux.TransformableNode
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -133,7 +134,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         mTransparencyBar?.setOnSeekBarChangeListener(this)
         mHeightBar?.setOnSeekBarChangeListener(this)
         mWidthBar?.setOnSeekBarChangeListener(this)
-
+        Reffi.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
