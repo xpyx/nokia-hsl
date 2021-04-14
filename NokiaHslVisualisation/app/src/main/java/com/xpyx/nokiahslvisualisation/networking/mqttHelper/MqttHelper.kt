@@ -2,7 +2,6 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
-import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -11,8 +10,9 @@ import org.eclipse.paho.client.mqttv3.*
 class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
+    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
 
-    fun connect(applicationContext: Context) {
+    fun connect(applicationContext: Context): Boolean {
 
         mqttAndroidClient = MqttAndroidClient(
             applicationContext,
@@ -25,7 +25,7 @@ class MqttHelper {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     Log.i("Connection", "success ")
                     Log.i("Connection", mqttAndroidClient.isConnected.toString())
-
+                    subscribe(topic)
                     //connectionStatus = true
                     // Give your callback on connection established here
                 }
@@ -41,7 +41,36 @@ class MqttHelper {
             // Give your callback on connection failure here
             e.printStackTrace()
         }
+        return true
     }
+
+    fun subscribe(topic: String) {
+        val qos = 2 // Mention your qos value
+        try {
+            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken) {
+                    // Give your callback on Subscription here
+                    Log.i("Connection", "subscribe success ")
+                    receiveMessages()
+
+
+                }
+
+                override fun onFailure(
+                    asyncActionToken: IMqttToken,
+                    exception: Throwable
+                ) {
+                    // Give your subscription failure callback here
+                    Log.i("Connection", "subscribe failure")
+
+                }
+            })
+        } catch (e: MqttException) {
+            System.err.println("Exception whilst subscribing to topic '$topic'")
+            e.printStackTrace()
+        }
+    }
+
 
     fun unSubscribe(topic: String) {
         try {
@@ -50,8 +79,7 @@ class MqttHelper {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on unsubscribing here
                     Log.i("Connection", "Unsubscribe success ")
-                    subscribe("/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#")
-                    receiveMessages()
+
 
                 }
 
@@ -92,29 +120,6 @@ class MqttHelper {
         })
     }
 
-    fun subscribe(topic: String) {
-        val qos = 2 // Mention your qos value
-        try {
-            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on Subscription here
-                    Log.i("Connection", "subscribe success ")
-                }
-
-                override fun onFailure(
-                    asyncActionToken: IMqttToken,
-                    exception: Throwable
-                ) {
-                    // Give your subscription failure callback here
-                    Log.i("Connection", "subscribe failure")
-
-                }
-            })
-        } catch (e: MqttException) {
-            System.err.println("Exception whilst subscribing to topic '$topic'")
-            e.printStackTrace()
-        }
-    }
 
     fun destroy() {
         mqttAndroidClient.unregisterResources()

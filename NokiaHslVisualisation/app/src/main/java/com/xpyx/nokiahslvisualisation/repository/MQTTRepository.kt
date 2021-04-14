@@ -19,6 +19,6 @@ class MQTTRepository {
             mqtt.connect(applicationContext)
         }
         job.join()
-        
     }
+
 }
