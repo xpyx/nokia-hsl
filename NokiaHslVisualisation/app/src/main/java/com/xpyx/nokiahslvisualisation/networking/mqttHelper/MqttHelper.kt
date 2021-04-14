@@ -2,6 +2,7 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -12,13 +13,15 @@ class MqttHelper {
     private lateinit var mqttAndroidClient: MqttAndroidClient
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
 
-    fun connect(applicationContext: Context): Boolean {
+    fun connect(applicationContext: Context) {
+
 
         mqttAndroidClient = MqttAndroidClient(
             applicationContext,
             HSL_MQTT_HOST,
             HSL_CLIENT_USER_NAME
         )
+
         try {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
@@ -41,7 +44,6 @@ class MqttHelper {
             // Give your callback on connection failure here
             e.printStackTrace()
         }
-        return true
     }
 
     fun subscribe(topic: String) {
@@ -51,9 +53,6 @@ class MqttHelper {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on Subscription here
                     Log.i("Connection", "subscribe success ")
-                    receiveMessages()
-
-
                 }
 
                 override fun onFailure(
@@ -71,6 +70,34 @@ class MqttHelper {
         }
     }
 
+    fun receiveMessages() {
+
+        mqttAndroidClient.setCallback(object : MqttCallback {
+            override fun connectionLost(cause: Throwable) {
+                //connectionStatus = false
+                // Give your callback on failure here
+            }
+
+            override fun messageArrived(topic: String, message: MqttMessage) {
+
+                try {
+                    var data = String(message.payload, charset("UTF-8"))
+                    // data is the desired received message
+                    // Give your callback on message received here
+                    Log.d("Connection", data)
+                    
+
+                } catch (e: Exception) {
+                    // Give your callback on error here
+                }
+            }
+
+            override fun deliveryComplete(token: IMqttDeliveryToken) {
+                // Acknowledgement on delivery complete
+            }
+        })
+
+    }
 
     fun unSubscribe(topic: String) {
         try {
@@ -92,33 +119,7 @@ class MqttHelper {
         }
     }
 
-    fun receiveMessages() {
 
-        mqttAndroidClient.setCallback(object : MqttCallback {
-            override fun connectionLost(cause: Throwable) {
-                //connectionStatus = false
-                // Give your callback on failure here
-            }
-
-            override fun messageArrived(topic: String, message: MqttMessage) {
-
-                try {
-                    val data = String(message.payload, charset("UTF-8"))
-                    // data is the desired received message
-                    // Give your callback on message received here
-                    Log.d("Connection", data)
-
-
-                } catch (e: Exception) {
-                    // Give your callback on error here
-                }
-            }
-
-            override fun deliveryComplete(token: IMqttDeliveryToken) {
-                // Acknowledgement on delivery complete
-            }
-        })
-    }
 
 
     fun destroy() {
