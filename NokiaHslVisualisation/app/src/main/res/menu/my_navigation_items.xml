@@ -5,6 +5,9 @@
         android:title="@string/menu_home"
         android:icon="@drawable/home_icon" />
 
+    <item android:id="@+id/action_vehicles"
+        android:title="@string/menu_positions"
+        android:icon="@drawable/bus_icon_image_view_black" />
 
     <item android:id="@+id/action_map"
         android:title="@string/menu_map"

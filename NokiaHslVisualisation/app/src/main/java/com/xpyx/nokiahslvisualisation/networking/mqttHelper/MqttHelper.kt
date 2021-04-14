@@ -2,17 +2,18 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
-import com.xpyx.nokiahslvisualisation.fragments.home.HomeFragment
+import com.google.gson.Gson
+import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
+import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
-class MqttHelper(homeFragment: HomeFragment) {
+class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-    private var homeFragment: HomeFragment = homeFragment
-
+    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
 
     fun connect(applicationContext: Context) {
 
@@ -21,18 +22,18 @@ class MqttHelper(homeFragment: HomeFragment) {
             HSL_MQTT_HOST,
             HSL_CLIENT_USER_NAME
         )
+
         try {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Log.i("Connection", "success ")
+                    subscribe(topic)
                     //connectionStatus = true
                     // Give your callback on connection established here
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
                     //connectionStatus = false
-                    Log.i("Connection", "failure")
                     // Give your callback on connection failure here
                     exception.printStackTrace()
                 }
@@ -43,26 +44,30 @@ class MqttHelper(homeFragment: HomeFragment) {
         }
     }
 
-    fun unSubscribe(topic: String) {
+    fun subscribe(topic: String) {
+        val qos = 2 // Mention your qos value
         try {
-            val unsubToken = mqttAndroidClient.unsubscribe(topic)
-            unsubToken.actionCallback = object : IMqttActionListener {
+            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on unsubscribing here
-                    Log.i("Connection", "Unsubscribe success ")
-
+                    // Give your callback on Subscription here
                 }
 
-                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    // Give your callback on failure here
+                override fun onFailure(
+                    asyncActionToken: IMqttToken,
+                    exception: Throwable
+                ) {
+                    // Give your subscription failure callback here
                 }
-            }
+            })
         } catch (e: MqttException) {
-            // Give your callback on failure here
+            System.err.println("Exception whilst subscribing to topic '$topic'")
+            e.printStackTrace()
         }
     }
 
-    fun receiveMessages() {
+    fun receiveMessages(vehicleFragment: VehicleFragment) {
+
+        val gson = Gson()
 
         mqttAndroidClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable) {
@@ -74,10 +79,9 @@ class MqttHelper(homeFragment: HomeFragment) {
 
                 try {
                     val data = String(message.payload, charset("UTF-8"))
-                    // data is the desired received message
-                    // Give your callback on message received here
-                    Log.d("Connection", data)
-                    homeFragment.updateUI(data)
+                    val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+                    vehicleFragment.updateUI(vehiclePosition)
+                    Log.d("DBG", vehiclePosition.toString())
 
                 } catch (e: Exception) {
                     // Give your callback on error here
@@ -90,27 +94,20 @@ class MqttHelper(homeFragment: HomeFragment) {
         })
     }
 
-    fun subscribe(topic: String) {
-        val qos = 2 // Mention your qos value
+    fun unSubscribe() {
         try {
-            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
+            val unsubToken = mqttAndroidClient.unsubscribe(topic)
+            unsubToken.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on Subscription here
-                    Log.i("Connection", "subscribe success ")
+                    // Give your callback on unsubscribing here
                 }
 
-                override fun onFailure(
-                    asyncActionToken: IMqttToken,
-                    exception: Throwable
-                ) {
-                    // Give your subscription failure callback here
-                    Log.i("Connection", "subscribe failure")
-
+                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                    // Give your callback on failure here
                 }
-            })
+            }
         } catch (e: MqttException) {
-            System.err.println("Exception whilst subscribing to topic '$topic'")
-            e.printStackTrace()
+            // Give your callback on failure here
         }
     }
 
@@ -118,5 +115,6 @@ class MqttHelper(homeFragment: HomeFragment) {
         mqttAndroidClient.unregisterResources()
         mqttAndroidClient.disconnect()
     }
+
 
 }
