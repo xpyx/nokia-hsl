@@ -2,38 +2,25 @@ package com.xpyx.nokiahslvisualisation.fragments.vehicles
 
 import android.app.Activity
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.google.android.material.button.MaterialButton
+import androidx.lifecycle.ViewModelProvider
 import com.xpyx.nokiahslvisualisation.R
-import com.xpyx.nokiahslvisualisation.networking.mqttHelper.MqttHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
+import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
+import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
+import kotlinx.coroutines.*
 
 class VehicleFragment : Fragment() {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
     private var counter: Int = 0
-    private lateinit var editText: EditText
-    private lateinit var busLineValue: Editable
-    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu, inflater)
-    }
+    private lateinit var textViewNumMsgs: TextView
+    private lateinit var textViewMsgPayload: TextView
+    private lateinit var mMQTTViewModel: MQTTViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,99 +28,38 @@ class VehicleFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_vehicles, container, false)
-        setHasOptionsMenu(true)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Create a color state list programmatically for BUTTONS
-        val states = arrayOf(
-            intArrayOf(android.R.attr.state_enabled), // enabled
-            intArrayOf(-android.R.attr.state_enabled) // disabled
-        )
-        val colors = intArrayOf(
-            Color.parseColor("#FF3700B3"), // enabled color
-            Color.parseColor("#E6E6FA") // disabled color
-        )
-        val colorStates = ColorStateList(states, colors)
+        textViewNumMsgs = view.findViewById(R.id.textViewNumMsgs)
+        textViewMsgPayload = view.findViewById(R.id.textViewMsgPayload)
+        ("Number of MQTT messages: $counter").also { textViewNumMsgs.text = it }
 
+        // MQTT viewmodel
+        val mqttRepository = MQTTRepository()
+        val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
+        mMQTTViewModel = ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
 
-
-        // Get HSL Vehicle positions with MQTT
-        // First init the helper class
-        val mqtt = MqttHelper(this)
-
-        // Connect to HSL MQTT broker
-        mqtt.connect(view.context)
-        val btnPositions = view.findViewById<Button>(R.id.btn_positions)
-
-        // Set button background tint
-        btnPositions.backgroundTintList = colorStates
-
-        // Initialize 'num msgs received' field in the view
-        val textViewNumMsgs = view.findViewById<TextView>(R.id.textViewNumMsgs)
-        textViewNumMsgs.text = counter.toString()
-
-        // Get editText value
-        editText = view.findViewById(R.id.editText)
-        busLineValue = editText.text
-
-        // Listen to editText, clear editText and hide keyboard
-        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                return@OnEditorActionListener true
-            }
-            false
-        })
-
-        // Subscribe button
-        btnPositions.setOnClickListener {
-            scope.launch {
-                topic = "/hfp/v2/journey/ongoing/vp/+/+/+/10$busLineValue/+/+/+/+/0/#"
-                Log.d("DBG", topic)
-                mqtt.subscribe(topic)
-                mqtt.receiveMessages()
-                runOnUiThread {
-                    editText.text.clear()
-                    hideKeyboard()
-                    (it as MaterialButton).apply {
-                        isEnabled = false
-                        isClickable = false
-                    }
-                }
-            }
+        // Connect to MQTT broker, subscribe to topic and start receiving messages
+        GlobalScope.launch {
+            receiveMQTTMessages()
         }
-
-        // Unsubscribe button
-        val btnStop = view.findViewById<Button>(R.id.btn_positions_stop)
-        btnStop.backgroundTintList = colorStates
-        (btnStop as MaterialButton).apply {
-            isEnabled = true
-            isClickable = true
-        }
-        btnStop.setOnClickListener {
-            scope.launch {
-                mqtt.unSubscribe(topic)
-                runOnUiThread {
-                    (btnPositions as MaterialButton).apply {
-                        isEnabled = true
-                        isClickable = true
-                    }
-                }
-            }
-        }
-
-
     }
 
-    fun updateUI(data: String) {
-        counter++
-        val textViewNumMsgs = view?.findViewById<TextView>(R.id.textViewNumMsgs)
-        val textViewMsgPayload = view?.findViewById<TextView>(R.id.textViewMsgPayload)
-        ("Number of MQTT messages: $counter").also { textViewNumMsgs?.text = it }
-        textViewMsgPayload?.text = data
+    suspend fun receiveMQTTMessages() {
+        val job = GlobalScope.launch(Dispatchers.IO) {
+            view?.context?.let { mMQTTViewModel.connectMQTT(it) }
+        }
+        job.join()
+        delay(1000)
+        mMQTTViewModel.receiveMessages(this)
+    }
+
+    fun updateUI(vehiclePosition: VehiclePosition) {
+        textViewMsgPayload.text = vehiclePosition.toString()
     }
 
     // For running on UI thread
@@ -154,5 +80,16 @@ class VehicleFragment : Fragment() {
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    // When exiting this fragment, unsubscribe from the topic
+    override fun onPause() {
+        super.onPause()
+        mMQTTViewModel.unsubscribe()
+    }
+
+    // When exiting this app, unsubscribe from the topic
+    override fun onStop() {
+        super.onStop()
+        mMQTTViewModel.destroy()
+    }
 }
 

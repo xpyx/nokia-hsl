@@ -94,7 +94,9 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
 
                 var filterPattern: String = constraint.toString().toLowerCase().trim()
                 for (item in alertListFull) {
-                    if (item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!) {
+                    if (
+                        item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
+                        item.alertDescriptionText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!    ) {
                         filteredAlertList.add(item)
                     }
                 }
