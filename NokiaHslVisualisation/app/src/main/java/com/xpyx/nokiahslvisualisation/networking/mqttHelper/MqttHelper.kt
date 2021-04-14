@@ -2,7 +2,9 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.Gson
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
+import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -12,6 +14,7 @@ class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
     private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
+    val vehiclePositionList = mutableListOf<VehiclePosition>()
 
     fun connect(applicationContext: Context) {
 
@@ -72,6 +75,8 @@ class MqttHelper {
 
     fun receiveMessages() {
 
+        var gson = Gson()
+
         mqttAndroidClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable) {
                 //connectionStatus = false
@@ -82,10 +87,10 @@ class MqttHelper {
 
                 try {
                     var data = String(message.payload, charset("UTF-8"))
-                    // data is the desired received message
-                    // Give your callback on message received here
-                    Log.d("Connection", data)
-                    
+                    var vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+                    Log.d("Connection", "data:" + data)
+                    Log.d("Connection", vehiclePosition.toString())
+
 
                 } catch (e: Exception) {
                     // Give your callback on error here
