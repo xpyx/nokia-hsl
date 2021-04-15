@@ -75,9 +75,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    </com.google.android.material.navigation.NavigationView>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.drawerlayout.widget.DrawerLayout>
+
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nvView"
         android:layout_width="wrap_content"
