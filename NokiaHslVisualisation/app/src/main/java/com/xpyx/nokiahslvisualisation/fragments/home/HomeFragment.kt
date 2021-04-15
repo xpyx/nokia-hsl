@@ -27,6 +27,8 @@ import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.AlertRepository
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,8 +42,6 @@ class HomeFragment : Fragment() {
     private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
     private lateinit var adapter: AlertListAdapter
-//    private lateinit var filterSliderView: NavigationView
-
 
     private val trafficIdRoomList = mutableListOf<Long>()
     private val trafficIdApiList = mutableListOf<Long>()
@@ -51,6 +51,7 @@ class HomeFragment : Fragment() {
         inflater.inflate(R.menu.main_menu, menu)
         val menuItem = menu.findItem(R.id.action_search)
         val searchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+
         searchView.setOnQueryTextListener(object : OnQueryTextListener {
 
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -99,15 +100,6 @@ class HomeFragment : Fragment() {
         // Set top bar search
         setHasOptionsMenu(true)
 
-        // Drawer filtering
-//        val severityUnknown: MenuItem = filterSliderView.menu.findItem(R.id.UNKNOWN_SEVERITY)
-//        val severityInfo: MenuItem = filterSliderView.menu.findItem(R.id.INFO)
-//        val severityWarning: MenuItem = filterSliderView.menu.findItem(R.id.WARNING)
-//        val severitySevere: MenuItem = filterSliderView.menu.findItem(R.id.SEVERE)
-
-//        filterSliderView.setNavigationItemSelectedListener { menuItem }
-
-
         return view
     }
 
@@ -142,6 +134,114 @@ class HomeFragment : Fragment() {
                 Log.d("DBG", response.errorBody().toString())
             }
         })
+
+        // Drawer filtering
+        // Severity
+        UNKNOWN_SEVERITY.setOnCheckedChangeListener {_, _ ->
+            if (UNKNOWN_SEVERITY.isChecked) {
+                adapter.filter.filter("UNKNOWN_SEVERITY")
+            } else if (!UNKNOWN_SEVERITY.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        INFO.setOnCheckedChangeListener {_, _ ->
+            if (INFO.isChecked) {
+                adapter.filter.filter("INFO")
+            } else if (!INFO.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        WARNING.setOnCheckedChangeListener {_, _ ->
+            if (WARNING.isChecked) {
+                adapter.filter.filter("WARNING")
+            } else if (!WARNING.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        SEVERE.setOnCheckedChangeListener {_, _ ->
+            if (SEVERE.isChecked) {
+                adapter.filter.filter("SEVERE")
+            } else if (!SEVERE.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+
+        // Cause
+        NO_SERVICE.setOnCheckedChangeListener {_, _ ->
+            if (NO_SERVICE.isChecked) {
+                adapter.filter.filter("NO_SERVICE")
+            } else if (!NO_SERVICE.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        REDUCED_SERVICE.setOnCheckedChangeListener {_, _ ->
+            if (REDUCED_SERVICE.isChecked) {
+                adapter.filter.filter("REDUCED_SERVICE")
+            } else if (!REDUCED_SERVICE.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        SIGNIFICANT_DELAYS.setOnCheckedChangeListener {_, _ ->
+            if (SIGNIFICANT_DELAYS.isChecked) {
+                adapter.filter.filter("SIGNIFICANT_DELAYS")
+            } else if (!SIGNIFICANT_DELAYS.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        DETOUR.setOnCheckedChangeListener {_, _ ->
+            if (DETOUR.isChecked) {
+                adapter.filter.filter("DETOUR")
+            } else if (!DETOUR.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        ADDITIONAL_SERVICE.setOnCheckedChangeListener {_, _ ->
+            if (ADDITIONAL_SERVICE.isChecked) {
+                adapter.filter.filter("ADDITIONAL_SERVICE")
+            } else if (!ADDITIONAL_SERVICE.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        MODIFIED_SERVICE.setOnCheckedChangeListener {_, _ ->
+            if (MODIFIED_SERVICE.isChecked) {
+                adapter.filter.filter("MODIFIED_SERVICE")
+            } else if (!MODIFIED_SERVICE.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        OTHER_EFFECT.setOnCheckedChangeListener {_, _ ->
+            if (OTHER_EFFECT.isChecked) {
+                adapter.filter.filter("OTHER_EFFECT")
+            } else if (!OTHER_EFFECT.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        UNKNOWN_EFFECT.setOnCheckedChangeListener {_, _ ->
+            if (UNKNOWN_EFFECT.isChecked) {
+                adapter.filter.filter("UNKNOWN_EFFECT")
+            } else if (!UNKNOWN_EFFECT.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        STOP_MOVED.setOnCheckedChangeListener {_, _ ->
+            if (STOP_MOVED.isChecked) {
+                adapter.filter.filter("STOP_MOVED")
+            } else if (!STOP_MOVED.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+        NO_EFFECT.setOnCheckedChangeListener {_, _ ->
+            if (NO_EFFECT.isChecked) {
+                adapter.filter.filter("NO_EFFECT")
+            } else if (!NO_EFFECT.isChecked) {
+                adapter.filter.filter("")
+            }
+        }
+
+
+
+
+
     }
 
     private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {

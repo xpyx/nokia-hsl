@@ -96,36 +96,11 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
                 for (item in alertListFull) {
                     if (
                         item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
-                        item.alertDescriptionText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!    ) {
-                        filteredAlertList.add(item)
-                    }
-                }
-            }
-            val results = FilterResults()
-            results.values = filteredAlertList
-            return results
-        }
-    }
-
-    private val drawerFilter: Filter = object : Filter() {
-        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            alertList = results?.values as MutableList<AlertItem>
-            notifyDataSetChanged()
-        }
-
-        override fun performFiltering(constraint: CharSequence?): FilterResults {
-
-            var filteredAlertList = mutableListOf<AlertItem>()
-            if (constraint == null || constraint.length == 0) {
-                filteredAlertList.addAll(alertListFull)
-
-            } else {
-
-                var filterPattern: String = constraint.toString().toLowerCase().trim()
-                for (item in alertListFull) {
-                    if (
-                        item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
-                        item.alertDescriptionText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!    ) {
+                        item.alertDescriptionText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
+                        item.alertSeverityLevel?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
+                        item.alertCause?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
+                        item.alertEffect?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!
+                    ) {
                         filteredAlertList.add(item)
                     }
                 }
