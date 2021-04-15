@@ -4,9 +4,7 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
@@ -19,6 +17,7 @@ import com.google.ar.sceneform.ux.TransformableNode
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -43,14 +42,21 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     private var width = 900
     private lateinit var apa: LinearLayout
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_map, container, false)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        setHasOptionsMenu(true)
+        return view
     }
 
 
@@ -58,7 +64,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         super.onViewCreated(view, savedInstanceState)
         val ctx = requireActivity().applicationContext
         //important! set your user agent to prevent getting banned from the osm servers
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
+        Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext()))
         setSeekBars()
 
 
@@ -127,7 +133,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         mTransparencyBar?.setOnSeekBarChangeListener(this)
         mHeightBar?.setOnSeekBarChangeListener(this)
         mWidthBar?.setOnSeekBarChangeListener(this)
-
+        Reffi.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
