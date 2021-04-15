@@ -66,4 +66,8 @@
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
     <string name="menu_positions">Vehicles</string>
     <string name="menu_vehicles">Vehicles</string>
+
+    // AR
+    <string name="user_location_permission_explanation">WIP</string>
+    <string name="user_location_permission_not_granted">Location permission not granted</string>
 </resources>
