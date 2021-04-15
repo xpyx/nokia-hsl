@@ -19,6 +19,6 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="145dp"
-        android:layout_weight="3" />
+        android:layout_height="195dp"
+        android:layout_gravity="center_horizontal|bottom" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
