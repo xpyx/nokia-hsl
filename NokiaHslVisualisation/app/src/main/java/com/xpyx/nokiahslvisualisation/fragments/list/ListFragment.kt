@@ -7,17 +7,11 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.SeekBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.navigation.NavigationView
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.R.*
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
