@@ -193,6 +193,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
 
         for (item in trafficList){
+
+
         val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
         val trafficItemLongitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLongitude!!
             val trafficTitle = item.traffic_item_type_desc

@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +18,8 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.api.AlertViewModel
+import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
 import com.xpyx.nokiahslvisualisation.api.ApiViewModel
 import com.xpyx.nokiahslvisualisation.api.ApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.AlertItem
@@ -24,6 +28,7 @@ import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
+import com.xpyx.nokiahslvisualisation.repository.AlertRepository
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -36,13 +41,31 @@ class HomeFragment : Fragment() {
     private lateinit var hereTrafficViewModel: ApiViewModel
     private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
+    private lateinit var mAlertApiViewModel: AlertViewModel
+    private lateinit var adapter: AlertListAdapter
+
     private val trafficIdRoomList = mutableListOf<Long>()
     private val trafficIdApiList = mutableListOf<Long>()
 
+    // Set search at the top menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu, inflater)
+        val menuItem = menu.findItem(R.id.action_search)
+        val searchView = menuItem.actionView as androidx.appcompat.widget.SearchView
+        searchView.setOnQueryTextListener(object: OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // do smthing
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return true
+            }
+        })
+
+
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onCreateView(
@@ -54,21 +77,19 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         // RecyclerView init
-        val adapter = context?.let { AlertListAdapter() }
+        adapter = context?.let { AlertListAdapter() }!!
         recyclerView = view.findViewById(R.id.alert_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        // ViewModel init
+        // AlertViewModel init
         mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
         mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
             adapter?.setData(alerts)
         })
 
         // Set up Room DB Traffic view model
-        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
-
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
         mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
             for (item in traffic) {
@@ -85,26 +106,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Init Apollo and try to get response
-        val apollo = ApolloClient()
-        lifecycleScope.launchWhenResumed {
-            val response = try {
-                apollo.client.query(AlertsListQuery()).await()
-            } catch (e: ApolloException) {
-                Log.e("AlertList", "Failure", e)
-                null
-            }
-            // When response successfull, pass list of alerts to adapter
+        // Alert viewmodel
+        val alertRepository = AlertRepository()
+        val alertViewModelFactory = AlertViewModelFactory(alertRepository)
+        mAlertApiViewModel = ViewModelProvider(this, alertViewModelFactory).get(AlertViewModel::class.java)
+        mAlertApiViewModel.getAlertData()
+        mAlertApiViewModel.myAlertApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
+            } else {
+                Log.d("DBG", response.toString())
             }
-        }
+        })
 
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
         val viewModelFactory = ApiViewModelFactory(repository)
         hereTrafficViewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
-
         hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
         hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
         hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
@@ -239,4 +257,6 @@ class HomeFragment : Fragment() {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+
 }
