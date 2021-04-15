@@ -66,4 +66,5 @@
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
     <string name="menu_positions">Vehicles</string>
     <string name="menu_vehicles">Vehicles</string>
+    <string name="alert_filtering_preferences">Alert filtering preferences</string>
 </resources>

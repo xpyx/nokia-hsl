@@ -34,6 +34,10 @@ class VehicleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Shared preferences
+        val sharedPref = activity?.getSharedPreferences(
+            getString(R.string.alert_filtering_preferences), Context.MODE_PRIVATE)
+
         textViewNumMsgs = view.findViewById(R.id.textViewNumMsgs)
         textViewMsgPayload = view.findViewById(R.id.textViewMsgPayload)
         ("Number of MQTT messages: $counter").also { textViewNumMsgs.text = it }
