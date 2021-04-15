@@ -2,9 +2,16 @@
 package com.xpyx.nokiahslvisualisation.fragments.list
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -14,16 +21,15 @@ import com.google.android.material.navigation.NavigationView
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.R.*
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
-import kotlinx.android.synthetic.main.radio_group_traffic_type.*
+import kotlinx.android.synthetic.main.fragment_list.*
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(){
 
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var viewHere: View
-    private lateinit var filterSliderView: NavigationView
-    private val listOfFilters = mutableMapOf<String, Boolean>()
+    private val listOfFilters = mutableMapOf<String, Any>()
 
 
     override fun onCreateView(
@@ -32,7 +38,6 @@ class ListFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         viewHere = inflater.inflate(layout.fragment_list, container, false)
-        filterSliderView = viewHere.findViewById(R.id.filter_drawer_view)
 
         val adapter = context?.let { TrafficListAdapter(requireContext()) }
 
@@ -55,45 +60,29 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val menuItemCritical: MenuItem = filterSliderView.menu.findItem(R.id.critical_menu_item)
-        Log.d("MENUITEM", "${menuItemCritical.title}")
-        filterSliderView.setNavigationItemSelectedListener { menuItem ->
-            if (menuItem.isChecked) {
-                Log.d("MENUCHECKED", "${menuItem.title}: ${menuItem.isChecked}")
-            }
 
+        criticality_switch.setOnCheckedChangeListener {_, isChecked ->
 
-            when (menuItem.itemId) {
-
-                // This is how to clear radio buttons. Radio groups .clearCheck() not working.
-                R.id.clear_button_type -> {
-                    Log.d("RADIOMENU","${incident_menu_item.isChecked}")
-                    Log.d("RADIOMENU","${event_menu_item.isChecked}")
-                    incident_menu_item.isChecked = false
-                    event_menu_item.isChecked = false
-                    true
-                }
-
-                R.id.critical_menu_item -> {
-                    Log.d("Menu", "${menuItem.title}")
-                    true
-                }
-
-                R.id.apply_button_traffic_filters -> {
-                    Log.d("BUTTON_TEST","TESTINGGG")
-
-                    listOfFilters["Critical"] = menuItem.isChecked
-                    Log.d("MENU", "Critical: ${menuItem.isChecked}")
-                    Log.d("MENU", "FILTERLIST: $listOfFilters")
-
-
-                    true
-                }
-                else -> true
-            }
+            listOfFilters["Criticality"] = isChecked
+            Log.d("Criticality", "$isChecked")
         }
-
-
     }
+
+
+
+
+
+
+    // For hiding the soft keyboard
+    private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+                getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
 }
 

@@ -19,11 +19,56 @@
 
     <!-- The navigation drawer that comes from the left -->
     <!-- Note that `android:layout_gravity` needs to be set to 'start' -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/filter_drawer_view"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/filter_card_view"
+        android:layout_width="250dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@android:color/white"
-        app:menu="@menu/traffic_filter_drawer_view" />
+        android:layout_gravity="start">
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/criticality_switch"
+                android:text="@string/criticality_menu_item"
+                android:layout_marginHorizontal="5dp"
+                android:gravity="fill"
+                />
+
+            <RadioGroup
+                android:id="@+id/radio_group_criticality"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="5dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/incident_menu_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="rtl"
+                    android:textAlignment="textStart"
+                    android:layout_gravity="start"
+                    android:text="@string/incident_menu_item"
+                    android:textSize="14sp" />
+
+                <RadioButton
+                    android:id="@+id/event_menu_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="rtl"
+                    android:textAlignment="textStart"
+                    android:layout_gravity="start"
+                    android:text="@string/event_menu_item"
+                    android:textSize="14sp" />
+            </RadioGroup>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 </androidx.drawerlayout.widget.DrawerLayout>
