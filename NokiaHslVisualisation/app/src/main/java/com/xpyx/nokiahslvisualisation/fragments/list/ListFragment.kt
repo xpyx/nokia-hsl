@@ -61,10 +61,9 @@ class ListFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
 
-        criticality_switch.setOnCheckedChangeListener {_, isChecked ->
-
-            listOfFilters["Criticality"] = isChecked
-            Log.d("Criticality", "$isChecked")
+        critical_switch.setOnCheckedChangeListener {_, isChecked ->
+            listOfFilters["Critical"] = isChecked
+            Log.d("Critical", "$listOfFilters")
         }
     }
 

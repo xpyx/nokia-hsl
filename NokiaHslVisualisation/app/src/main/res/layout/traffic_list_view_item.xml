@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:textColor="?attr/colorOnPrimary"
     android:id="@+id/bus_card_view">
 
     <androidx.constraintlayout.widget.ConstraintLayout
