@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filter_menu">
 
     <item android:title="@string/criticality_menu_item">
         <menu>
-            <item android:title="@string/critical_menu_item"
-                android:id="@+id/critical_menu_item"
-                app:actionViewClass="android.widget.Switch"/>
-            <item android:title="@string/major_menu_item"
-                android:id="@+id/major_menu_item"
-                app:actionViewClass="android.widget.Switch"/>
-            <item android:title="@string/minor_menu_item"
-                android:id="@+id/minor_menu_item"
-                app:actionViewClass="android.widget.Switch"/>
+            <group android:checkableBehavior="all">
+                <item android:title="@string/critical_menu_item"
+                    android:id="@+id/critical_menu_item"
+                    app:actionViewClass="androidx.appcompat.widget.SwitchCompat"
+                    app:showAsAction="always"/>
+                <item android:title="@string/major_menu_item"
+                    android:id="@+id/major_menu_item"
+                    app:actionViewClass="android.widget.Switch"/>
+                <item android:title="@string/minor_menu_item"
+                    android:id="@+id/minor_menu_item"
+                    app:actionViewClass="android.widget.Switch"/>
+            </group>
         </menu>
     </item>
 
