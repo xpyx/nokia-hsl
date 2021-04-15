@@ -91,6 +91,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 map.zoomController
                 map.controller.setCenter(GeoPoint(60.17, 24.95))
                 viewRenderable = it
+
             }
 
 
@@ -98,6 +99,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             if (viewRenderable == null) {
                 return@setOnTapArPlaneListener
             }
+
+            arFrag.getPlaneDiscoveryController().hide();
+            arFrag.getPlaneDiscoveryController().setInstructionView(null);
+            arFrag.getArSceneView().getPlaneRenderer().setEnabled(false);
             //Creates a new anchor at the hit location
             val anchor = hitResult!!.createAnchor()
             //Creates a new anchorNode attaching it to anchor
@@ -117,6 +122,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             viewNode.select()
 
             setMapMarkers()
+
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
@@ -182,6 +188,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
 
         for (item in trafficList){
+
+
         val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
         val trafficItemLongitude = item.location.locationGeoloc.geolocOrigin.geolocLocationLongitude!!
             val trafficTitle = item.traffic_item_type_desc

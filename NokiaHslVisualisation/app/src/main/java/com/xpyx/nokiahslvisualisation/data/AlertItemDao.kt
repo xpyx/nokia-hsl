@@ -9,7 +9,7 @@ import androidx.room.Query
 @Dao
 interface AlertItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAlertItem(alert: AlertItem)
 
     @Query("SELECT * FROM alertitems ORDER BY id DESC")
