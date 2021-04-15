@@ -110,7 +110,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             )
 
             val position = CameraPosition.Builder()
-                .zoom(22.0)
+                .zoom(15.0)
                 .tilt(20.0)
                 .build()
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)

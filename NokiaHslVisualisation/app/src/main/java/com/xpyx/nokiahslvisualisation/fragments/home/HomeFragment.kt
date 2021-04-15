@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
     private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
     private lateinit var adapter: AlertListAdapter
-    private lateinit var filterSliderView: NavigationView
+//    private lateinit var filterSliderView: NavigationView
 
 
     private val trafficIdRoomList = mutableListOf<Long>()
@@ -100,10 +100,10 @@ class HomeFragment : Fragment() {
         setHasOptionsMenu(true)
 
         // Drawer filtering
-        val severityUnknown: MenuItem = filterSliderView.menu.findItem(R.id.UNKNOWN_SEVERITY)
-        val severityInfo: MenuItem = filterSliderView.menu.findItem(R.id.INFO)
-        val severityWarning: MenuItem = filterSliderView.menu.findItem(R.id.WARNING)
-        val severitySevere: MenuItem = filterSliderView.menu.findItem(R.id.SEVERE)
+//        val severityUnknown: MenuItem = filterSliderView.menu.findItem(R.id.UNKNOWN_SEVERITY)
+//        val severityInfo: MenuItem = filterSliderView.menu.findItem(R.id.INFO)
+//        val severityWarning: MenuItem = filterSliderView.menu.findItem(R.id.WARNING)
+//        val severitySevere: MenuItem = filterSliderView.menu.findItem(R.id.SEVERE)
 
 //        filterSliderView.setNavigationItemSelectedListener { menuItem }
 
