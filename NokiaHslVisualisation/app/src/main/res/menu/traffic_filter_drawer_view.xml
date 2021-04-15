@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filter_menu">
+
+    <item android:title="@string/criticality_menu_item">
+        <menu>
+            <group android:checkableBehavior="all">
+                <item android:title="@string/critical_menu_item"
+                    android:id="@+id/critical_menu_item"
+                    app:actionViewClass="androidx.appcompat.widget.SwitchCompat"
+                    app:showAsAction="always"/>
+                <item android:title="@string/major_menu_item"
+                    android:id="@+id/major_menu_item"
+                    app:actionViewClass="android.widget.Switch"/>
+                <item android:title="@string/minor_menu_item"
+                    android:id="@+id/minor_menu_item"
+                    app:actionViewClass="android.widget.Switch"/>
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/distance_menu_item">
+        <menu>
+            <group android:checkableBehavior="all">
+                <item
+                    android:id="@+id/maximum_distance_menu_item"
+                    android:title="@string/maximum_distance_menu_item"
+                    app:actionViewClass="android.widget.Switch"
+                    />
+                <item
+                    android:id="@+id/minimum_distance_menu_item"
+                    android:title="@string/minimum_distance_menu_item"
+                    app:actionViewClass="android.widget.Switch"
+                    />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/type_menu_item"
+        android:layout_gravity="start">
+        <menu>
+            <item
+            app:actionLayout="@layout/radio_group_traffic_type"
+            android:id="@+id/radio_group_type"
+            android:title=""
+            />
+            <item
+            android:title="@string/clear_text"
+            android:id="@+id/clear_button_type"
+            />
+        </menu>
+    </item>
+
+    <item android:title="@string/miscellaneous_menu_item">
+        <menu>
+            <group android:checkableBehavior="all">
+                <item
+                    android:id="@+id/road_closed_menu_item"
+                    android:title="@string/road_closed_menu_item"
+                    app:actionViewClass="android.widget.Switch"
+                    />
+                <item
+                    android:id="@+id/response_vehicles_menu_item"
+                    android:title="@string/response_vehicles_menu_item"
+                    app:actionViewClass="android.widget.Switch"
+                    />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/apply_button_menu_item"
+        android:id="@+id/apply_button_traffic_filters"
+        />
+
+
+
+</menu>
