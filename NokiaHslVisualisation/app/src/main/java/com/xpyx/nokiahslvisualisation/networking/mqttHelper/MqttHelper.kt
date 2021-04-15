@@ -80,7 +80,10 @@ class MqttHelper {
                 try {
                     val data = String(message.payload, charset("UTF-8"))
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+
+                    // Here I update the fragment that shows the data
                     vehicleFragment.updateUI(vehiclePosition)
+
                     Log.d("DBG", vehiclePosition.toString())
 
                 } catch (e: Exception) {

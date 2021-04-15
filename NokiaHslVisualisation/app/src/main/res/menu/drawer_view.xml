@@ -8,23 +8,23 @@
                 <item
                     android:id="@+id/UNKNOWN_SEVERITY"
                     android:title="@string/UNKNOWN_SEVERITY"
-                    app:actionViewClass="android.widget.Switch"
-                    />
+                    app:actionViewClass="android.widget.Switch" />
+
                 <item
                     android:id="@+id/INFO"
                     android:title="@string/INFO"
-                    app:actionViewClass="android.widget.Switch"
-                    />
+                    app:actionViewClass="android.widget.Switch" />
+
                 <item
                     android:id="@+id/WARNING"
                     android:title="@string/WARNING"
-                    app:actionViewClass="android.widget.Switch"
-                    />
+                    app:actionViewClass="android.widget.Switch" />
+
                 <item
                     android:id="@+id/SEVERE"
                     android:title="@string/SEVERE"
-                    app:actionViewClass="android.widget.Switch"
-                    />
+                    app:actionViewClass="android.widget.Switch" />
+
             </group>
         </menu>
     </item>
@@ -35,13 +35,11 @@
                 <item
                     android:id="@+id/NO_SERVICE"
                     android:title="@string/NO_SERVICE"
-                    app:actionViewClass="android.widget.Switch"
-                    />
+                    app:actionViewClass="android.widget.Switch" />
                 <item
                     android:id="@+id/REDUCED_SERVICE"
                     android:title="@string/REDUCED_SERVICE"
-                    app:actionViewClass="android.widget.Switch"
-                    />
+                    app:actionViewClass="android.widget.Switch" />
                 <item
                     android:id="@+id/SIGNIFICANT_DELAYS"
                     android:title="@string/SIGNIFICANT_DELAYS"
