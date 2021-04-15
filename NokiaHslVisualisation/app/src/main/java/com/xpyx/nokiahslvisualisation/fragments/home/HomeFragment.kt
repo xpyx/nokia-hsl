@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.api.Response
+import com.google.android.material.navigation.NavigationView
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.AlertViewModel
@@ -39,7 +40,7 @@ class HomeFragment : Fragment() {
     private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
     private lateinit var adapter: AlertListAdapter
-    private lateinit var drawer: DrawerLayout
+    private lateinit var filterSliderView: NavigationView
 
 
     private val trafficIdRoomList = mutableListOf<Long>()
@@ -97,6 +98,16 @@ class HomeFragment : Fragment() {
 
         // Set top bar search
         setHasOptionsMenu(true)
+
+        // Drawer filtering
+        val severityUnknown: MenuItem = filterSliderView.menu.findItem(R.id.UNKNOWN_SEVERITY)
+        val severityInfo: MenuItem = filterSliderView.menu.findItem(R.id.INFO)
+        val severityWarning: MenuItem = filterSliderView.menu.findItem(R.id.WARNING)
+        val severitySevere: MenuItem = filterSliderView.menu.findItem(R.id.SEVERE)
+
+//        filterSliderView.setNavigationItemSelectedListener { menuItem }
+
+
         return view
     }
 
@@ -106,7 +117,8 @@ class HomeFragment : Fragment() {
         // Alert viewmodel
         val alertRepository = AlertRepository()
         val alertViewModelFactory = AlertViewModelFactory(alertRepository)
-        mAlertApiViewModel = ViewModelProvider(this, alertViewModelFactory).get(AlertViewModel::class.java)
+        mAlertApiViewModel =
+            ViewModelProvider(this, alertViewModelFactory).get(AlertViewModel::class.java)
         mAlertApiViewModel.getAlertData()
         mAlertApiViewModel.myAlertApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null && !response.hasErrors()) {
@@ -119,7 +131,8 @@ class HomeFragment : Fragment() {
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
         val viewModelFactory = ApiViewModelFactory(repository)
-        hereTrafficViewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
+        hereTrafficViewModel =
+            ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
         hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
         hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
         hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
@@ -183,8 +196,8 @@ class HomeFragment : Fragment() {
 
         // Remove ended traffic items
         if (trafficIdApiList.isNotEmpty() && trafficIdRoomList.isNotEmpty()) {
-            for (item in trafficIdRoomList){
-                if (trafficIdApiList.contains(item)){
+            for (item in trafficIdRoomList) {
+                if (trafficIdApiList.contains(item)) {
                     GlobalScope.launch(context = Dispatchers.IO) {
                         mTrafficViewModel.removeIfNotExists(item)
                         Log.d("REMOVED_ITEM", "Removed item with id: $item")
