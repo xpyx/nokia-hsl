@@ -13,8 +13,8 @@ import org.eclipse.paho.client.mqttv3.*
 class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
-
+    // private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#" // situational overview
+    private var topic: String = "/hfp/v2/journey/ongoing/vp/tram/#" // all trams
     fun connect(applicationContext: Context) {
 
         mqttAndroidClient = MqttAndroidClient(
