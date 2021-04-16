@@ -72,10 +72,11 @@
     <string name="critical_menu_item">Critical</string>
     <string name="major_menu_item">Major</string>
     <string name="minor_menu_item">Minor</string>
-    <string name="clear_text">Clear</string>
+    <string name="clear_radio_button_text">Clear radio</string>
+    <string name="clear_all_button_text">Clear All</string>
 
 
-    <string name="distance_menu_item">Distance</string>
+    <string name="distance_menu_item">Distance (km)</string>
     <string name="minimum_distance_menu_item">Minimum distance</string>
     <string name="maximum_distance_menu_item">Maximum distance</string>
 
