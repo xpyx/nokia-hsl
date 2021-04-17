@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -95,6 +96,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {
+
+            Log.d("DBG", "receiveMQTTMessages")
+
             receiveMQTTMessages()
         }
     }
@@ -201,7 +205,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
         job.join()
-        delay(1000)
+        delay(10000)
+        Log.d("DBG", "Delay 10000ms")
+
         mMQTTViewModel.receiveMessages(this)
     }
 

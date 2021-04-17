@@ -246,7 +246,7 @@ class HomeFragment : Fragment() {
 
                     if (exists) {
 
-                        Log.d("DBG", "Alert already in database")
+                        // Log.d("DBG", "Alert already in database")
 
                     } else {
                         val alertId = item.id()

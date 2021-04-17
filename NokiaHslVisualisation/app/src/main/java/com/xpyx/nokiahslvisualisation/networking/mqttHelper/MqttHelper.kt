@@ -13,9 +13,12 @@ import org.eclipse.paho.client.mqttv3.*
 class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-    // private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#" // situational overview
-    private var topic: String = "/hfp/v2/journey/ongoing/vp/tram/#" // all trams
+    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#" // situational overview
+    //private var topic: String = "/hfp/v2/journey/ongoing/vp/tram/#" // all trams
+
     fun connect(applicationContext: Context) {
+
+        Log.d("DBG", "Start MQTT connection try")
 
         mqttAndroidClient = MqttAndroidClient(
             applicationContext,
@@ -27,6 +30,7 @@ class MqttHelper {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
+                    Log.d("DBG", "MQTT connection ready")
                     subscribe(topic)
                     //connectionStatus = true
                     // Give your callback on connection established here
@@ -50,6 +54,8 @@ class MqttHelper {
             mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on Subscription here
+                    Log.d("DBG", "MQTT subscription ready")
+
                 }
 
                 override fun onFailure(
