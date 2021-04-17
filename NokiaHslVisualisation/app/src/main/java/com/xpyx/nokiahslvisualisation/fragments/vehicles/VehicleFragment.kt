@@ -1,25 +1,28 @@
 package com.xpyx.nokiahslvisualisation.fragments.vehicles
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
@@ -61,12 +64,12 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
 
         Mapbox.getInstance(
-                listener, getString(R.string.mapbox_access_token)
+            listener, getString(R.string.mapbox_access_token)
         )
 
         // Inflate the layout for this fragment
@@ -100,60 +103,75 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
         mapboxMap.setStyle(Style.Builder().fromUri(
-                "asset://local_style")) {
+            "asset://local_style")) {
 
             val source = RasterSource(
-                    "map", TileSet("https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png", "mapbox://mapid")
+                "map", TileSet("https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png", "mapbox://mapid")
             )
 
-
             val position = CameraPosition.Builder()
-                    .zoom(25.5)
-                    .tilt(20.0)
-                    .build()
+                .zoom(15.0)
+                .tilt(20.0)
+                .build()
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
             it.addSource(source)
-
-
             enableLocationComponent(it)
         }
     }
 
-    @SuppressLint("MissingPermission")
     private fun enableLocationComponent(loadedMapStyle: Style) {
-// Check if permissions are enabled and if not request
+        // Check if permissions are enabled and if not request
         if (PermissionsManager.areLocationPermissionsGranted(listener)) {
 
-// Create and customize the LocationComponent's options
+            // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(listener)
-                    .trackingGesturesManagement(true)
-                    .pulseEnabled(true)
-                    .pulseColor(Color.GREEN)
-                    .pulseAlpha(.4f)
-                    .pulseInterpolator(BounceInterpolator())
-                    .build()
+                .trackingGesturesManagement(true)
+                .pulseEnabled(true)
+                .pulseColor(Color.GREEN)
+                .pulseAlpha(.4f)
+                .pulseInterpolator(BounceInterpolator())
+                .build()
 
             val locationComponentActivationOptions = LocationComponentActivationOptions
-                    .builder(listener, loadedMapStyle)
-                    .locationComponentOptions(customLocationComponentOptions)
-                    .build()
+                .builder(listener, loadedMapStyle)
+                .locationComponentOptions(customLocationComponentOptions)
+                .build()
 
-
-
-// Get an instance of the LocationComponent and then adjust its settings
+            // Get an instance of the LocationComponent and then adjust its settings
             mapboxMap.locationComponent.apply {
 
-// Activate the LocationComponent with options
+                // Activate the LocationComponent with options
                 activateLocationComponent(locationComponentActivationOptions)
 
-// Enable to make the LocationComponent visible
+                // Enable to make the LocationComponent visible
+                if (context?.let {
+                        ActivityCompat.checkSelfPermission(
+                            it,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                    } != PackageManager.PERMISSION_GRANTED && context?.let {
+                        ActivityCompat.checkSelfPermission(
+                            it,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    } != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
+                }
                 isLocationComponentEnabled = true
 
-// Set the LocationComponent's camera mode
-                cameraMode = CameraMode.TRACKING_COMPASS
+                // Set the LocationComponent's camera mode
+                cameraMode = CameraMode.TRACKING_GPS_NORTH
 
-// Set the LocationComponent's render mode
-                renderMode = RenderMode.COMPASS
+                // Set the LocationComponent's render mode
+                renderMode = RenderMode.NORMAL
             }
         } else {
             permissionsManager = PermissionsManager(this)
@@ -188,27 +206,20 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
-        textViewMsgPayload.text = vehiclePosition.toString()
+        var sumOF = object {
+            var a = vehiclePosition.VP.oper
+            var b = vehiclePosition.VP.veh
+            var c = vehiclePosition.VP.lat
+            var d = vehiclePosition.VP.long
+        }
 
-    }
+        mapView?.getMapAsync{ mapbox ->
 
-    // For running on UI thread
-    private fun Fragment?.runOnUiThread(action: () -> Unit) {
-        this ?: return
-        if (!isAdded) return // Fragment not attached to an Activity
-        activity?.runOnUiThread(action)
-    }
-
-
-    // For hiding the soft keyboard
-    private fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
-    }
-
-    private fun Context.hideKeyboard(view: View) {
-        val inputMethodManager =
-                getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            mapbox.addMarker(
+                MarkerOptions()
+                    .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
+            )
+        }
     }
 
     override fun onStart() {
@@ -250,4 +261,3 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mapView?.onLowMemory()
     }
 }
-

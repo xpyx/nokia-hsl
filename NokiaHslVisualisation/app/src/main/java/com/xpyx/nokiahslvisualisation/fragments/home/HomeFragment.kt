@@ -1,21 +1,15 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
-import android.widget.SearchView
+import android.widget.CheckBox
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.exception.ApolloException
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.AlertViewModel
@@ -27,9 +21,9 @@ import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
-import com.xpyx.nokiahslvisualisation.networking.apolloClient.ApolloClient
 import com.xpyx.nokiahslvisualisation.repository.AlertRepository
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -52,7 +46,9 @@ class HomeFragment : Fragment() {
         inflater.inflate(R.menu.main_menu, menu)
         val menuItem = menu.findItem(R.id.action_search)
         val searchView = menuItem.actionView as androidx.appcompat.widget.SearchView
-        searchView.setOnQueryTextListener(object: OnQueryTextListener {
+
+        searchView.setOnQueryTextListener(object : OnQueryTextListener {
+
             override fun onQueryTextSubmit(query: String?): Boolean {
                 // do smthing
                 return true
@@ -63,7 +59,6 @@ class HomeFragment : Fragment() {
                 return true
             }
         })
-
 
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -86,7 +81,7 @@ class HomeFragment : Fragment() {
         // AlertViewModel init
         mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
         mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
-            adapter?.setData(alerts)
+            adapter.setData(alerts)
         })
 
         // Set up Room DB Traffic view model
@@ -97,11 +92,11 @@ class HomeFragment : Fragment() {
             }
         })
 
+        // Set top bar search
         setHasOptionsMenu(true)
 
         return view
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -109,7 +104,8 @@ class HomeFragment : Fragment() {
         // Alert viewmodel
         val alertRepository = AlertRepository()
         val alertViewModelFactory = AlertViewModelFactory(alertRepository)
-        mAlertApiViewModel = ViewModelProvider(this, alertViewModelFactory).get(AlertViewModel::class.java)
+        mAlertApiViewModel =
+            ViewModelProvider(this, alertViewModelFactory).get(AlertViewModel::class.java)
         mAlertApiViewModel.getAlertData()
         mAlertApiViewModel.myAlertApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null && !response.hasErrors()) {
@@ -122,7 +118,8 @@ class HomeFragment : Fragment() {
         // HERE MAPS TRAFFIC API view model setup
         val repository = ApiRepository()
         val viewModelFactory = ApiViewModelFactory(repository)
-        hereTrafficViewModel = ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
+        hereTrafficViewModel =
+            ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
         hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
         hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
         hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
@@ -133,7 +130,49 @@ class HomeFragment : Fragment() {
             }
         })
 
+        // Drawer filtering
+        val listOfCheckBoxes = listOf<CheckBox>(
+            UNKNOWN_SEVERITY,
+            INFO,
+            WARNING,
+            SEVERE,
+            NO_SERVICE,
+            REDUCED_SERVICE,
+            SIGNIFICANT_DELAYS,
+            DETOUR,
+            ADDITIONAL_SERVICE,
+            MODIFIED_SERVICE,
+            OTHER_EFFECT,
+            UNKNOWN_EFFECT,
+            STOP_MOVED,
+            NO_EFFECT,
+            UNKNOWN_CAUSE,
+            OTHER_CAUSE,
+            TECHNICAL_PROBLEM,
+            STRIKE,
+            DEMONSTRATION,
+            CAUSE_MODIFIED_SERVICE,
+            ACCIDENT,
+            HOLIDAY,
+            WEATHER,
+            MAINTENANCE,
+            CONSTRUCTION,
+            POLICE_ACTIVITY,
+            MEDICAL_EMERGENCY
+        )
+
+        listOfCheckBoxes.forEach {
+            val name = it.text.toString()
+            it.setOnCheckedChangeListener { _, _ ->
+                if (it.isChecked) {
+                    adapter.filter.filter(name)
+                } else if (!it.isChecked) {
+                    adapter.filter.filter("")
+                }
+            }
+        }
     }
+
     private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
         var exists: Boolean
         val trafficItemList = response.body()!!.trafficDataTrafficItems
@@ -180,23 +219,21 @@ class HomeFragment : Fragment() {
                             }
                         }
                     }
-
                 }
             }
         }
 
         // Remove ended traffic items
         if (trafficIdApiList.isNotEmpty() && trafficIdRoomList.isNotEmpty()) {
-            for (item in trafficIdRoomList){
-                if (trafficIdApiList.contains(item)){
+            for (item in trafficIdRoomList) {
+                if (trafficIdApiList.contains(item)) {
                     GlobalScope.launch(context = Dispatchers.IO) {
                         mTrafficViewModel.removeIfNotExists(item)
-                        Log.d("REMOVED_ITEM","Removed item with id: $item")
+                        Log.d("REMOVED_ITEM", "Removed item with id: $item")
                     }
                 }
             }
         }
-
     }
 
     private fun insertToAlertDatabase(response: Response<AlertsListQuery.Data>) {
@@ -208,7 +245,9 @@ class HomeFragment : Fragment() {
                     exists = mAlertViewModel.checkIfExists(item.id())
 
                     if (exists) {
-                        Log.d("DBG", "Alert exists in database already")
+
+                        Log.d("DBG", "Alert already in database")
+
                     } else {
                         val alertId = item.id()
                         val alertHeaderText = item.alertHeaderText()
@@ -233,30 +272,9 @@ class HomeFragment : Fragment() {
                             alertEffect
                         )
                         mAlertViewModel.addAlertItem(alert)
-                        Log.d("DBG", "Alert added to database")
                     }
                 }
             }
         }
     }
-
-    // For running on UI thread
-    private fun Fragment?.runOnUiThread(action: () -> Unit) {
-        this ?: return
-        if (!isAdded) return // Fragment not attached to an Activity
-        activity?.runOnUiThread(action)
-    }
-
-    // For hiding the soft keyboard
-    private fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
-    }
-
-    private fun Context.hideKeyboard(view: View) {
-        val inputMethodManager =
-            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
-
 }

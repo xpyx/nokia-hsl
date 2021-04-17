@@ -26,12 +26,14 @@
             android:id="@+id/traffic_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSecondary"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/traffic_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSecondary"
             android:minLines="3"
             android:textSize="18sp" />
 
@@ -39,6 +41,7 @@
             android:id="@+id/traffic_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSecondary"
             android:minLines="3"
             android:textSize="18sp" />
 

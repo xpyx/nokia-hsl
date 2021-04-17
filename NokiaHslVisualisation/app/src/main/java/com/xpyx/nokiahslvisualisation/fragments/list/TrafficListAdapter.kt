@@ -20,7 +20,7 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
     class TrafficViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrafficViewHolder {
-        return TrafficViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_view_item, parent, false))
+        return TrafficViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.traffic_list_view_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: TrafficViewHolder, position: Int) {

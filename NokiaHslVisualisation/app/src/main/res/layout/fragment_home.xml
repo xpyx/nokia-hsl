@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,12 +21,347 @@
 
     <!-- The navigation drawer that comes from the left -->
     <!-- Note that `android:layout_gravity` needs to be set to 'start' -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nvView"
-        android:layout_width="wrap_content"
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="260dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@android:color/white"
-        app:menu="@menu/drawer_view" />
+        android:layout_gravity="start|bottom"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/severity_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/severity_level"
+                android:textSize="20sp"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"
+                android:layout_marginTop="16dp"/>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/UNKNOWN_SEVERITY"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/UNKNOWN_SEVERITY" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/INFO"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/INFO" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/WARNING"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/WARNING" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/SEVERE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/SEVERE" />
+
+
+            <TextView
+                android:id="@+id/alert_effect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="48dp"
+                android:gravity="fill"
+                android:text="@string/alert_effect"
+                android:textSize="20sp"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"
+                android:layout_marginTop="16dp"/>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/NO_SERVICE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/NO_SERVICE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/REDUCED_SERVICE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/REDUCED_SERVICE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/SIGNIFICANT_DELAYS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/SIGNIFICANT_DELAYS" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/DETOUR"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/DETOUR" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/ADDITIONAL_SERVICE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/ADDITIONAL_SERVICE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/MODIFIED_SERVICE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/MODIFIED_SERVICE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/OTHER_EFFECT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/OTHER_EFFECT" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/UNKNOWN_EFFECT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/UNKNOWN_EFFECT" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/STOP_MOVED"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/STOP_MOVED" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/NO_EFFECT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/NO_EFFECT" />
+
+        <TextView
+                android:id="@+id/alert_cause"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="48dp"
+                android:gravity="fill"
+                android:text="@string/alert_cause"
+               android:textSize="20sp"
+            />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"
+                android:layout_marginTop="16dp"/>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/UNKNOWN_CAUSE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/UNKNOWN_CAUSE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/OTHER_CAUSE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/OTHER_CAUSE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/TECHNICAL_PROBLEM"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/TECHNICAL_PROBLEM" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/STRIKE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/STRIKE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/DEMONSTRATION"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/DEMONSTRATION" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/CAUSE_MODIFIED_SERVICE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/CAUSE_MODIFIED_SERVICE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/ACCIDENT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/ACCIDENT" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/HOLIDAY"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/HOLIDAY" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/WEATHER"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/WEATHER" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/MAINTENANCE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/MAINTENANCE" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/CONSTRUCTION"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/CONSTRUCTION" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/POLICE_ACTIVITY"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/POLICE_ACTIVITY" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/MEDICAL_EMERGENCY"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp"
+                android:gravity="fill"
+                android:text="@string/MEDICAL_EMERGENCY" />
+
+        </LinearLayout>
+    </ScrollView>
+<!--    </com.google.android.material.card.MaterialCardView>-->
 
 </androidx.drawerlayout.widget.DrawerLayout>

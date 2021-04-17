@@ -13,8 +13,8 @@ import org.eclipse.paho.client.mqttv3.*
 class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-    private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
-
+    // private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#" // situational overview
+    private var topic: String = "/hfp/v2/journey/ongoing/vp/tram/#" // all trams
     fun connect(applicationContext: Context) {
 
         mqttAndroidClient = MqttAndroidClient(
@@ -80,7 +80,10 @@ class MqttHelper {
                 try {
                     val data = String(message.payload, charset("UTF-8"))
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+
+                    // Here I update the fragment that shows the data
                     vehicleFragment.updateUI(vehiclePosition)
+
                     Log.d("DBG", vehiclePosition.toString())
 
                 } catch (e: Exception) {
