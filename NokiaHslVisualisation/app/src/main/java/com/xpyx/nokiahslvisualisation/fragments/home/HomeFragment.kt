@@ -3,17 +3,13 @@ package com.xpyx.nokiahslvisualisation.fragments.home
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Switch
-import android.widget.Toolbar
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.widget.CheckBox
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.api.Response
-import com.google.android.material.navigation.NavigationView
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.AlertViewModel
@@ -28,7 +24,6 @@ import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.AlertRepository
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -136,112 +131,46 @@ class HomeFragment : Fragment() {
         })
 
         // Drawer filtering
-        // Severity
-        UNKNOWN_SEVERITY.setOnCheckedChangeListener {_, _ ->
-            if (UNKNOWN_SEVERITY.isChecked) {
-                adapter.filter.filter("UNKNOWN_SEVERITY")
-            } else if (!UNKNOWN_SEVERITY.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        INFO.setOnCheckedChangeListener {_, _ ->
-            if (INFO.isChecked) {
-                adapter.filter.filter("INFO")
-            } else if (!INFO.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        WARNING.setOnCheckedChangeListener {_, _ ->
-            if (WARNING.isChecked) {
-                adapter.filter.filter("WARNING")
-            } else if (!WARNING.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        SEVERE.setOnCheckedChangeListener {_, _ ->
-            if (SEVERE.isChecked) {
-                adapter.filter.filter("SEVERE")
-            } else if (!SEVERE.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
+        val listOfCheckBoxes = listOf<CheckBox>(
+            UNKNOWN_SEVERITY,
+            INFO,
+            WARNING,
+            SEVERE,
+            NO_SERVICE,
+            REDUCED_SERVICE,
+            SIGNIFICANT_DELAYS,
+            DETOUR,
+            ADDITIONAL_SERVICE,
+            MODIFIED_SERVICE,
+            OTHER_EFFECT,
+            UNKNOWN_EFFECT,
+            STOP_MOVED,
+            NO_EFFECT,
+            UNKNOWN_CAUSE,
+            OTHER_CAUSE,
+            TECHNICAL_PROBLEM,
+            STRIKE,
+            DEMONSTRATION,
+            CAUSE_MODIFIED_SERVICE,
+            ACCIDENT,
+            HOLIDAY,
+            WEATHER,
+            MAINTENANCE,
+            CONSTRUCTION,
+            POLICE_ACTIVITY,
+            MEDICAL_EMERGENCY
+        )
 
-        // Cause
-        NO_SERVICE.setOnCheckedChangeListener {_, _ ->
-            if (NO_SERVICE.isChecked) {
-                adapter.filter.filter("NO_SERVICE")
-            } else if (!NO_SERVICE.isChecked) {
-                adapter.filter.filter("")
+        listOfCheckBoxes.forEach {
+            val name = it.text.toString()
+            it.setOnCheckedChangeListener { _, _ ->
+                if (it.isChecked) {
+                    adapter.filter.filter(name)
+                } else if (!it.isChecked) {
+                    adapter.filter.filter("")
+                }
             }
         }
-        REDUCED_SERVICE.setOnCheckedChangeListener {_, _ ->
-            if (REDUCED_SERVICE.isChecked) {
-                adapter.filter.filter("REDUCED_SERVICE")
-            } else if (!REDUCED_SERVICE.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        SIGNIFICANT_DELAYS.setOnCheckedChangeListener {_, _ ->
-            if (SIGNIFICANT_DELAYS.isChecked) {
-                adapter.filter.filter("SIGNIFICANT_DELAYS")
-            } else if (!SIGNIFICANT_DELAYS.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        DETOUR.setOnCheckedChangeListener {_, _ ->
-            if (DETOUR.isChecked) {
-                adapter.filter.filter("DETOUR")
-            } else if (!DETOUR.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        ADDITIONAL_SERVICE.setOnCheckedChangeListener {_, _ ->
-            if (ADDITIONAL_SERVICE.isChecked) {
-                adapter.filter.filter("ADDITIONAL_SERVICE")
-            } else if (!ADDITIONAL_SERVICE.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        MODIFIED_SERVICE.setOnCheckedChangeListener {_, _ ->
-            if (MODIFIED_SERVICE.isChecked) {
-                adapter.filter.filter("MODIFIED_SERVICE")
-            } else if (!MODIFIED_SERVICE.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        OTHER_EFFECT.setOnCheckedChangeListener {_, _ ->
-            if (OTHER_EFFECT.isChecked) {
-                adapter.filter.filter("OTHER_EFFECT")
-            } else if (!OTHER_EFFECT.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        UNKNOWN_EFFECT.setOnCheckedChangeListener {_, _ ->
-            if (UNKNOWN_EFFECT.isChecked) {
-                adapter.filter.filter("UNKNOWN_EFFECT")
-            } else if (!UNKNOWN_EFFECT.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        STOP_MOVED.setOnCheckedChangeListener {_, _ ->
-            if (STOP_MOVED.isChecked) {
-                adapter.filter.filter("STOP_MOVED")
-            } else if (!STOP_MOVED.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-        NO_EFFECT.setOnCheckedChangeListener {_, _ ->
-            if (NO_EFFECT.isChecked) {
-                adapter.filter.filter("NO_EFFECT")
-            } else if (!NO_EFFECT.isChecked) {
-                adapter.filter.filter("")
-            }
-        }
-
-
-
-
-
     }
 
     private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
