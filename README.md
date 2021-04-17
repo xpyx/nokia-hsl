@@ -33,17 +33,8 @@ Used libraries:
     - row should look like:
     `HERE_MAPS_API_KEY="<API KEY>"`
 
-#### To run the Realtime Transport Updates API server
 
-Prerequisites: [Node](https://nodejs.org/en/) & [Npm](https://www.npmjs.com/)
+---
 
-You will need to set the connection variables in the .env file
-
-0. `cd Realtime-Transport-Updates-API`
-1. `cp .env.example .env`
-2. Edit the `.env` file. Add the Azure secrets from this sheet: https://docs.google.com/spreadsheets/d/1x4Js820tdTT7_A2OFcWZzXjuSML6FdiHpvU0n0_NLWQ
-3. If you can't access the sheet, contact ville.pystynen@metropolia.fi
-4. `npm run prod`
-5. Go to (http://127.0.0.1:3000/api/routes/1001) to see route information
 
 [Link to tools and instructions no more in use](README_OLD.md)
