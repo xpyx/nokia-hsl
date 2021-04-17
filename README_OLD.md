@@ -46,4 +46,3 @@ You will need to set the connection variables in the .env file
 4. `npm run prod`
 5. Go to (http://127.0.0.1:3000/api/routes/1001) to see route information
 
-[Link to tools and instructions no more in use](README_OLD.md)
