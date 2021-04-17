@@ -1,6 +1,6 @@
-query StopTimesList {
-
-    stops(ids: ["HSL:1140447", "HSL:1140446", "HSL:1", "HSL:2"]) {
+query StopTimesList($ids: [String]) {
+    # ids is a list of bus stop id strings
+    stops(ids: $ids) {
         name
         stoptimesWithoutPatterns {
             scheduledArrival
