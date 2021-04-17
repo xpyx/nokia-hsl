@@ -205,9 +205,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
         job.join()
-        delay(10000)
-        Log.d("DBG", "Delay 10000ms")
-
+        delay(1000) // wait for connection to be established
         mMQTTViewModel.receiveMessages(this)
     }
 

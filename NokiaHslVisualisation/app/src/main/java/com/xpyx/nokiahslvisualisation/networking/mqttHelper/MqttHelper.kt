@@ -18,8 +18,6 @@ class MqttHelper {
 
     fun connect(applicationContext: Context) {
 
-        Log.d("DBG", "Start MQTT connection try")
-
         mqttAndroidClient = MqttAndroidClient(
             applicationContext,
             HSL_MQTT_HOST,
@@ -30,7 +28,6 @@ class MqttHelper {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Log.d("DBG", "MQTT connection ready")
                     subscribe(topic)
                     //connectionStatus = true
                     // Give your callback on connection established here
@@ -54,7 +51,6 @@ class MqttHelper {
             mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on Subscription here
-                    Log.d("DBG", "MQTT subscription ready")
 
                 }
 
@@ -124,6 +120,4 @@ class MqttHelper {
         mqttAndroidClient.unregisterResources()
         mqttAndroidClient.disconnect()
     }
-
-
 }
