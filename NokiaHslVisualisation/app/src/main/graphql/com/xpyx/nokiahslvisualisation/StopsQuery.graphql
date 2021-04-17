@@ -1,0 +1,32 @@
+query StopTimesList {
+
+    stops(ids: ["HSL:1140447", "HSL:1140446", "HSL:1", "HSL:2"]) {
+        name
+        stoptimesWithoutPatterns {
+            scheduledArrival
+            realtimeArrival
+            arrivalDelay
+            scheduledDeparture
+            realtimeDeparture
+            departureDelay
+            realtime
+            realtimeState
+            serviceDay
+            headsign
+            trip {
+                gtfsId
+                route {
+                    gtfsId
+                    shortName
+                    longName
+                    mode
+                    type
+                    desc
+                    url
+                }
+                serviceId
+                activeDates
+            }
+        }
+    }
+}
