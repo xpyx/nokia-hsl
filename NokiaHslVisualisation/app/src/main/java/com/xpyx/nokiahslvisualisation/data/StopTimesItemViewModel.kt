@@ -10,17 +10,17 @@ import kotlinx.coroutines.launch
 class StopTimesItemViewModel(application: Application) : AndroidViewModel(application) {
 
     val readAllData: LiveData<List<StopTimesItem>>
-    private val repository: StopTimesRepository
+    private val itemRepository: StopTimesItemRepository
 
     init {
         val stopTimesItemDao = StopTimesDatabase.getDatabase(application).stopTimesDao()
-        repository = StopTimesRepository(stopTimesItemDao)
-        readAllData = repository.readAllData
+        itemRepository = StopTimesItemRepository(stopTimesItemDao)
+        readAllData = itemRepository.readAllData
     }
 
     fun addStopItem(stopTimesItem: StopTimesItem){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addStopTimesItem(stopTimesItem)
+            itemRepository.addStopTimesItem(stopTimesItem)
         }
     }
 
@@ -28,10 +28,10 @@ class StopTimesItemViewModel(application: Application) : AndroidViewModel(applic
     suspend fun checkIfExists(id: Int): Boolean {
         var exists = false
         val job = viewModelScope.launch(Dispatchers.IO) {
-            exists = repository.checkIfExists(id)
+            exists = itemRepository.checkIfExists(id)
         }
         job.join()
         return exists
     }
-    
+
 }

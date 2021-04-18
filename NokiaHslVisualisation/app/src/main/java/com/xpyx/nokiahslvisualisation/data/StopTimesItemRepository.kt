@@ -2,7 +2,7 @@ package com.xpyx.nokiahslvisualisation.data
 
 import androidx.lifecycle.LiveData
 
-class StopTimesRepository(private val stopTimesDao: StopTimesDao) {
+class StopTimesItemRepository(private val stopTimesDao: StopTimesDao) {
 
     val readAllData: LiveData<List<StopTimesItem>> = stopTimesDao.readAllData()
 
@@ -10,8 +10,8 @@ class StopTimesRepository(private val stopTimesDao: StopTimesDao) {
         stopTimesDao.addStopTimesItem(stopTimesItem)
     }
 
-    suspend fun checkIfExists(id: Int): Boolean {
-        return stopTimesDao.productExists(id)
+    suspend fun checkIfExists(itemId: Int): Boolean {
+        return stopTimesDao.productExists(itemId)
     }
 
 }

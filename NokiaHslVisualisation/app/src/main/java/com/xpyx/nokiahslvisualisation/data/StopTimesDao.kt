@@ -12,10 +12,10 @@ interface StopTimesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addStopTimesItem(stopTimesItem: StopTimesItem)
 
-    @Query("SELECT * FROM stoptimesitems ORDER BY id DESC")
+    @Query("SELECT * FROM stoptimesitems ORDER BY itemId DESC")
     fun readAllData(): LiveData<List<StopTimesItem>>
 
-    @Query("SELECT EXISTS (SELECT 1 FROM stoptimesitems WHERE id = :id)")
-    suspend fun productExists(id: Int): Boolean
+    @Query("SELECT EXISTS (SELECT 1 FROM stoptimesitems WHERE itemId = :itemId)")
+    suspend fun productExists(itemId: Int): Boolean
 
 }

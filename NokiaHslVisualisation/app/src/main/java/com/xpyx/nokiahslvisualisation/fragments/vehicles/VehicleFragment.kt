@@ -88,21 +88,13 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // Get late busses info and apply to MQTT topic
 
 
+
+
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
         val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
         mMQTTViewModel =
             ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
-
-        // StopTimes viewmodel init
-        val stopTimesRepository = StopTimesRepository()
-        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
-        mStopTimesViewModel =
-            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
-
-/*        mStopTimesViewModel.getStopTimesData().observe(viewLifecycleOwner, { traffic ->
-            Log.d("DBG", mStopTimesViewModel.myStopTimesApiResponse.value?.data.toString())
-        })*/
 
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {

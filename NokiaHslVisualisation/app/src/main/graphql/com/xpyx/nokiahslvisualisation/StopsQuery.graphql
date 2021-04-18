@@ -1,5 +1,6 @@
 query StopTimesList {
     stops {
+        id
         name
         stoptimesWithoutPatterns {
             scheduledArrival
