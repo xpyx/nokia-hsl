@@ -86,7 +86,7 @@ class MqttHelper {
                     // Here I update the fragment that shows the data
                     vehicleFragment.updateUI(vehiclePosition)
 
-                    Log.d("DBG", vehiclePosition.toString())
+                    //Log.d("DBG", vehiclePosition.toString())
 
                 } catch (e: Exception) {
                     // Give your callback on error here

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,8 +37,11 @@ import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
+import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
+import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
+import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -45,11 +49,8 @@ import kotlinx.coroutines.launch
 
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
-    private var counter: Int = 0
-    private lateinit var textViewNumMsgs: TextView
-    private lateinit var textViewMsgPayload: TextView
     private lateinit var mMQTTViewModel: MQTTViewModel
-
+    private lateinit var mStopTimesViewModel: StopTimesViewModel
     private lateinit var listener: FragmentActivity
     private var mapView: MapView? = null
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
@@ -84,17 +85,24 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
 
-        textViewNumMsgs = view.findViewById(R.id.textViewNumMsgs)
-        textViewMsgPayload = view.findViewById(R.id.textViewMsgPayload)
-        ("Number of MQTT messages: $counter").also { textViewNumMsgs.text = it }
-
         // Get late busses info and apply to MQTT topic
 
 
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
         val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
-        mMQTTViewModel = ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
+        mMQTTViewModel =
+            ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
+
+        // StopTimes viewmodel init
+        val stopTimesRepository = StopTimesRepository()
+        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
+        mStopTimesViewModel =
+            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
+
+/*        mStopTimesViewModel.getStopTimesData().observe(viewLifecycleOwner, { traffic ->
+            Log.d("DBG", mStopTimesViewModel.myStopTimesApiResponse.value?.data.toString())
+        })*/
 
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {
@@ -105,11 +113,18 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
-        mapboxMap.setStyle(Style.Builder().fromUri(
-            "asset://local_style")) {
+        mapboxMap.setStyle(
+            Style.Builder().fromUri(
+                "asset://local_style"
+            )
+        ) {
 
             val source = RasterSource(
-                "map", TileSet("https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png", "mapbox://mapid")
+                "map",
+                TileSet(
+                    "https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png",
+                    "mapbox://mapid"
+                )
             )
 
             val position = CameraPosition.Builder()
@@ -182,19 +197,28 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-        Toast.makeText(listener, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show()
+        Toast.makeText(listener, R.string.user_location_permission_explanation, Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
             enableLocationComponent(mapboxMap.style!!)
         } else {
-            Toast.makeText(listener, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                listener,
+                R.string.user_location_permission_not_granted,
+                Toast.LENGTH_LONG
+            ).show()
 
         }
     }
@@ -216,7 +240,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             var d = vehiclePosition.VP.long
         }
 
-        mapView?.getMapAsync{ mapbox ->
+        mapView?.getMapAsync { mapbox ->
 
             mapbox.addMarker(
                 MarkerOptions()
@@ -249,6 +273,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mapView?.onStop()
         mMQTTViewModel.destroy()
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
