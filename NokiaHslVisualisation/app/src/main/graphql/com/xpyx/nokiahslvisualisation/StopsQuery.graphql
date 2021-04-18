@@ -1,6 +1,5 @@
-query StopTimesList($ids: [String]) {
-    # ids is a list of bus stop id strings
-    stops(ids: $ids) {
+query StopTimesList {
+    stops {
         name
         stoptimesWithoutPatterns {
             scheduledArrival

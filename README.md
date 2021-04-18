@@ -32,7 +32,7 @@ Used libraries:
 2. Add here maps APIkey to local.properties
     - row should look like:
     `HERE_MAPS_API_KEY="<API KEY>"`
-
+3. Preferably use your device's mobile data. Some network firewalls block MQTT traffic.
 
 ---
 

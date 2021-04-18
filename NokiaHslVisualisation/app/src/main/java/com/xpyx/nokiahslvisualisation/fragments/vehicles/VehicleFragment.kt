@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -89,6 +88,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         textViewMsgPayload = view.findViewById(R.id.textViewMsgPayload)
         ("Number of MQTT messages: $counter").also { textViewNumMsgs.text = it }
 
+        // Get late busses info and apply to MQTT topic
+
+
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
         val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
@@ -96,9 +98,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {
-
-            Log.d("DBG", "receiveMQTTMessages")
-
             receiveMQTTMessages()
         }
     }
