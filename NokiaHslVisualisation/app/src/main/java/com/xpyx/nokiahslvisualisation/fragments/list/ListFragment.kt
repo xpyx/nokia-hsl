@@ -18,17 +18,30 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.slider.RangeSlider
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.R.*
+import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModel
+import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModelFactory
+import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
+import com.xpyx.nokiahslvisualisation.repository.TrafficRepository
 import com.xpyx.nokiahslvisualisation.utils.Constants
 import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ListFragment : Fragment(){
 
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var hereTrafficViewModelTraffic: TrafficApiViewModel
+    private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
+    private val trafficIdApiList = mutableListOf<Long>()
+    private lateinit var adapter: TrafficListAdapter
     private lateinit var viewHere: View
+    private val trafficIdRoomList = mutableListOf<Long>()
     private val listOfFilters = mutableMapOf<String, Any>()
     private val listOfBooleanFilterNames = listOf(
             "critical",
@@ -39,15 +52,14 @@ class ListFragment : Fragment(){
             "incident",
             "event"
     )
-
     private val listOfDistanceFilterNames = listOf(
             "min_lat_difference",
             "max_lat_difference",
             "min_lon_difference",
             "max_lon_difference"
     )
-
-
+    private var listOfCheckBoxes = listOf<CheckBox>()
+    private var listOfRadioButtons = listOf<RadioButton>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +68,7 @@ class ListFragment : Fragment(){
         // Inflate the layout for this fragment
         viewHere = inflater.inflate(layout.fragment_list, container, false)
 
-        val adapter = context?.let { TrafficListAdapter(requireContext()) }
+        adapter = context?.let { TrafficListAdapter(requireContext()) }!!
 
         // Recycler view
         recyclerView = viewHere.findViewById(R.id.bus_recycler_view)
@@ -67,29 +79,45 @@ class ListFragment : Fragment(){
 
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
         mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
-            adapter?.setData(traffic)
+            adapter.setData(traffic)
+            for (item in traffic) {
+                trafficIdRoomList.add(item.traffic_item_id!!)
+            }
         })
-
-
         return viewHere
     }
 
     @SuppressLint("LogNotTimber")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val listOfCheckBoxes = listOf<CheckBox>(
+        listOfCheckBoxes = listOf<CheckBox>(
                 critical_checkbox,
                 major_checkbox,
                 minor_checkbox,
                 road_closed_checkbox,
                 response_vehicles_checkbox
         )
-        val listOfRadioButtons = listOf<RadioButton>(
+        listOfRadioButtons = listOf<RadioButton>(
                 incident_radio_button,
                 event_radio_button
         )
-        loadData()
 
+
+        // HERE MAPS TRAFFIC API view model setup
+        val repository = TrafficRepository()
+        val viewModelFactory = TrafficApiViewModelFactory(repository)
+        hereTrafficViewModelTraffic =
+                ViewModelProvider(this, viewModelFactory).get(TrafficApiViewModel::class.java)
+        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
+        hereTrafficViewModelTraffic.getTrafficData(hereTrafficApiKey)
+        hereTrafficViewModelTraffic.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                insertToTrafficDatabase(response)
+            } else {
+                Log.d("DBG", response.errorBody().toString())
+            }
+        })
+        loadData()
 
         distance_slider.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener{
             override fun onStartTrackingTouch(slider: RangeSlider) {
@@ -102,16 +130,12 @@ class ListFragment : Fragment(){
                 listOfFilters["max_lat_difference"] = convertToCoordinates()[1]
                 listOfFilters["min_lon_difference"] = convertToCoordinates()[0]
                 listOfFilters["max_lon_difference"] = convertToCoordinates()[1]
-
-                Log.d("FILTERLIST", "$listOfFilters")
             }
         })
 
         clear_all_button.setOnClickListener{
 
                 radio_group_criticality.clearCheck()
-                distance_slider.valueFrom = 0F
-                distance_slider.valueTo = 150F
                 critical_checkbox.isChecked = false
                 major_checkbox.isChecked = false
                 minor_checkbox.isChecked = false
@@ -127,18 +151,10 @@ class ListFragment : Fragment(){
             listOfFilters["max_lat_difference"] = convertToCoordinates()[1]
             listOfFilters["min_lon_difference"] = convertToCoordinates()[0]
             listOfFilters["max_lon_difference"] = convertToCoordinates()[1]
-            Log.d("FILTERLIST", "$listOfFilters")
         }
-
 
         listOfCheckBoxes.forEach {
-
             val name = it.text.toString().toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
-            it.setOnCheckedChangeListener  {_, isChecked ->
-                listOfFilters[name] = isChecked
-                Log.d("FILTERLIST", "$listOfFilters")
-            }
-            Log.d("filternames", name)
             val value = listOfFilters[name] as Boolean
             if (value) {
                 it.isChecked = true
@@ -146,14 +162,20 @@ class ListFragment : Fragment(){
             } else {
                 it.isChecked = false
                 it.jumpDrawablesToCurrentState()
+            }
+
+            it.setOnCheckedChangeListener  {_, _ ->
+                listOfFilters[name] = it.isChecked
+                if (it.isChecked) {
+                    adapter.filter.filter(name)
+                } else if (!it.isChecked) {
+                    adapter.filter.filter("")
+                }
             }
         }
+
         listOfRadioButtons.forEach {
             val name = it.text.toString().toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
-            it.setOnCheckedChangeListener {_, isChecked ->
-                listOfFilters[name] = isChecked
-                Log.d("FILTERLIST", "$listOfFilters")
-            }
             val value = listOfFilters[name] as Boolean
             if (value) {
                 it.isChecked = true
@@ -161,6 +183,15 @@ class ListFragment : Fragment(){
             } else {
                 it.isChecked = false
                 it.jumpDrawablesToCurrentState()
+            }
+
+            it.setOnCheckedChangeListener {_, _ ->
+                listOfFilters[name] = it.isChecked
+                if (it.isChecked) {
+                    adapter.filter.filter(name)
+                } else if (!it.isChecked) {
+                    adapter.filter.filter("")
+                }
             }
         }
     }
@@ -174,6 +205,66 @@ class ListFragment : Fragment(){
         val differenceMin = coordinateList[0]*110.574
         val differenceMax = coordinateList[1]*110.574
         return listOf(differenceMin.toFloat(), differenceMax.toFloat())
+    }
+    private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
+        var exists: Boolean
+        val trafficItemList = response.body()!!.trafficDataTrafficItems
+        if (trafficItemList != null) {
+            for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
+                trafficIdApiList.add(item.trafficItemId!!)
+
+                GlobalScope.launch(context = Dispatchers.IO) {
+                    exists = mTrafficViewModel.checkIfExists(item.trafficItemId)
+
+                    if (!exists) {
+
+                        val trafficItemId = item.trafficItemId
+                        val trafficItemStatusShortDesc = item.trafficItemStatusShortDesc
+                        val trafficItemTypeDesc = item.trafficItemTypeDesc
+                        val startTime = item.trafficItemStartTime
+                        val endTime = item.trafficItemEndTime
+                        val criticality = item.trafficItemCriticality
+                        val verified = item.trafficItemVerified
+                        val rdsTmcLocations = item.trafficitemRDSTmclocations
+                        val location = item.trafficItemLocation
+                        val trafficItemDetail = item.trafficItemDetail
+                        val trafficItemDescriptionElement = item.trafficItemDescriptionElement
+
+                        val traffic = DataTrafficItem(
+                                0,
+                                trafficItemId,
+                                trafficItemStatusShortDesc,
+                                trafficItemTypeDesc,
+                                startTime,
+                                endTime,
+                                criticality,
+                                verified,
+                                rdsTmcLocations,
+                                location,
+                                trafficItemDetail,
+                                trafficItemDescriptionElement
+                        )
+
+
+                        mTrafficViewModel.addTrafficData(traffic)
+                        Log.d("TRAFFIC", "Successfully added traffic item: $trafficItemId")
+
+                    }
+                }
+            }
+        }
+
+        // Remove ended traffic items
+        if (trafficIdApiList.isNotEmpty() && trafficIdRoomList.isNotEmpty()) {
+            for (item in trafficIdRoomList) {
+                if (trafficIdApiList.contains(item)) {
+                    GlobalScope.launch(context = Dispatchers.IO) {
+                        mTrafficViewModel.removeIfNotExists(item)
+                        Log.d("REMOVED_ITEM", "Removed item with id: $item")
+                    }
+                }
+            }
+        }
     }
 
 

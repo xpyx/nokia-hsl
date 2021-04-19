@@ -3,19 +3,24 @@ package com.xpyx.nokiahslvisualisation.fragments.list
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
+import java.util.*
 
-class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<TrafficListAdapter.TrafficViewHolder>() {
+class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<TrafficListAdapter.TrafficViewHolder>(), Filterable {
 
-    private var trafficList = emptyList<DataTrafficItem>()
+    private var trafficList = mutableListOf<DataTrafficItem>()
+    private var trafficListFull = mutableListOf<DataTrafficItem>()
 
     class TrafficViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -41,7 +46,47 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
     }
 
     fun setData(traffic: List<DataTrafficItem>) {
-        this.trafficList = traffic
+        this.trafficList = traffic as MutableList<DataTrafficItem>
+        this.trafficListFull = traffic.toMutableList()
         notifyDataSetChanged()
+    }
+
+    override fun getFilter(): Filter {
+        return searchFilter
+    }
+
+    private val searchFilter: Filter = object : Filter() {
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            trafficList = results?.values as MutableList<DataTrafficItem>
+            notifyDataSetChanged()
+        }
+
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+
+            val filteredTrafficList = mutableListOf<DataTrafficItem>()
+            if ((constraint == null || constraint.isEmpty())) {
+                filteredTrafficList.addAll(trafficListFull)
+
+            } else {
+                val filterPattern: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
+                for (item in trafficListFull) {
+
+
+                    when (filterPattern) {
+                        "response_vehicles" -> if (item.traffic_item_detail?.trafficItemDetailIncident != null && item.traffic_item_detail.trafficItemDetailIncident.responseVehicles!!) filteredTrafficList.add(item)
+                        "road_closed" -> if (item.traffic_item_detail?.trafficItemDetailRoadClosed!!) filteredTrafficList.add(item)
+                        "incident" -> if (item.traffic_item_detail?.trafficItemDetailIncident != null && !item.traffic_item_detail.trafficItemDetailIncident.equals("")) filteredTrafficList.add(item)
+                        "event" -> if (item.traffic_item_detail?.trafficItemDetailEvent != null && !item.traffic_item_detail.trafficItemDetailEvent.equals("")) filteredTrafficList.add(item)
+                        "major" -> if (item.criticality?.ityDescription?.contains("major")!!) filteredTrafficList.add(item)
+                        "critical" -> if (item.criticality?.ityDescription?.contains("critical")!!) filteredTrafficList.add(item)
+                        "minor" -> if (item.criticality?.ityDescription?.contains("minor")!!) filteredTrafficList.add(item)
+                    }
+                    Log.d("FILTER", filterPattern)
+                }
+            }
+            val results = FilterResults()
+            results.values = filteredTrafficList
+            return results
+        }
     }
 }
