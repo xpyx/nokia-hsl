@@ -80,6 +80,7 @@ class ListFragment : Fragment(){
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
         mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
             adapter.setData(traffic)
+            checkFilters()
             for (item in traffic) {
                 trafficIdRoomList.add(item.traffic_item_id!!)
             }
@@ -118,6 +119,7 @@ class ListFragment : Fragment(){
             }
         })
         loadData()
+        checkFilters()
 
         distance_slider.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener{
             override fun onStartTrackingTouch(slider: RangeSlider) {
@@ -151,6 +153,7 @@ class ListFragment : Fragment(){
             listOfFilters["max_lat_difference"] = convertToCoordinates()[1]
             listOfFilters["min_lon_difference"] = convertToCoordinates()[0]
             listOfFilters["max_lon_difference"] = convertToCoordinates()[1]
+            checkFilters()
         }
 
         listOfCheckBoxes.forEach {
@@ -166,12 +169,9 @@ class ListFragment : Fragment(){
 
             it.setOnCheckedChangeListener  {_, _ ->
                 listOfFilters[name] = it.isChecked
-                if (it.isChecked) {
-                    adapter.filter.filter(name)
-                } else if (!it.isChecked) {
-                    adapter.filter.filter("")
-                }
+                checkFilters()
             }
+
         }
 
         listOfRadioButtons.forEach {
@@ -187,11 +187,7 @@ class ListFragment : Fragment(){
 
             it.setOnCheckedChangeListener {_, _ ->
                 listOfFilters[name] = it.isChecked
-                if (it.isChecked) {
-                    adapter.filter.filter(name)
-                } else if (!it.isChecked) {
-                    adapter.filter.filter("")
-                }
+                checkFilters()
             }
         }
     }
@@ -294,16 +290,35 @@ class ListFragment : Fragment(){
         }
     }
 
+    private fun checkFilters() {
+        var filterText = ""
+        for (item in listOfBooleanFilterNames) {
+            val name = item
+            val value = listOfFilters[item] as Boolean
+            if (value) {
+                filterText += "$name,"
+            }
+        }
+        Log.d("FILTERTEXT", "This is filterText $filterText")
+        adapter.filter.filter(filterText)
+    }
+
     private fun loadData() {
         val sPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_FILTERS, MODE_PRIVATE)
         for (item in listOfBooleanFilterNames) {
             listOfFilters[item] = sPreferences?.getBoolean(item, false) as Boolean
         }
         for (item in listOfDistanceFilterNames) {
-            listOfFilters[item] = sPreferences?.getFloat(item, 0.0F)?.toDouble() as Double
+            if (item == "min_lat_difference" || item == "min_lon_difference"){
+                listOfFilters[item] = sPreferences?.getFloat(item, 0.0F)?.toDouble() as Double
+            } else {
+                listOfFilters[item] = sPreferences?.getFloat(item, 1.3565576076507568F)?.toDouble() as Double
+            }
         }
         val list = listOf(listOfFilters["min_lat_difference"] as Double, listOfFilters["max_lat_difference"] as Double)
         distance_slider.setValues(convertFromCoordinates(list)[0], convertFromCoordinates(list)[1])
+
+        checkFilters()
     }
 
 

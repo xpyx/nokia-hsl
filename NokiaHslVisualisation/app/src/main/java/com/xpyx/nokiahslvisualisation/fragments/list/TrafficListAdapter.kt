@@ -1,6 +1,7 @@
 package com.xpyx.nokiahslvisualisation.fragments.list
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -55,31 +56,43 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
         return searchFilter
     }
 
+
+
     private val searchFilter: Filter = object : Filter() {
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             trafficList = results?.values as MutableList<DataTrafficItem>
             notifyDataSetChanged()
         }
 
+        @SuppressLint("LogNotTimber")
         override fun performFiltering(constraint: CharSequence?): FilterResults {
 
             val filteredTrafficList = mutableListOf<DataTrafficItem>()
-            if ((constraint == null || constraint.isEmpty())) {
+            if (constraint.isNullOrEmpty()) {
                 filteredTrafficList.addAll(trafficListFull)
 
             } else {
                 val filterPattern: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
                 for (item in trafficListFull) {
-
-
-                    when (filterPattern) {
-                        "response_vehicles" -> if (item.traffic_item_detail?.trafficItemDetailIncident != null && item.traffic_item_detail.trafficItemDetailIncident.responseVehicles!!) filteredTrafficList.add(item)
-                        "road_closed" -> if (item.traffic_item_detail?.trafficItemDetailRoadClosed!!) filteredTrafficList.add(item)
-                        "incident" -> if (item.traffic_item_detail?.trafficItemDetailIncident != null && !item.traffic_item_detail.trafficItemDetailIncident.equals("")) filteredTrafficList.add(item)
-                        "event" -> if (item.traffic_item_detail?.trafficItemDetailEvent != null && !item.traffic_item_detail.trafficItemDetailEvent.equals("")) filteredTrafficList.add(item)
-                        "major" -> if (item.criticality?.ityDescription?.contains("major")!!) filteredTrafficList.add(item)
-                        "critical" -> if (item.criticality?.ityDescription?.contains("critical")!!) filteredTrafficList.add(item)
-                        "minor" -> if (item.criticality?.ityDescription?.contains("minor")!!) filteredTrafficList.add(item)
+                    if (filterPattern.contains(item.criticality?.ityDescription.toString())) {
+                        filteredTrafficList.add(item)
+                        Log.d("FILTERADAPTER", "Added: ${item.traffic_item_id}")
+                    }
+                    if (filterPattern.contains("response_vehicles")) {
+                        if (item.traffic_item_detail?.trafficItemDetailIncident != null && item.traffic_item_detail.trafficItemDetailIncident.responseVehicles!!) filteredTrafficList.add(item)
+                        Log.d("FILTERADAPTER", "Added: ${item.traffic_item_id}")
+                    }
+                    if (filterPattern.contains("road_closed")) {
+                        if (item.traffic_item_detail?.trafficItemDetailRoadClosed!!) filteredTrafficList.add(item)
+                        Log.d("FILTERADAPTER", "Added: ${item.traffic_item_id}")
+                    }
+                    if (filterPattern.contains("incident")) {
+                        if (item.traffic_item_detail?.trafficItemDetailIncident != null && !item.traffic_item_detail.trafficItemDetailIncident.equals("")) filteredTrafficList.add(item)
+                        Log.d("FILTERADAPTER", "Added: ${item.traffic_item_id}")
+                    }
+                    if (filterPattern.contains("event" )){
+                        if (item.traffic_item_detail?.trafficItemDetailEvent != null && !item.traffic_item_detail.trafficItemDetailEvent.equals("")) filteredTrafficList.add(item)
+                        Log.d("FILTERADAPTER", "Added: ${item.traffic_item_id}")
                     }
                     Log.d("FILTER", filterPattern)
                 }
