@@ -5,7 +5,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".MainActivity">
+tools:context=".MainActivity"
+    android:theme="@style/Theme.NokiaHslVisualisation">
 
 
 <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -16,8 +17,9 @@ tools:context=".MainActivity">
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:menu="@menu/my_navigation_items"
-    app:itemIconTint="@color/black"
-    app:itemTextColor="@color/black"
+    app:backgroundTint="?attr/colorOnPrimary"
+    app:itemIconTint="?attr/colorOnSecondary"
+    app:itemTextColor="?attr/colorOnSecondary"
     />
 
 

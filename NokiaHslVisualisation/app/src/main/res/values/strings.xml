@@ -66,4 +66,33 @@
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
     <string name="menu_positions">Vehicles</string>
     <string name="menu_vehicles">Vehicles</string>
+    <string name="alert_filtering_preferences">Alert filtering preferences</string>
+
+    // Traffic Filters
+    <string name="criticality_menu_item">Criticality</string>
+    <string name="critical_menu_item">Critical</string>
+    <string name="major_menu_item">Major</string>
+    <string name="minor_menu_item">Minor</string>
+    <string name="clear_radio_button_text">Clear radio</string>
+    <string name="clear_all_button_text">Clear All</string>
+
+
+    <string name="distance_menu_item">Distance (km)</string>
+    <string name="minimum_distance_menu_item">Minimum distance</string>
+    <string name="maximum_distance_menu_item">Maximum distance</string>
+
+    <string name="type_menu_item">Traffic cause type</string>
+    <string name="event_menu_item">Event</string>
+    <string name="incident_menu_item">Incident</string>
+
+    <string name="miscellaneous_menu_item">Miscellaneous</string>
+    <string name="road_closed_menu_item">Road closed</string>
+    <string name="response_vehicles_menu_item">Response vehicles</string>
+    <string name="apply_button_menu_item">Apply</string>
+
+    // AR
+    <string name="user_location_permission_explanation">WIP</string>
+    <string name="user_location_permission_not_granted">Location permission not granted</string>
+    <string name="distance_hint">e.g. 10</string>
+    <string name="CAUSE_MODIFIED_SERVICE">Modified service</string>
 </resources>

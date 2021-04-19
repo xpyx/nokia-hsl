@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.action_home,
+                R.id.action_vehicles,
                 R.id.action_map,
                 R.id.action_list,
                 R.id.ar_view,

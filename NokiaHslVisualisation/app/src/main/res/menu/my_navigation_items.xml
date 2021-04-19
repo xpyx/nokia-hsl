@@ -3,21 +3,26 @@
 
     <item android:id="@+id/action_home"
         android:title="@string/menu_home"
-        android:icon="@drawable/home_icon" />
+        android:icon="@drawable/home_icon"
+        android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/action_vehicles"
         android:title="@string/menu_positions"
-        android:icon="@drawable/bus_icon_image_view_black" />
+        android:icon="@drawable/bus_icon_image_view_black"
+        android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/action_map"
         android:title="@string/menu_map"
-        android:icon="@drawable/map_icon" />
+        android:icon="@drawable/map_icon"
+        android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/action_list"
         android:title="@string/menu_list"
-        android:icon="@drawable/list_icon" />
+        android:icon="@drawable/list_icon"
+        android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/ar_view"
         android:title="@string/menu_ar"
-        android:icon="@drawable/ar_icon" />
+        android:icon="@drawable/ar_icon"
+        android:iconTint="@color/design_default_color_on_secondary"/>
 </menu>

@@ -17,5 +17,5 @@ data class TrafficItemDetail (
 	@SerializedName("ROAD_CLOSED") val trafficItemDetailRoadClosed: Boolean? = null,
 	@SerializedName("EVENT") val trafficItemDetailEvent: Event?,
 	@SerializedName("INCIDENT") val trafficItemDetailIncident: Incident?,
-	@SerializedName("ALERTC") val trafficItemDetailAlertc: List<AlertCElement>? = null
+	@SerializedName("ALERTC") val trafficItemDetailAlertC: List<AlertCElement>? = null
 )

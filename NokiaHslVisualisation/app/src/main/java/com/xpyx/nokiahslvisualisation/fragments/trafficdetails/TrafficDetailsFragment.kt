@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.xpyx.nokiahslvisualisation.R
@@ -100,7 +101,7 @@ class TrafficDetailsFragment : Fragment() {
 
                 val locationText: String = if (defined != null) {
                     if (defined.definedOrigin?.definedLocationDirection != null) {
-                        "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin?.definedLocationDirection?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                        "From: ${defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin.definedLocationDirection.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                     } else {
                         "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                     }
@@ -123,7 +124,7 @@ class TrafficDetailsFragment : Fragment() {
         marker.position = GeoPoint(lat, lon)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         // Icon made by Freepik from www.flaticon.com
-        marker.icon = requireContext().resources.getDrawable(R.drawable.map_warning_icon)
+        marker.icon = ResourcesCompat.getDrawable(resources,R.drawable.map_warning_icon, requireContext().theme)
         marker.setInfoWindow(null)
         map.overlays.add(marker)
 
