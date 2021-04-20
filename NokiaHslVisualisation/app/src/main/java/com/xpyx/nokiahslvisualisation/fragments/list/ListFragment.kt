@@ -293,13 +293,11 @@ class ListFragment : Fragment(){
     private fun checkFilters() {
         var filterText = ""
         for (item in listOfBooleanFilterNames) {
-            val name = item
             val value = listOfFilters[item] as Boolean
             if (value) {
-                filterText += "$name,"
+                filterText += "$item;"
             }
         }
-        Log.d("FILTERTEXT", "This is filterText $filterText")
         adapter.filter.filter(filterText)
     }
 
