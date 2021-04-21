@@ -1,7 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -15,21 +14,12 @@ import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.StopTimesListQuery
 import com.xpyx.nokiahslvisualisation.api.*
 import com.xpyx.nokiahslvisualisation.data.*
-import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.AlertRepository
-import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import com.xpyx.nokiahslvisualisation.api.AlertViewModel
 import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
-import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModel
-import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
-import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
-import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
-import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
-import com.xpyx.nokiahslvisualisation.repository.AlertRepository
-import com.xpyx.nokiahslvisualisation.repository.TrafficRepository
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -39,12 +29,10 @@ class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
-    private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
     private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var adapter: AlertListAdapter
-
 
     // Set search at the top menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -89,8 +77,6 @@ class HomeFragment : Fragment() {
             adapter.setData(alerts)
         })
 
-
-
         // Set top bar search
         setHasOptionsMenu(true)
 
@@ -110,7 +96,7 @@ class HomeFragment : Fragment() {
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
             } else {
-//                Log.d("DBG", response.toString())
+                // Log.d("DBG", response.toString())
             }
         })
 
@@ -122,10 +108,10 @@ class HomeFragment : Fragment() {
         mStopTimesApiViewModel.getStopTimesData()
         mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null) {
-//                Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
+                // Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
                 insertToStopTimesDatabase(response)
             } else {
-//                Log.d("DBG", response.toString())
+                // Log.d("DBG", response.toString())
             }
         })
 
