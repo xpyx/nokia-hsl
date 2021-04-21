@@ -3,10 +3,22 @@ package com.xpyx.nokiahslvisualisation.utils
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.xpyx.nokiahslvisualisation.StopTimesListQuery
 import com.xpyx.nokiahslvisualisation.model.traffic.*
 import java.util.*
 
 class Converters {
+
+
+    @TypeConverter
+    fun stopsToJson(value: MutableList<StopTimesListQuery.Stop>?) = Gson().toJson(value)
+    @TypeConverter
+    fun stopsToList(value: String) = Gson().fromJson(value, Array<StopTimesListQuery.Stop>::class.java).toMutableList()
+
+    @TypeConverter
+    fun stoptimesForPatternsToJson(value: MutableList<StopTimesListQuery.StoptimesForPattern>?) = Gson().toJson(value)
+    @TypeConverter
+    fun stoptimesForPatternsToList(value: String) = Gson().fromJson(value, Array<StopTimesListQuery.StoptimesForPattern>::class.java).toMutableList()
 
     @TypeConverter
     fun trafficItemDescsToJson(value: MutableList<TrafficItemDescriptionElement>?) = Gson().toJson(value)

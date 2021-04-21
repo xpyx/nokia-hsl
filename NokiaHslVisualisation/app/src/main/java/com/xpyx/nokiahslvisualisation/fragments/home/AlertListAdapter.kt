@@ -110,5 +110,9 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
             return results
         }
     }
+
+
+
+
 }
 
