@@ -19,6 +19,17 @@ import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.AlertRepository
 import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
+import com.xpyx.nokiahslvisualisation.api.AlertViewModel
+import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
+import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModel
+import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModelFactory
+import com.xpyx.nokiahslvisualisation.data.AlertItem
+import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
+import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
+import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
+import com.xpyx.nokiahslvisualisation.repository.AlertRepository
+import com.xpyx.nokiahslvisualisation.repository.TrafficRepository
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,16 +39,12 @@ class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
-    private lateinit var hereTrafficViewModel: ApiViewModel
-    private lateinit var hereTrafficApiKey: String
     private lateinit var mTrafficViewModel: TrafficItemViewModel
     private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
     private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var adapter: AlertListAdapter
 
-    private val trafficIdRoomList = mutableListOf<Long>()
-    private val trafficIdApiList = mutableListOf<Long>()
 
     // Set search at the top menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -82,15 +89,6 @@ class HomeFragment : Fragment() {
             adapter.setData(alerts)
         })
 
-        // Set up Room DB Traffic view model
-        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
-        mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
-            for (item in traffic) {
-                trafficIdRoomList.add(item.traffic_item_id!!)
-            }
-        })
-        mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
-
 
 
         // Set top bar search
@@ -128,21 +126,6 @@ class HomeFragment : Fragment() {
                 insertToStopTimesDatabase(response)
             } else {
 //                Log.d("DBG", response.toString())
-            }
-        })
-
-        // HERE MAPS TRAFFIC API view model setup
-        val repository = ApiRepository()
-        val viewModelFactory = ApiViewModelFactory(repository)
-        hereTrafficViewModel =
-            ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
-        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
-        hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
-        hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response.isSuccessful) {
-                insertToTrafficDatabase(response)
-            } else {
-                Log.d("DBG", response.errorBody().toString())
             }
         })
 
@@ -184,70 +167,6 @@ class HomeFragment : Fragment() {
                     adapter.filter.filter(name)
                 } else if (!it.isChecked) {
                     adapter.filter.filter("")
-                }
-            }
-        }
-    }
-
-
-    private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
-        var exists: Boolean
-        val trafficItemList = response.body()!!.trafficDataTrafficItems
-        if (trafficItemList != null) {
-            for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
-                trafficIdApiList.add(item.trafficItemId!!)
-
-                GlobalScope.launch(context = Dispatchers.IO) {
-                    exists = mTrafficViewModel.checkIfExists(item.trafficItemId)
-
-                    if (!exists) {
-
-                        val trafficItemId = item.trafficItemId
-                        val trafficItemStatusShortDesc = item.trafficItemStatusShortDesc
-                        val trafficItemTypeDesc = item.trafficItemTypeDesc
-                        val startTime = item.trafficItemStartTime
-                        val endTime = item.trafficItemEndTime
-                        val criticality = item.trafficItemCriticality
-                        val verified = item.trafficItemVerified
-                        val rdsTmcLocations = item.trafficitemRDSTmclocations
-                        val location = item.trafficItemLocation
-                        val trafficItemDetail = item.trafficItemDetail
-                        val trafficItemDescriptionElement = item.trafficItemDescriptionElement
-
-                        val traffic = DataTrafficItem(
-                            0,
-                            trafficItemId,
-                            trafficItemStatusShortDesc,
-                            trafficItemTypeDesc,
-                            startTime,
-                            endTime,
-                            criticality,
-                            verified,
-                            rdsTmcLocations,
-                            location,
-                            trafficItemDetail,
-                            trafficItemDescriptionElement
-                        )
-
-                        if (criticality != null) {
-                            if (criticality.ityDescription.equals("critical")) {
-                                mTrafficViewModel.addTrafficData(traffic)
-                                Log.d("TRAFFIC", "Successfully added traffic item: $trafficItemId")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove ended traffic items
-        if (trafficIdApiList.isNotEmpty() && trafficIdRoomList.isNotEmpty()) {
-            for (item in trafficIdRoomList) {
-                if (trafficIdApiList.contains(item)) {
-                    GlobalScope.launch(context = Dispatchers.IO) {
-                        mTrafficViewModel.removeIfNotExists(item)
-                        Log.d("REMOVED_ITEM", "Removed item with id: $item")
-                    }
                 }
             }
         }
