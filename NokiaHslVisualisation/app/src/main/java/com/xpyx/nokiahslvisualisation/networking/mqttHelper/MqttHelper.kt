@@ -23,6 +23,8 @@ class MqttHelper {
 
     private var event_type = "vp"           // One of vp, due, arr, dep, ars, pde, pas, wait, doo,
                                             // doc, tlr, tla, da, dout, ba, bout, vja, vjout
+                                            // Note: events are not available for metros (metro),
+                                            // U-line buses (ubus), robot buses (robot) and ferries (ferry).
 
     private var transport_mode = "bus"      // The type of the vehicle. One of bus, tram, train,
                                             // ferry, metro, ubus (used by U-line buses and other
