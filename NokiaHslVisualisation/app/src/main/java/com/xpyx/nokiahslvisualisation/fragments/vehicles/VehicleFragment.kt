@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,11 +103,17 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
-        mapboxMap.setStyle(Style.Builder().fromUri(
-            "asset://local_style")) {
+        mapboxMap.setStyle(
+            Style.Builder().fromUri(
+                "asset://local_style"
+            )
+        ) {
 
             val source = RasterSource(
-                "map", TileSet("https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png", "mapbox://mapid")
+                "map", TileSet(
+                    "https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png",
+                    "mapbox://mapid"
+                )
             )
 
             val position = CameraPosition.Builder()
@@ -179,7 +186,11 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
@@ -191,7 +202,11 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         if (granted) {
             enableLocationComponent(mapboxMap.style!!)
         } else {
-            Toast.makeText(listener, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                listener,
+                R.string.user_location_permission_not_granted,
+                Toast.LENGTH_LONG
+            ).show()
 
         }
     }
@@ -213,14 +228,19 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             var d = vehiclePosition.VP.long
         }
 
-        mapView?.getMapAsync{ mapbox ->
+        mapView?.getMapAsync { mapbox ->
 
-            mapbox.addMarker(
+
+            var mark = mapbox.addMarker(
+
                 MarkerOptions()
                     .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
+                    .setTitle("${sumOF.a}, ${sumOF.b}")
             )
+            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
         }
     }
+
 
     override fun onStart() {
         super.onStart()
