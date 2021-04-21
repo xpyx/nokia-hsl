@@ -1,32 +1,69 @@
 query StopTimesList {
+
     stops {
-        id
-        name
-        stoptimesWithoutPatterns {
-            scheduledArrival
-            realtimeArrival
-            arrivalDelay
-            scheduledDeparture
-            realtimeDeparture
-            departureDelay
-            realtime
-            realtimeState
-            serviceDay
-            headsign
-            trip {
-                gtfsId
-                route {
+        stoptimesForPatterns(
+            startTime: 0,
+            timeRange: 360,
+            numberOfDepartures: 5
+        ) {
+            stoptimes {
+                trip {
                     gtfsId
-                    shortName
-                    longName
-                    mode
-                    type
-                    desc
-                    url
+                    routeShortName
+                    route {
+                        gtfsId
+                    }
                 }
-                serviceId
-                activeDates
+                arrivalDelay
+                realtime
+                realtimeArrival
+                headsign
+                stop {
+                    name
+                    lat
+                    lon
+                    gtfsId
+                }
             }
         }
     }
 }
+
+
+
+
+
+#    stops {
+#        id
+#        name
+#        stoptimesWithoutPatterns(
+#            timeRange: 100,
+#            numberOfDepartures: 2
+#        ) {
+#            scheduledArrival
+#            realtimeArrival
+#            arrivalDelay
+#            scheduledDeparture
+#            realtimeDeparture
+#            departureDelay
+#            realtime
+#            realtimeState
+#            serviceDay
+#            headsign
+#            trip {
+#                gtfsId
+#                route {
+#                    gtfsId
+#                    shortName
+#                    longName
+#                    mode
+#                    type
+#                    desc
+#                    url
+#                }
+#                serviceId
+#                activeDates
+#            }
+#        }
+#    }
+#}

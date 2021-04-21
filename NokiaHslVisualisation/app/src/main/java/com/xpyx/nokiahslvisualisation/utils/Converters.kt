@@ -10,9 +10,15 @@ import java.util.*
 class Converters {
 
     @TypeConverter
-    fun stoptimesWithoutPatternsToJson(value: MutableList<StopTimesListQuery.StoptimesWithoutPattern>?) = Gson().toJson(value)
+    fun stoptimesForPatternsToJson(value: MutableList<StopTimesListQuery.StoptimesForPattern>?) = Gson().toJson(value)
     @TypeConverter
-    fun stoptimesWithoutPatternsToList(value: String) = Gson().fromJson(value, Array<StopTimesListQuery.StoptimesWithoutPattern>::class.java).toMutableList()
+    fun stoptimesForPatternsToList(value: String) = Gson().fromJson(value, Array<StopTimesListQuery.StoptimesForPattern>::class.java).toMutableList()
+
+
+//    @TypeConverter
+//    fun stoptimesWithoutPatternsToJson(value: MutableList<StopTimesListQuery.StoptimesWithoutPattern>?) = Gson().toJson(value)
+//    @TypeConverter
+//    fun stoptimesWithoutPatternsToList(value: String) = Gson().fromJson(value, Array<StopTimesListQuery.StoptimesWithoutPattern>::class.java).toMutableList()
 
     @TypeConverter
     fun trafficItemDescsToJson(value: MutableList<TrafficItemDescriptionElement>?) = Gson().toJson(value)

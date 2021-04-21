@@ -92,8 +92,11 @@ class HomeFragment : Fragment() {
 
         // Set up Room DB StopTimes view model
         mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
-        mStopTimesItemViewModel.readAllData.observe(viewLifecycleOwner, { stopTimes ->
-            Log.d("DBG", stopTimes.toString())
+        mStopTimesItemViewModel.readAllData.observe(viewLifecycleOwner, { stopTimesItem ->
+
+//            Log.d("DBG", "StopTimesItem + $stopTimesItem")
+
+
         })
 
         // Set top bar search
@@ -115,21 +118,22 @@ class HomeFragment : Fragment() {
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
             } else {
-                Log.d("DBG", response.toString())
+//                Log.d("DBG", response.toString())
             }
         })
 
         // StopTimes API viewmodel
         val stopTimesRepository = StopTimesRepository()
         val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
-        mStopTimesApiViewModel = ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
+        mStopTimesApiViewModel =
+            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
         mStopTimesApiViewModel.getStopTimesData()
         mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response != null && !response.hasErrors()) {
-                Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
+            if (response != null) {
+//                Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
                 insertToStopTimesDatabase(response)
             } else {
-                Log.d("DBG", response.toString())
+//                Log.d("DBG", response.toString())
             }
         })
 
@@ -190,7 +194,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
 
 
     private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
@@ -300,26 +303,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun insertToStopTimesDatabase(response: Response<StopTimesListQuery.Data>) {
-        var exists: Boolean
         if (response.data?.stops() != null) {
             response.data?.stops()!!.forEach { item ->
-                Log.d("DBG", item.toString())
                 GlobalScope.launch(context = Dispatchers.IO) {
 
-
-                    exists = mStopTimesItemViewModel.checkIfExists(item.id().toInt())
-
-                    if (exists) {
-
-                        // Log.d("DBG", "StopTimes already in database")
-
-                    } else {
-                        val stopTimes = StopTimesItem(
-                            0,
-                            item
-                        )
-                        mStopTimesItemViewModel.addStopItem(stopTimes)
-                    }
+                    val stopTimes = StopTimesItem(
+                        0,
+                        item
+                    )
+//                    if(stopTimes.stops.stoptimesWithoutPatterns() != null) {
+                    mStopTimesItemViewModel.addStopItem(stopTimes)
+//                    }
                 }
             }
         }

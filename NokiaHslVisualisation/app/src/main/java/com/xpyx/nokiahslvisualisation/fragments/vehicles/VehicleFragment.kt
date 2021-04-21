@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -55,7 +56,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private var mapView: MapView? = null
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private lateinit var mapboxMap: MapboxMap
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -225,7 +225,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
-        var sumOF = object {
+        val sumOF = object {
             var a = vehiclePosition.VP.oper
             var b = vehiclePosition.VP.veh
             var c = vehiclePosition.VP.lat
@@ -234,10 +234,12 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         mapView?.getMapAsync { mapbox ->
 
-            mapbox.addMarker(
+            val mark = mapbox.addMarker(
                 MarkerOptions()
                     .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
+                    .title("Operator: ${sumOF.a} Vehicle: ${sumOF.b}")
             )
+            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
         }
     }
 

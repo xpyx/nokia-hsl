@@ -5,12 +5,11 @@
 
 This repository contains:
 
-- Android client for displaying realtime public transport data
+- An Android client for displaying realtime public transport data
     - [High-frequency positioning](https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/) of vehicles via MQTT [API Terms of use](https://digitransit.fi/en/developers/apis/6-terms-of-use() 
     - [HSL alerts](https://digitransit.fi/en/developers/apis/1-routing-api/disruption-info/) via Apollo GraphQL Client
     - Traffic data from Here Maps API
     - AR map 
-- Node Express server for connecting to HSL GTFS-RT feed and to a (slow) SQL Server in Azure cloud
 
 #### To run the Android app
 
