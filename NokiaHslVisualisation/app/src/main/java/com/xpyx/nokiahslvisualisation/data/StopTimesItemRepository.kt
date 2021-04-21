@@ -10,6 +10,10 @@ class StopTimesItemRepository(private val stopTimesDao: StopTimesDao) {
         stopTimesDao.addStopTimesItem(stopTimesItem)
     }
 
+    suspend fun getStopTimesItem(id: Long): StopTimesItem {
+        return stopTimesDao.getStopTimesItem(id)
+    }
+
     suspend fun checkIfExists(itemId: Int): Boolean {
         return stopTimesDao.productExists(itemId)
     }

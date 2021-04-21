@@ -14,11 +14,63 @@ class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
 
-    // /<prefix>/<version>/<journey_type>/<temporal_type>/<event_type>/<transport_mode>/<operator_id>/<vehicle_number>/<route_id>/<direction_id>/<headsign>/<start_time>/<next_stop>/<geohash_level>/<geohash>/<sid>/#
+    // Topic variables:
+    // See for more information -> https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/#event-types
 
+    // Use "+" for wildcard
 
-    //private var topic: String = "/hfp/v2/journey/ongoing/vp/+/+/+/+/+/+/+/+/0/#"
-    private var topic: String = "/hfp/v2/journey/ongoing/vp/tram/#" // all trams
+    private var temporal_type = "ongoing"   // The status of the journey, ongoing or upcoming
+
+    private var event_type = "vp"           // One of vp, due, arr, dep, ars, pde, pas, wait, doo,
+                                            // doc, tlr, tla, da, dout, ba, bout, vja, vjout
+
+    private var transport_mode = "bus"      // The type of the vehicle. One of bus, tram, train,
+                                            // ferry, metro, ubus (used by U-line buses and other
+                                            // vehicles with limited realtime information) or robot (used by robot buses).
+
+    private var route_id = "1039"           // The ID of the route the vehicle is running on. This
+                                            // matches route_id in GTFS (field gtfsId of Route in the routing API).
+
+    private var direction_id = "1"          // The line direction of the trip, either 1 or 2.
+                                            // Note: This does not exactly match direction_id in GTFS or the routing API.
+                                            // Value 1 here is same as 0 in GTFS and the Routing API.
+                                            // Value 2 here is same as 1 in GTFS and the Routing API.
+
+    private var start_time = "+"            // The scheduled start time of the trip, i.e. the scheduled departure time
+                                            // from the first stop of the trip. The format follows HH:mm in 24-hour
+                                            // local time, not the 30-hour overlapping operating days present in GTFS.
+
+    private var next_stop = "+"             // The ID of next stop or station. Updated on each departure from or
+                                            // passing of a stop. EOL (end of line) after final stop and empty if the vehicle
+                                            // is leaving HSL area. Matches stop_id in GTFS (value of gtfsId field, without
+                                            // HSL: prefix, in Stop type in the routing API).
+
+    private var geohash_level = "+"         // By subscribing to specific geohash levels, you can reduce the amount of
+                                            // traffic into the client. By only subscribing to level 0 the client gets
+                                            // the most important status changes. The rough percentages of messages with a
+                                            // specific geohash_level value out of all ongoing messages are:
+                                            // 0: 3 % / 1: 0.09 % / 2: 0.9 % / 3: 8 % / 4: 43 % / 5: 44 %
+
+    private var geohash = "+"               // The latitude and the longitude of the vehicle. The digits of the integer
+                                            // parts are separated into their own level in the format <lat>;<long>, e.g. 60;24.
+                                            // The digits of the fractional parts are split and interleaved into a custom format
+                                            // so that e.g. (60.123, 24.789) becomes 60;24/17/28/39.
+                                            // This format enables subscribing to specific geographic boundaries easily.
+                                            // If the coordinates are missing, geohash_level and geohash have the concatenated
+                                            // value 0////. This geohash scheme is greatly simplified from the original geohash scheme
+
+    private var topic: String =
+        "/hfp/v2/journey" +
+        "/$temporal_type" +
+        "/$event_type" +
+        "/$transport_mode" +
+        "/+/+" +
+        "/$route_id" +
+        "/$direction_id" +
+        "/$start_time" +
+        "/$next_stop" +
+        "/$geohash_level" +
+        "/$geohash/#"
 
     fun connect(applicationContext: Context) {
 
@@ -55,6 +107,7 @@ class MqttHelper {
             mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on Subscription here
+                    Log.d("DBG", "subscription OK")
 
                 }
 
@@ -90,7 +143,7 @@ class MqttHelper {
                     // Here I update the fragment that shows the data
                     vehicleFragment.updateUI(vehiclePosition)
 
-                    //Log.d("DBG", vehiclePosition.toString())
+                    Log.d("DBG", vehiclePosition.toString())
 
                 } catch (e: Exception) {
                     // Give your callback on error here

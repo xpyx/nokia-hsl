@@ -24,6 +24,15 @@ class StopTimesItemViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
+    suspend fun getStopTimesItem(id: Long): StopTimesItem {
+        lateinit var stopTimesItem: StopTimesItem
+        val job = viewModelScope.launch(Dispatchers.IO) {
+            stopTimesItem = itemRepository.getStopTimesItem(id)
+        }
+        job.join()
+        return stopTimesItem
+    }
+
     // Check if exists by alertId
     suspend fun checkIfExists(id: Int): Boolean {
         var exists = false

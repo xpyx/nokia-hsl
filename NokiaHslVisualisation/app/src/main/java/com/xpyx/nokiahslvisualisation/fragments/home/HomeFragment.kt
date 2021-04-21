@@ -89,15 +89,9 @@ class HomeFragment : Fragment() {
                 trafficIdRoomList.add(item.traffic_item_id!!)
             }
         })
-
-        // Set up Room DB StopTimes view model
         mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
-        mStopTimesItemViewModel.readAllData.observe(viewLifecycleOwner, { stopTimesItem ->
-
-//            Log.d("DBG", "StopTimesItem + $stopTimesItem")
 
 
-        })
 
         // Set top bar search
         setHasOptionsMenu(true)
@@ -305,15 +299,14 @@ class HomeFragment : Fragment() {
     private fun insertToStopTimesDatabase(response: Response<StopTimesListQuery.Data>) {
         if (response.data?.stops() != null) {
             response.data?.stops()!!.forEach { item ->
-                GlobalScope.launch(context = Dispatchers.IO) {
-
-                    val stopTimes = StopTimesItem(
-                        0,
-                        item
-                    )
-//                    if(stopTimes.stops.stoptimesWithoutPatterns() != null) {
-                    mStopTimesItemViewModel.addStopItem(stopTimes)
-//                    }
+                if (item.stoptimesForPatterns()?.isEmpty() != true) {
+                    GlobalScope.launch(context = Dispatchers.IO) {
+                        val stopTimes = StopTimesItem(
+                            0,
+                            item
+                        )
+                        mStopTimesItemViewModel.addStopItem(stopTimes)
+                    }
                 }
             }
         }

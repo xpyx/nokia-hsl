@@ -12,7 +12,7 @@ import com.xpyx.nokiahslvisualisation.utils.Converters
 @TypeConverters(Converters::class)
 data class StopTimesItem (
     @PrimaryKey(autoGenerate = true) val itemId: Int,
+    @Embedded val stops: StopTimesListQuery.Stop
 //    @SerializedName("__typename") val typeName: String?,
-    @Embedded val stops: StopTimesListQuery.Stop,
 //    @Embedded val stoptimesWithoutPatterns: StopTimesListQuery.StoptimesWithoutPattern
 )

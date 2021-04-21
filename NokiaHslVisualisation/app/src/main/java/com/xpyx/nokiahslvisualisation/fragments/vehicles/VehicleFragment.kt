@@ -40,6 +40,8 @@ import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
+import com.xpyx.nokiahslvisualisation.data.StopTimesItemRepository
+import com.xpyx.nokiahslvisualisation.data.StopTimesItemViewModel
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
@@ -51,7 +53,7 @@ import kotlinx.coroutines.launch
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private lateinit var mMQTTViewModel: MQTTViewModel
-    private lateinit var mStopTimesViewModel: StopTimesViewModel
+    private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
     private lateinit var listener: FragmentActivity
     private var mapView: MapView? = null
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
@@ -86,8 +88,8 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mapView?.getMapAsync(this)
 
         // Get late busses info and apply to MQTT topic
-
-
+        mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
+        //mStopTimesItemViewModel.getStopTimesItem()
 
 
         // MQTT viewmodel
