@@ -94,30 +94,28 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
                         // Add so later filters don't add duplicates
                         listOfTrafficItemId.add(item.traffic_item_id!!)
                         Log.d("FILTERADAPTERcriticality", "Added: ${item.traffic_item_id}")
-                    } else if (filterPattern.contains("major") && item.criticality?.ityDescription.toString() != "major") {
+                    } else if ((filterPattern.contains("major") && item.criticality?.ityDescription.toString() != "major") || (filterPattern.contains("critical") && item.criticality?.ityDescription.toString() != "critical") || (filterPattern.contains("minor") && item.criticality?.ityDescription.toString() != "minor")) {
                         // If filter not matching, add to id-list so later filters don't add item
                         listOfTrafficItemId.add(item.traffic_item_id!!)
-                    } else if (filterPattern.contains("critical") && item.criticality?.ityDescription.toString() != "critical") {
-                        // If filter not matching, add to id-list so later filters don't add item
-                        listOfTrafficItemId.add(item.traffic_item_id!!)
-                    } else if (filterPattern.contains("minor") && item.criticality?.ityDescription.toString() != "minor") {
-                        // If filter not matching, add to id-list so later filters don't add item
-                        listOfTrafficItemId.add(item.traffic_item_id!!)
+                        Log.d("FILTERADAPTERcriticality", "Excluded: ${item.traffic_item_id}")
                     }
                     if (filterPattern.contains("response_vehicles")) {
                         if (!listOfTrafficItemId.contains(item.traffic_item_id)  && item.traffic_item_detail?.trafficItemDetailIncident != null && item.traffic_item_detail.trafficItemDetailIncident.responseVehicles == true) {
                             filteredTrafficList.add(item)
                             listOfTrafficItemId.add(item.traffic_item_id!!)
                             Log.d("FILTERADAPTERresponse_vehicles", "Added: ${item.traffic_item_id}")
-                        } else if (listOfTrafficItemId.contains(item.traffic_item_id) && (item.traffic_item_detail?.trafficItemDetailIncident == null || item.traffic_item_detail.trafficItemDetailIncident.responseVehicles == false)) {
+                        } else if ((item.traffic_item_detail?.trafficItemDetailIncident == null || item.traffic_item_detail.trafficItemDetailIncident.responseVehicles == false)) {
                             // Check if item already on filtered list and not matching new filters, remove it.
-                            if (filteredTrafficList.contains(item)) {
-                                filteredTrafficList.remove(item)
-                                Log.d("FILTERADAPTERresponse_vehicles", "Removed: ${item.traffic_item_id}")
+                            if (listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                if (filteredTrafficList.contains(item)) {
+                                    filteredTrafficList.remove(item)
+                                    Log.d("FILTERADAPTERresponse_vehicles", "Removed: ${item.traffic_item_id}")
+                                }
+                                } else {
+                                listOfTrafficItemId.add(item.traffic_item_id!!)
+                                Log.d("FILTERADAPTERresponse_vehicles", "Excluded: ${item.traffic_item_id}")
                             }
-                        } else if (!listOfTrafficItemId.contains(item.traffic_item_id) && (item.traffic_item_detail?.trafficItemDetailIncident == null || item.traffic_item_detail.trafficItemDetailIncident.responseVehicles == false)) {
-                            listOfTrafficItemId.add(item.traffic_item_id!!)
-                        } else if (filteredTrafficList.contains(item)) {
+                        }  else if (filteredTrafficList.contains(item)) {
                             Log.d("FILTERADAPTERresponse_vehicles", "Kept: ${item.traffic_item_id}")
                         }
                     }
@@ -126,15 +124,18 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
                             filteredTrafficList.add(item)
                             listOfTrafficItemId.add(item.traffic_item_id!!)
                             Log.d("FILTERADAPTERroad_closed", "Added: ${item.traffic_item_id}")
-                        } else if (listOfTrafficItemId.contains(item.traffic_item_id) && item.traffic_item_detail?.trafficItemDetailRoadClosed == false) {
+                        } else if (item.traffic_item_detail?.trafficItemDetailRoadClosed == false) {
                             // Check if item already on filtered list and not matching new filters, remove it.
-                            if (filteredTrafficList.contains(item)) {
-                                filteredTrafficList.remove(item)
-                                Log.d("FILTERADAPTERroad_closed", "Removed: ${item.traffic_item_id}")
+                            if (listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                if (filteredTrafficList.contains(item)) {
+                                    filteredTrafficList.remove(item)
+                                    Log.d("FILTERADAPTERroad_closed", "Removed: ${item.traffic_item_id}")
+                                }
+                            } else {
+                                // If filter not matching, add to id-list so later filters don't add item
+                                listOfTrafficItemId.add(item.traffic_item_id!!)
+                                Log.d("FILTERADAPTERroad_closed", "Excluded: ${item.traffic_item_id}")
                             }
-                            // If filter not matching, add to id-list so later filters don't add item
-                        } else if (!listOfTrafficItemId.contains(item.traffic_item_id) && item.traffic_item_detail?.trafficItemDetailRoadClosed == false) {
-                            listOfTrafficItemId.add(item.traffic_item_id!!)
                         } else if (filteredTrafficList.contains(item)) {
                             Log.d("FILTERADAPTERroad_closed", "Kept: ${item.traffic_item_id}")
                         }
@@ -144,13 +145,16 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
                             filteredTrafficList.add(item)
                             listOfTrafficItemId.add(item.traffic_item_id!!)
                             Log.d("FILTERADAPTERincident", "Added: ${item.traffic_item_id}")
-                        } else if (listOfTrafficItemId.contains(item.traffic_item_id) && (item.traffic_item_detail?.trafficItemDetailIncident == null || item.traffic_item_detail.trafficItemDetailIncident.equals(""))) {
-                            if (filteredTrafficList.contains(item)) {
-                                filteredTrafficList.remove(item)
-                                Log.d("FILTERADAPTERincident", "Removed: ${item.traffic_item_id}")
+                        } else if ((item.traffic_item_detail?.trafficItemDetailIncident == null || item.traffic_item_detail.trafficItemDetailIncident.equals(""))) {
+                            if (listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                if (filteredTrafficList.contains(item)){
+                                    filteredTrafficList.remove(item)
+                                    Log.d("FILTERADAPTERincident", "Removed: ${item.traffic_item_id}")
+                                }
+                            } else {
+                                listOfTrafficItemId.add(item.traffic_item_id!!)
+                                Log.d("FILTERADAPTERincident", "Excluded: ${item.traffic_item_id}")
                             }
-                        } else if (!listOfTrafficItemId.contains(item.traffic_item_id) && (item.traffic_item_detail?.trafficItemDetailIncident == null || item.traffic_item_detail.trafficItemDetailIncident.equals(""))) {
-                            listOfTrafficItemId.add(item.traffic_item_id!!)
                         } else if (filteredTrafficList.contains(item)) {
                             Log.d("FILTERADAPTERincident", "Kept: ${item.traffic_item_id}")
                         }
@@ -160,13 +164,16 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
                             filteredTrafficList.add(item)
                             listOfTrafficItemId.add(item.traffic_item_id!!)
                             Log.d("FILTERADAPTERevent", "Added: ${item.traffic_item_id}")
-                        } else if (listOfTrafficItemId.contains(item.traffic_item_id) && (item.traffic_item_detail?.trafficItemDetailEvent == null || item.traffic_item_detail.trafficItemDetailEvent.equals(""))) {
+                        } else if ((item.traffic_item_detail?.trafficItemDetailEvent == null || item.traffic_item_detail.trafficItemDetailEvent.equals(""))) {
                             if (filteredTrafficList.contains(item)) {
-                                filteredTrafficList.remove(item)
-                                Log.d("FILTERADAPTERevent", "Removed: ${item.traffic_item_id}")
+                                if (listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                    filteredTrafficList.remove(item)
+                                    Log.d("FILTERADAPTERevent", "Removed: ${item.traffic_item_id}")
+                                }
+                            } else {
+                                listOfTrafficItemId.add(item.traffic_item_id!!)
+                                Log.d("FILTERADAPTERevent", "Excluded: ${item.traffic_item_id}")
                             }
-                        } else if (!listOfTrafficItemId.contains(item.traffic_item_id) && (item.traffic_item_detail?.trafficItemDetailEvent == null || item.traffic_item_detail.trafficItemDetailEvent.equals(""))) {
-                            listOfTrafficItemId.add(item.traffic_item_id!!)
                         } else if (filteredTrafficList.contains(item))  {
                             Log.d("FILTERADAPTERevent", "Kept: ${item.traffic_item_id}")
                         }
@@ -179,6 +186,64 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
                             distanceFilters.add(value)
                         }
                     }
+                    if (distanceFilters.isNotEmpty()){
+                        val latitudeNow = distanceFilters[0]
+                        val longitudeNow = distanceFilters[1]
+                        val minDifference = distanceFilters[2]
+                        val maxDifference = distanceFilters[3]
+                        val latitudeSouthMin = latitudeNow-minDifference
+                        val latitudeSouthMax = latitudeNow-maxDifference
+                        val latitudeNorthMin = latitudeNow+minDifference
+                        val latitudeNorthMax = latitudeNow+maxDifference
+                        val longitudeWestMin = longitudeNow-minDifference
+                        val longitudeWestMax = longitudeNow-maxDifference
+                        val longitudeEastMin = longitudeNow+minDifference
+                        val longitudeEastMax = longitudeNow+maxDifference
+                        Log.d("FILTERADAPTERMAX", "$maxDifference - $latitudeNow - $latitudeNorthMax - $latitudeSouthMax - $longitudeNow - $longitudeEastMax - $longitudeWestMax")
+                        Log.d("FILTERADAPTERMIN", "$minDifference - $latitudeNow - $latitudeNorthMin - $latitudeSouthMin - $longitudeNow - $longitudeEastMin - $longitudeWestMin")
+                        val itemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
+                        val itemLongitude = item.location.locationGeoloc.geolocOrigin.geolocLocationLongitude!!
+                        if (minDifference != 0.0) {
+                            if ((itemLatitude !in latitudeSouthMin..latitudeNorthMin) && (itemLongitude !in longitudeWestMin..longitudeEastMin) && !listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                filteredTrafficList.add(item)
+                                listOfTrafficItemId.add(item.traffic_item_id!!)
+                                Log.d("FILTERADAPTERmindifference", "Added: ${item.traffic_item_id}")
+                            } else if ((itemLatitude in latitudeSouthMin..latitudeNorthMin) || (itemLongitude in longitudeWestMin..longitudeEastMin)) {
+                                if (listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                    if (filteredTrafficList.contains(item)) {
+                                        filteredTrafficList.remove(item)
+                                        Log.d("FILTERADAPTERmindifference", "Removed: ${item.traffic_item_id}")
+                                    }
+                                } else {
+                                    listOfTrafficItemId.add(item.traffic_item_id!!)
+                                    Log.d("FILTERADAPTERmindifference", "Excluded: ${item.traffic_item_id}")
+                                }
+                            } else if (filteredTrafficList.contains(item)) {
+                                Log.d("FILTERADAPTERmindifference", "Kept: ${item.traffic_item_id}")
+                            }
+                        }
+                        if (maxDifference != 1.356557599435672 /*150 km == maxmaxdifference*/) {
+                            if ((itemLatitude in latitudeSouthMax..latitudeNorthMax) && (itemLongitude in longitudeWestMax..longitudeEastMax) && !listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                filteredTrafficList.add(item)
+                                listOfTrafficItemId.add(item.traffic_item_id!!)
+                                Log.d("FILTERADAPTERmaxdifference", "Added: ${item.traffic_item_id}")
+                            } else if ((itemLatitude !in latitudeSouthMax..latitudeNorthMax) || (itemLongitude !in longitudeWestMax..longitudeEastMax)){
+                                if (listOfTrafficItemId.contains(item.traffic_item_id)) {
+                                    if (filteredTrafficList.contains(item)) {
+                                        filteredTrafficList.remove(item)
+                                        Log.d("FILTERADAPTERmaxdifference", "Removed: ${item.traffic_item_id}")
+                                    }
+                                } else {
+                                    listOfTrafficItemId.add(item.traffic_item_id!!)
+                                    Log.d("FILTERADAPTERmaxdifference", "Excluded: ${item.traffic_item_id}")
+                                }
+                            } else if (filteredTrafficList.contains(item)) {
+                                Log.d("FILTERADAPTERmaxdifference", "Kept: ${item.traffic_item_id}")
+                            }
+                        }
+
+                    }
+
                 }
             }
             val results = FilterResults()

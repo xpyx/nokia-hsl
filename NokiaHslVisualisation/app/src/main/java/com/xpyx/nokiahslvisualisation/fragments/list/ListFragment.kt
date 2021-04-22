@@ -324,14 +324,11 @@ class ListFragment : Fragment(){
 
         if ((minValue > 0.0 || maxValue < 150.0 ) && locationNow != Location("LocationInit")){
             filterText += "${locationNow.latitude};${locationNow.longitude};"
-            if (minValue > 0.0) {
-                val minDistanceFilter = listOfFilters["min_lat_difference"] as Double
-                filterText += "$minDistanceFilter;"
-            }
-            if (maxValue < 150.0) {
-                val maxDistanceFilter = listOfFilters["max_lat_difference"] as Double
-                filterText += "$maxDistanceFilter;"
-            }
+
+            val minDistanceFilter = listOfFilters["min_lat_difference"] as Double
+            filterText += "$minDistanceFilter;"
+            val maxDistanceFilter = listOfFilters["max_lat_difference"] as Double
+            filterText += "$maxDistanceFilter;"
 
         }
 
