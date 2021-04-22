@@ -44,24 +44,24 @@
                 android:background="?attr/colorOnSecondary" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/late_5_mins"
+                android:id="@+id/show_busses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:gravity="fill"
-                android:text="@string/late_5_mins" />
+                android:text="@string/show_busses" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/on_wrong_route"
+                android:id="@+id/show_trams"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:gravity="fill"
-                android:text="@string/on_wrong_route" />
+                android:text="@string/show_trams" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/speeding"

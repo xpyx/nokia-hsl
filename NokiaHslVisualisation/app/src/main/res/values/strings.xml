@@ -101,4 +101,6 @@
     <string name="speeding">Vehicle is speeding</string>
     <string name="late_time">Set vehicle late time</string>
     <string name="vehicle_late_time_hint">Seconds late</string>
+    <string name="show_trams">Show only trams</string>
+    <string name="show_busses">Show only busses</string>
 </resources>
