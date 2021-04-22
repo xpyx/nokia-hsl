@@ -112,6 +112,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 // Show spinner
                 spinner.visibility = View.VISIBLE
 
+                // Unsubscribe from previous topics
+                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/#")
+
                 // Get stoptimes
                 mStopTimesApiViewModel.getStopTimesData()
                 mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->

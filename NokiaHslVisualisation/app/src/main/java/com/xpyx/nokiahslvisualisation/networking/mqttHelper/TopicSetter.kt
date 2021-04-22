@@ -6,6 +6,11 @@ class TopicSetter {
 
     fun setTopic(vehicleInfo: Late): String {
 
+        // Topic variables:
+        // See for more information -> https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/#event-types
+
+        // Use "+" for wildcard
+
         val temporalType = "ongoing"                        // The status of the journey, ongoing or upcoming
 
         val eventType = "vp"                                // One of vp, due, arr, dep, ars, pde, pas, wait, doo,
