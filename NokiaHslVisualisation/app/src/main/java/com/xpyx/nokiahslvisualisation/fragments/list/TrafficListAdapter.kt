@@ -1,8 +1,11 @@
 package com.xpyx.nokiahslvisualisation.fragments.list
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +14,9 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -163,6 +169,14 @@ class TrafficListAdapter(private val context: Context) : RecyclerView.Adapter<Tr
                             listOfTrafficItemId.add(item.traffic_item_id!!)
                         } else if (filteredTrafficList.contains(item))  {
                             Log.d("FILTERADAPTERevent", "Kept: ${item.traffic_item_id}")
+                        }
+                    }
+                    val distanceFilters = mutableListOf<Double>()
+                    for (filter in filterPattern) {
+                        if (filter.contains(".")){
+                            val value = filter.toDouble()
+                            Log.d("FILTERDOUBLE", value.toString())
+                            distanceFilters.add(value)
                         }
                     }
                 }
