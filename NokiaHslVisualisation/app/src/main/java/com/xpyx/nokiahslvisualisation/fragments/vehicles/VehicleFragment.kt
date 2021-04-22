@@ -7,12 +7,10 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -38,13 +36,9 @@ import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
-import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
-import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
-import com.xpyx.nokiahslvisualisation.data.StopTimesItemRepository
 import com.xpyx.nokiahslvisualisation.data.StopTimesItemViewModel
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
-import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -89,7 +83,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Get late busses info and apply to MQTT topic
         mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
-        //mStopTimesItemViewModel.getStopTimesItem()
+
 
 
         // MQTT viewmodel
@@ -97,10 +91,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
         mMQTTViewModel =
             ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
-
-
-
-
 
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {
@@ -231,6 +221,18 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
+
+        val description = """ 
+            Operator: ${vehiclePosition.VP.oper}
+            Vehicle: ${vehiclePosition.VP.veh}            
+            
+            Speed: ${vehiclePosition.VP.spd} m/s
+            Heading: ${vehiclePosition.VP.hdg} degrees
+            Acceleration: ${vehiclePosition.VP.acc} m/s2
+            Odometer reading: ${vehiclePosition.VP.odo} m
+            Offset from timetable: ${vehiclePosition.VP.dl} seconds
+        """.trimIndent()
+
         val sumOF = object {
             var a = vehiclePosition.VP.oper
             var b = vehiclePosition.VP.veh
@@ -243,9 +245,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             val mark = mapbox.addMarker(
                 MarkerOptions()
                     .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
-                    .title("Operator: ${sumOF.a} Vehicle: ${sumOF.b}")
+                    .title(description)
             )
-            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
+            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 4000)
         }
     }
 
