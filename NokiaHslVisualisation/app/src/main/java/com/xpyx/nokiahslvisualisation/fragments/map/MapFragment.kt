@@ -2,8 +2,6 @@ package com.xpyx.nokiahslvisualisation.fragments.map
 
 import android.location.Geocoder
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.SeekBar
@@ -134,7 +132,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         mTransparencyBar?.setOnSeekBarChangeListener(this)
         mHeightBar?.setOnSeekBarChangeListener(this)
         mWidthBar?.setOnSeekBarChangeListener(this)
-        Reffi.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
+        refresh_map_button.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

@@ -1,20 +1,28 @@
 
 package com.xpyx.nokiahslvisualisation.fragments.list
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import android.widget.RadioButton
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.*
 import com.google.android.material.slider.RangeSlider
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.R.*
@@ -22,6 +30,7 @@ import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModel
 import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import com.xpyx.nokiahslvisualisation.model.traffic.Geoloc
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.TrafficRepository
 import com.xpyx.nokiahslvisualisation.utils.Constants
@@ -29,7 +38,9 @@ import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.osmdroid.util.GeoPoint
 import java.util.*
+import kotlin.math.absoluteValue
 
 class ListFragment : Fragment(){
 
@@ -61,6 +72,12 @@ class ListFragment : Fragment(){
     private var listOfCheckBoxes = listOf<CheckBox>()
     private var listOfRadioButtons = listOf<RadioButton>()
 
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var locationNow: Location = Location("LocationInit")
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,7 +93,7 @@ class ListFragment : Fragment(){
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-
+        getLocationUpdates()
         mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
         mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
             adapter.setData(traffic)
@@ -132,6 +149,7 @@ class ListFragment : Fragment(){
                 listOfFilters["max_lat_difference"] = convertToCoordinates()[1]
                 listOfFilters["min_lon_difference"] = convertToCoordinates()[0]
                 listOfFilters["max_lon_difference"] = convertToCoordinates()[1]
+                checkFilters()
             }
         })
 
@@ -267,11 +285,13 @@ class ListFragment : Fragment(){
     override fun onPause() {
         super.onPause()
         saveData()
+        stopLocationUpdates()
     }
 
     override fun onResume() {
         super.onResume()
         loadData()
+        startLocationUpdates()
     }
 
     private fun saveData() {
@@ -298,6 +318,20 @@ class ListFragment : Fragment(){
                 filterText += "$item;"
             }
         }
+
+        val minValue = distance_slider.values[0]
+        val maxValue = distance_slider.values[1]
+
+        if ((minValue > 0.0 || maxValue < 150.0 ) && locationNow != Location("LocationInit")){
+            filterText += "${locationNow.latitude};${locationNow.longitude};"
+
+            val minDistanceFilter = listOfFilters["min_lat_difference"] as Double
+            filterText += "$minDistanceFilter;"
+            val maxDistanceFilter = listOfFilters["max_lat_difference"] as Double
+            filterText += "$maxDistanceFilter;"
+
+        }
+
         adapter.filter.filter(filterText)
     }
 
@@ -319,18 +353,65 @@ class ListFragment : Fragment(){
         checkFilters()
     }
 
+    private fun getLocationUpdates() {
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        locationRequest = LocationRequest()
+        locationRequest.interval = 100
+        locationRequest.fastestInterval = 1000
+        locationRequest.smallestDisplacement = 30F
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY //set according to your app function
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
 
-
-    // For hiding the soft keyboard
-    private fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
+                if (locationResult.locations.isNotEmpty()) {
+                    val location = locationResult.lastLocation
+                    locationNow = location
+                }
+            }
+        }
     }
 
-    private fun Context.hideKeyboard(view: View) {
-        val inputMethodManager =
-                getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    private fun startLocationUpdates() {
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                0
+            )
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                0
+            )
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                0
+            )
+        }
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            null /* Looper */
+        )
     }
+
+    private fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
 }
 

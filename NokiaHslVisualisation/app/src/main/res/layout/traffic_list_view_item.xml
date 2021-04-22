@@ -6,11 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textColor="?attr/colorOnPrimary"
-    android:id="@+id/bus_card_view">
+    android:id="@+id/bus_card_view"
+    android:layout_marginVertical="8dp"
+    app:cardElevation="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/border"
         >
 
         <ImageView
@@ -21,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/warning_icon"
-            app:tint="@color/black"
+            app:tint="?colorOnSecondary"
             android:contentDescription="@string/warning_icon_content_description" />
 
         <TextView
