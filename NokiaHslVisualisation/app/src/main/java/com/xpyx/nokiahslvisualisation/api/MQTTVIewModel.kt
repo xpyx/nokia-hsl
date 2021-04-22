@@ -19,15 +19,21 @@ class MQTTViewModel(private val mqttRepository: MQTTRepository): ViewModel() {
         }
     }
 
+    fun subscribe(topicString: String) {
+        viewModelScope.launch {
+            mqttRepository.subscribe(topicString)
+        }
+    }
+
     fun receiveMessages(vehicleFragment: VehicleFragment) {
         viewModelScope.launch {
             mqttRepository.mqtt.receiveMessages(vehicleFragment)
         }
     }
 
-    fun unsubscribe() {
+    fun unsubscribe(topic: String) {
         viewModelScope.launch {
-            mqttRepository.mqtt.unSubscribe()
+            mqttRepository.mqtt.unSubscribe(topic)
         }
     }
 

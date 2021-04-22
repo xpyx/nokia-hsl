@@ -44,7 +44,9 @@ import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.StopTimesItemViewModel
+import com.xpyx.nokiahslvisualisation.model.late.Late
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
+import com.xpyx.nokiahslvisualisation.networking.mqttHelper.TopicSetter
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import kotlinx.coroutines.Dispatchers
@@ -89,6 +91,8 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val topicSetter = TopicSetter()
+
         // Set up editText
         editText = view.findViewById(R.id.edit_text_late_time)
         editText.inputType = InputType.TYPE_CLASS_NUMBER
@@ -116,19 +120,24 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         // Hide spinner
                         spinner.visibility = View.GONE
 
-                        // The stoptimes data is here
+                        // The stoptimes data is here, iterate over the whole response
                         response.data?.stops()?.forEach {
+
                             if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
+
                                 val routeId =
                                     it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()
                                         ?.gtfsId()?.substring(
                                             4
                                         )
+
                                 val transportMode =
                                     it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()
                                         ?.mode()
+
                                 val arrivalDelay =
                                     it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.arrivalDelay()
+
                                 var directionId =
                                     it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()
                                         ?.directionId()
@@ -142,6 +151,17 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
                                 if (arrivalDelay != null) {
                                     if (arrivalDelay > lateTime) {
+
+                                        val late = Late(
+                                            routeId,
+                                            transportMode.toString().toLowerCase(),
+                                            arrivalDelay.toString(),
+                                            directionId
+                                        )
+
+                                        val topicString = topicSetter.setTopic(late)
+                                        Log.d("DBG topicString", topicString)
+                                        mMQTTViewModel.subscribe(topicString)
 
                                         Log.d("DBG late vehicles", "routeId         : $routeId")
                                         Log.d("DBG late vehicles", "transportMode   : $transportMode")
@@ -360,7 +380,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
-        mMQTTViewModel.unsubscribe()
+        mMQTTViewModel.unsubscribe("#")
     }
 
     // When exiting this app, unsubscribe from the topic
