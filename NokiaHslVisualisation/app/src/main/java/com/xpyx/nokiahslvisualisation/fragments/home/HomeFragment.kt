@@ -30,9 +30,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
-    private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
-    private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var adapter: AlertListAdapter
 
     // Set search at the top menu
@@ -96,49 +94,6 @@ class HomeFragment : Fragment() {
         mAlertApiViewModel.myAlertApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
-            } else {
-                // Log.d("DBG", response.toString())
-            }
-        })
-
-        // StopTimes API viewmodel
-        val stopTimesRepository = StopTimesRepository()
-        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
-        mStopTimesApiViewModel =
-            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
-        mStopTimesApiViewModel.getStopTimesData()
-        mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response != null) {
-
-                // The stoptimes data is here
-                response.data?.stops()?.forEach {
-                    if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
-                        val routeId = it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()?.gtfsId()?.substring(4)
-                        val transportMode = it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()?.mode()
-                        val arrivalDelay = it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.arrivalDelay()
-                        var directionId = it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.directionId()
-
-                        // Change direction id according to instructions. Also note if null, then -> "+"
-                        if (directionId.equals("0")) {
-                            directionId = "1"
-                        } else if (directionId.equals("1")) {
-                            directionId = "2"
-                        }
-
-                        if (arrivalDelay != null) {
-                            if (arrivalDelay > 240) {
-                                Log.d("DBG late vehicles", "routeId         : $routeId")
-                                Log.d("DBG late vehicles", "transportMode   : $transportMode")
-                                Log.d("DBG late vehicles", "arrivalDelay    : $arrivalDelay")
-                                Log.d("DBG late vehicles", "directionId     : $directionId")
-                                Log.d("DBG late vehicles", "---------------------------")
-                            }
-                        }
-                    }
-                }
-
-                // Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
-                // insertToStopTimesDatabase(response)
             } else {
                 // Log.d("DBG", response.toString())
             }
@@ -224,22 +179,6 @@ class HomeFragment : Fragment() {
                             alertEffect
                         )
                         mAlertViewModel.addAlertItem(alert)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun insertToStopTimesDatabase(response: Response<StopTimesListQuery.Data>) {
-        if (response.data?.stops() != null) {
-            response.data?.stops()!!.forEach { item ->
-                if (item.stoptimesForPatterns()?.isEmpty() != true) {
-                    GlobalScope.launch(context = Dispatchers.IO) {
-                        val stopTimes = StopTimesItem(
-                            0,
-                            item
-                        )
-                        mStopTimesItemViewModel.addStopItem(stopTimes)
                     }
                 }
             }

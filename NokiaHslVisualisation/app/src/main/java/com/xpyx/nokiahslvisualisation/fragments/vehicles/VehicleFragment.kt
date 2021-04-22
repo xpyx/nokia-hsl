@@ -7,11 +7,16 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
-import android.widget.Toast
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -36,9 +41,12 @@ import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
+import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
+import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.StopTimesItemViewModel
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
+import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -47,11 +55,15 @@ import kotlinx.coroutines.launch
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private lateinit var mMQTTViewModel: MQTTViewModel
-    private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
+    private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var listener: FragmentActivity
     private var mapView: MapView? = null
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private lateinit var mapboxMap: MapboxMap
+    private lateinit var editText: EditText
+    private lateinit var editTextValue: Editable
+    private lateinit var spinner: ProgressBar
+    private var lateTime: Int = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -77,14 +89,92 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up editText
+        editText = view.findViewById(R.id.edit_text_late_time)
+        editText.inputType = InputType.TYPE_CLASS_NUMBER
+        editTextValue = editText.text
+
+        // Spinner set up and hide
+        spinner = view.findViewById(R.id.spinner)
+        spinner.visibility = View.GONE
+
+        // Listen to editText and on complete set lateTime,
+        // clear editText and hide keyboard
+        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                // assign late time
+                setLateTime(editTextValue.toString().toInt())
+
+                // Show spinner
+                spinner.visibility = View.VISIBLE
+
+                // Get stoptimes
+                mStopTimesApiViewModel.getStopTimesData()
+                mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
+                    if (response != null) {
+
+                        // Hide spinner
+                        spinner.visibility = View.GONE
+
+                        // The stoptimes data is here
+                        response.data?.stops()?.forEach {
+                            if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
+                                val routeId =
+                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()
+                                        ?.gtfsId()?.substring(
+                                            4
+                                        )
+                                val transportMode =
+                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()
+                                        ?.mode()
+                                val arrivalDelay =
+                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.arrivalDelay()
+                                var directionId =
+                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()
+                                        ?.directionId()
+
+                                // Change direction id according to instructions. Also note if null, then -> "+"
+                                if (directionId.equals("0")) {
+                                    directionId = "1"
+                                } else if (directionId.equals("1")) {
+                                    directionId = "2"
+                                }
+
+                                if (arrivalDelay != null) {
+                                    if (arrivalDelay > lateTime) {
+
+                                        Log.d("DBG late vehicles", "routeId         : $routeId")
+                                        Log.d("DBG late vehicles", "transportMode   : $transportMode")
+                                        Log.d("DBG late vehicles", "arrivalDelay    : $arrivalDelay")
+                                        Log.d("DBG late vehicles", "directionId     : $directionId")
+                                        Log.d("DBG late vehicles", "---------------------------")
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Log.d("DBG", response.toString())
+                    }
+                })
+
+                editText.text.clear()
+                hideKeyboard()
+                view.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+        // StopTimes API viewmodel
+        val stopTimesRepository = StopTimesRepository()
+        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
+        mStopTimesApiViewModel =
+            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
+
+        // MAP
         mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
-
-        // Get late busses info and apply to MQTT topic
-        mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
-
-
 
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
@@ -98,6 +188,11 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         }
     }
 
+
+    private fun setLateTime(seconds: Int): Boolean {
+        lateTime = seconds
+        return true
+    }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
@@ -207,7 +302,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 R.string.user_location_permission_not_granted,
                 Toast.LENGTH_LONG
             ).show()
-
         }
     }
 
@@ -289,5 +383,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onLowMemory() {
         super.onLowMemory()
         mapView?.onLowMemory()
+    }
+
+    // For hiding the soft keyboard
+    private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
