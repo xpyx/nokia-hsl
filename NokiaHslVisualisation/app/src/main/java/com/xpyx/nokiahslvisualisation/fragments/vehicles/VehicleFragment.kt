@@ -98,6 +98,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mMQTTViewModel =
             ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
 
+
+
+
+
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {
             receiveMQTTMessages()

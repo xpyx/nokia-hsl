@@ -10,7 +10,7 @@ import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
-class MqttHelper {
+class MqttHelper() {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
 
@@ -19,35 +19,35 @@ class MqttHelper {
 
     // Use "+" for wildcard
 
-    private var temporal_type = "ongoing"   // The status of the journey, ongoing or upcoming
+    private var temporalType = "ongoing"    // The status of the journey, ongoing or upcoming
 
-    private var event_type = "vp"           // One of vp, due, arr, dep, ars, pde, pas, wait, doo,
+    private var eventType = "vp"            // One of vp, due, arr, dep, ars, pde, pas, wait, doo,
                                             // doc, tlr, tla, da, dout, ba, bout, vja, vjout
                                             // Note: events are not available for metros (metro),
                                             // U-line buses (ubus), robot buses (robot) and ferries (ferry).
 
-    private var transport_mode = "bus"      // The type of the vehicle. One of bus, tram, train,
+    private var transportMode = "tram"       // The type of the vehicle. One of bus, tram, train,
                                             // ferry, metro, ubus (used by U-line buses and other
                                             // vehicles with limited realtime information) or robot (used by robot buses).
 
-    private var route_id = "1039"           // The ID of the route the vehicle is running on. This
+    private var routeId = "1010"            // The ID of the route the vehicle is running on. This
                                             // matches route_id in GTFS (field gtfsId of Route in the routing API).
 
-    private var direction_id = "1"          // The line direction of the trip, either 1 or 2.
+    private var directionId = "1"           // The line direction of the trip, either 1 or 2.
                                             // Note: This does not exactly match direction_id in GTFS or the routing API.
                                             // Value 1 here is same as 0 in GTFS and the Routing API.
                                             // Value 2 here is same as 1 in GTFS and the Routing API.
 
-    private var start_time = "+"            // The scheduled start time of the trip, i.e. the scheduled departure time
+    private var startTime = "+"             // The scheduled start time of the trip, i.e. the scheduled departure time
                                             // from the first stop of the trip. The format follows HH:mm in 24-hour
                                             // local time, not the 30-hour overlapping operating days present in GTFS.
 
-    private var next_stop = "+"             // The ID of next stop or station. Updated on each departure from or
+    private var nextStop = "+"              // The ID of next stop or station. Updated on each departure from or
                                             // passing of a stop. EOL (end of line) after final stop and empty if the vehicle
                                             // is leaving HSL area. Matches stop_id in GTFS (value of gtfsId field, without
                                             // HSL: prefix, in Stop type in the routing API).
 
-    private var geohash_level = "+"         // By subscribing to specific geohash levels, you can reduce the amount of
+    private var geohashLevel = "+"          // By subscribing to specific geohash levels, you can reduce the amount of
                                             // traffic into the client. By only subscribing to level 0 the client gets
                                             // the most important status changes. The rough percentages of messages with a
                                             // specific geohash_level value out of all ongoing messages are:
@@ -63,15 +63,15 @@ class MqttHelper {
 
     private var topic: String =
         "/hfp/v2/journey" +
-        "/$temporal_type" +
-        "/$event_type" +
-        "/$transport_mode" +
+        "/$temporalType" +
+        "/$eventType" +
+        "/$transportMode" +
         "/+/+" +
-        "/$route_id" +
-        "/$direction_id" +
-        "/$start_time" +
-        "/$next_stop" +
-        "/$geohash_level" +
+        "/$routeId" +
+        "/$directionId" +
+        "/$startTime" +
+        "/$nextStop" +
+        "/$geohashLevel" +
         "/$geohash/#"
 
     fun connect(applicationContext: Context) {
