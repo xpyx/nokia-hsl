@@ -1,7 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -12,17 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.apollographql.apollo.api.Response
 import com.xpyx.nokiahslvisualisation.AlertsListQuery
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.StopTimesListQuery
+import com.xpyx.nokiahslvisualisation.api.*
+import com.xpyx.nokiahslvisualisation.data.*
+import com.xpyx.nokiahslvisualisation.repository.AlertRepository
+import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import com.xpyx.nokiahslvisualisation.api.AlertViewModel
 import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
-import com.xpyx.nokiahslvisualisation.api.ApiViewModel
-import com.xpyx.nokiahslvisualisation.api.ApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
-import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
-import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
-import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
-import com.xpyx.nokiahslvisualisation.repository.AlertRepository
-import com.xpyx.nokiahslvisualisation.repository.ApiRepository
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,14 +29,10 @@ class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
-    private lateinit var hereTrafficViewModel: ApiViewModel
-    private lateinit var hereTrafficApiKey: String
-    private lateinit var mTrafficViewModel: TrafficItemViewModel
+    private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
+    private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var adapter: AlertListAdapter
-
-    private val trafficIdRoomList = mutableListOf<Long>()
-    private val trafficIdApiList = mutableListOf<Long>()
 
     // Set search at the top menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -84,14 +77,6 @@ class HomeFragment : Fragment() {
             adapter.setData(alerts)
         })
 
-        // Set up Room DB Traffic view model
-        mTrafficViewModel = ViewModelProvider(this).get(TrafficItemViewModel::class.java)
-        mTrafficViewModel.readAllData.observe(viewLifecycleOwner, { traffic ->
-            for (item in traffic) {
-                trafficIdRoomList.add(item.traffic_item_id!!)
-            }
-        })
-
         // Set top bar search
         setHasOptionsMenu(true)
 
@@ -111,22 +96,22 @@ class HomeFragment : Fragment() {
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
             } else {
-                Log.d("DBG", response.toString())
+                // Log.d("DBG", response.toString())
             }
         })
 
-        // HERE MAPS TRAFFIC API view model setup
-        val repository = ApiRepository()
-        val viewModelFactory = ApiViewModelFactory(repository)
-        hereTrafficViewModel =
-            ViewModelProvider(this, viewModelFactory).get(ApiViewModel::class.java)
-        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
-        hereTrafficViewModel.getTrafficData(hereTrafficApiKey)
-        hereTrafficViewModel.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response.isSuccessful) {
-                insertToTrafficDatabase(response)
+        // StopTimes API viewmodel
+        val stopTimesRepository = StopTimesRepository()
+        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
+        mStopTimesApiViewModel =
+            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
+        mStopTimesApiViewModel.getStopTimesData()
+        mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
+            if (response != null) {
+                // Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
+                insertToStopTimesDatabase(response)
             } else {
-                Log.d("DBG", response.errorBody().toString())
+                // Log.d("DBG", response.toString())
             }
         })
 
@@ -173,68 +158,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun insertToTrafficDatabase(response: retrofit2.Response<TrafficData>) {
-        var exists: Boolean
-        val trafficItemList = response.body()!!.trafficDataTrafficItems
-        if (trafficItemList != null) {
-            for (item: com.xpyx.nokiahslvisualisation.model.traffic.TrafficItem in trafficItemList.trafficItem!!) {
-                trafficIdApiList.add(item.trafficItemId!!)
-
-                GlobalScope.launch(context = Dispatchers.IO) {
-                    exists = mTrafficViewModel.checkIfExists(item.trafficItemId)
-
-                    if (!exists) {
-
-                        val trafficItemId = item.trafficItemId
-                        val trafficItemStatusShortDesc = item.trafficItemStatusShortDesc
-                        val trafficItemTypeDesc = item.trafficItemTypeDesc
-                        val startTime = item.trafficItemStartTime
-                        val endTime = item.trafficItemEndTime
-                        val criticality = item.trafficItemCriticality
-                        val verified = item.trafficItemVerified
-                        val rdsTmcLocations = item.trafficitemRDSTmclocations
-                        val location = item.trafficItemLocation
-                        val trafficItemDetail = item.trafficItemDetail
-                        val trafficItemDescriptionElement = item.trafficItemDescriptionElement
-
-                        val traffic = DataTrafficItem(
-                            0,
-                            trafficItemId,
-                            trafficItemStatusShortDesc,
-                            trafficItemTypeDesc,
-                            startTime,
-                            endTime,
-                            criticality,
-                            verified,
-                            rdsTmcLocations,
-                            location,
-                            trafficItemDetail,
-                            trafficItemDescriptionElement
-                        )
-
-                        if (criticality != null) {
-                            if (criticality.ityDescription.equals("critical")) {
-                                mTrafficViewModel.addTrafficData(traffic)
-                                Log.d("TRAFFIC", "Successfully added traffic item: $trafficItemId")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove ended traffic items
-        if (trafficIdApiList.isNotEmpty() && trafficIdRoomList.isNotEmpty()) {
-            for (item in trafficIdRoomList) {
-                if (trafficIdApiList.contains(item)) {
-                    GlobalScope.launch(context = Dispatchers.IO) {
-                        mTrafficViewModel.removeIfNotExists(item)
-                        Log.d("REMOVED_ITEM", "Removed item with id: $item")
-                    }
-                }
-            }
-        }
-    }
 
     private fun insertToAlertDatabase(response: Response<AlertsListQuery.Data>) {
         var exists: Boolean
@@ -246,7 +169,7 @@ class HomeFragment : Fragment() {
 
                     if (exists) {
 
-                        Log.d("DBG", "Alert already in database")
+                        // Log.d("DBG", "Alert already in database")
 
                     } else {
                         val alertId = item.id()
@@ -272,6 +195,22 @@ class HomeFragment : Fragment() {
                             alertEffect
                         )
                         mAlertViewModel.addAlertItem(alert)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun insertToStopTimesDatabase(response: Response<StopTimesListQuery.Data>) {
+        if (response.data?.stops() != null) {
+            response.data?.stops()!!.forEach { item ->
+                if (item.stoptimesForPatterns()?.isEmpty() != true) {
+                    GlobalScope.launch(context = Dispatchers.IO) {
+                        val stopTimes = StopTimesItem(
+                            0,
+                            item
+                        )
+                        mStopTimesItemViewModel.addStopItem(stopTimes)
                     }
                 }
             }

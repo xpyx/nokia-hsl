@@ -86,13 +86,13 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
 
         override fun performFiltering(constraint: CharSequence?): FilterResults {
 
-            var filteredAlertList = mutableListOf<AlertItem>()
-            if (constraint == null || constraint.length == 0) {
+            val filteredAlertList = mutableListOf<AlertItem>()
+            if (constraint == null || constraint.isEmpty()) {
                 filteredAlertList.addAll(alertListFull)
 
             } else {
 
-                var filterPattern: String = constraint.toString().toLowerCase().trim()
+                val filterPattern: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
                 for (item in alertListFull) {
                     if (
                         item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
@@ -110,5 +110,9 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
             return results
         }
     }
+
+
+
+
 }
 

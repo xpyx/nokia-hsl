@@ -5,14 +5,21 @@
 
 This repository contains:
 
-- Android client for displaying realtime public transport data
-    - [High-frequency positioning](https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/) of vehicles via MQTT 
+- An Android client for displaying realtime public transport data
+    - [High-frequency positioning](https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/) of vehicles via MQTT [API Terms of use](https://digitransit.fi/en/developers/apis/6-terms-of-use() 
     - [HSL alerts](https://digitransit.fi/en/developers/apis/1-routing-api/disruption-info/) via Apollo GraphQL Client
     - Traffic data from Here Maps API
     - AR map 
-- Node Express server for connecting to HSL GTFS-RT feed and to a (slow) SQL Server in Azure cloud
 
-Used libraries:
+#### To run the Android app
+
+1. Open NokiaHslVisualisation directory in Android Studio
+2. Add here maps APIkey to local.properties
+    - row should look like:
+    `HERE_MAPS_API_KEY="<API KEY>"`
+3. Preferably use your device's mobile data. Some network firewalls block MQTT traffic.
+
+#### Used libraries:
 
 - Jetpack Navigation 2.3.3 [License](https://developer.android.com/license)
 - Room DB 2.2.6 [License](https://developer.android.com/license)
@@ -25,13 +32,6 @@ Used libraries:
 - Apollo Graphql Client 2.5.5 [License](https://github.com/apollographql/apollo/blob/main/LICENSE)
 - Paho Mqtt Client 1.1.0 [License](https://www.eclipse.org/org/documents/epl-v10.php)
 - Mapbox 9.6.1 [Terms of service](https://www.mapbox.com/legal/tos)
-
-#### To run the Android app
-
-1. Open NokiaHslVisualisation directory in Android Studio
-2. Add here maps APIkey to local.properties
-    - row should look like:
-    `HERE_MAPS_API_KEY="<API KEY>"`
 
 
 ---

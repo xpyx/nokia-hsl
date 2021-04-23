@@ -1,0 +1,69 @@
+query StopTimesList {
+
+    stops {
+        stoptimesForPatterns(
+            startTime: 0,
+            timeRange: 360,
+            numberOfDepartures: 5
+        ) {
+            stoptimes {
+                trip {
+                    gtfsId
+                    routeShortName
+                    route {
+                        gtfsId
+                    }
+                }
+                arrivalDelay
+                realtime
+                realtimeArrival
+                headsign
+                stop {
+                    name
+                    lat
+                    lon
+                    gtfsId
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+#    stops {
+#        id
+#        name
+#        stoptimesWithoutPatterns(
+#            timeRange: 100,
+#            numberOfDepartures: 2
+#        ) {
+#            scheduledArrival
+#            realtimeArrival
+#            arrivalDelay
+#            scheduledDeparture
+#            realtimeDeparture
+#            departureDelay
+#            realtime
+#            realtimeState
+#            serviceDay
+#            headsign
+#            trip {
+#                gtfsId
+#                route {
+#                    gtfsId
+#                    shortName
+#                    longName
+#                    mode
+#                    type
+#                    desc
+#                    url
+#                }
+#                serviceId
+#                activeDates
+#            }
+#        }
+#    }
+#}
