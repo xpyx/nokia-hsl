@@ -125,7 +125,7 @@ class ListFragment : Fragment(){
         hereTrafficViewModelTraffic =
                 ViewModelProvider(this, viewModelFactory).get(TrafficApiViewModel::class.java)
 
-        hereTrafficApiKey = ""/*resources.getString(string.here_maps_api_key)*/
+        hereTrafficApiKey = resources.getString(string.here_maps_api_key)
 
         loadData()
         if (hereTrafficApiKey.isNotEmpty()) {
