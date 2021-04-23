@@ -27,6 +27,7 @@ class MqttHelper() {
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // subscribe(topic)
+                    Log.d("DBG", "MQTT connect done")
                     //connectionStatus = true
                     // Give your callback on connection established here
                 }
@@ -49,7 +50,7 @@ class MqttHelper() {
             mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
                     // Give your callback on Subscription here
-                    Log.d("DBG", "subscription OK")
+                    Log.d("DBG", "subscription to topic: $topic OK")
 
                 }
 
@@ -74,6 +75,8 @@ class MqttHelper() {
             override fun connectionLost(cause: Throwable) {
                 //connectionStatus = false
                 // Give your callback on failure here
+                Log.d("DBG", "MQTT connection lost")
+
             }
 
             override fun messageArrived(topic: String, message: MqttMessage) {
@@ -89,6 +92,8 @@ class MqttHelper() {
 
                 } catch (e: Exception) {
                     // Give your callback on error here
+                    Log.d("DBG", "MQTT exception: $e")
+
                 }
             }
 

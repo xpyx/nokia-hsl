@@ -43,12 +43,13 @@ import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
-import com.xpyx.nokiahslvisualisation.data.StopTimesItemViewModel
 import com.xpyx.nokiahslvisualisation.model.late.Late
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.networking.mqttHelper.TopicSetter
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_vehicles.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -68,6 +69,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private lateinit var editTextValueBusses: Editable
     private lateinit var spinner: ProgressBar
     private var lateTime: Int = 0
+    var topic: String = ""
+    var busline: String = ""
+    var buslineTopic: String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -93,7 +97,47 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        // MQTT viewmodel
+        val mqttRepository = MQTTRepository()
+        val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
+        mMQTTViewModel =
+            ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
+
+        // Connect to MQTT broker, subscribe to topic and start receiving messages
+        GlobalScope.launch {
+            connectMQTT()
+        }
+
         val topicSetter = TopicSetter()
+
+        // Checkboxes
+        val listOfCheckBoxes = listOf<CheckBox>(
+            bus,
+            tram
+        )
+
+        listOfCheckBoxes.forEach {
+            val name = it.text.toString()
+            it.setOnCheckedChangeListener { _, _ ->
+                if (it.isChecked) {
+                    // subscribe to topic containing only trams or busses
+                    if (name == "Show only trams") {
+                        topic = "/hfp/v2/journey/ongoing/vp/tram/#"
+                        Log.d("DBG topic", topic)
+                        mMQTTViewModel.subscribe(topic)
+                    } else if (name == "Show only busses") {
+                        topic = "/hfp/v2/journey/ongoing/vp/bus/#"
+                        Log.d("DBG topic", topic)
+                        mMQTTViewModel.subscribe(topic)
+                    }
+                } else {
+                    // clear map markers
+                    mMQTTViewModel.unsubscribe(topic)
+                }
+            }
+        }
+
 
         // Set up editText for vehicle late time
         editText = view.findViewById(R.id.edit_text_late_time)
@@ -196,7 +240,30 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         editTextBusses.inputType = InputType.TYPE_CLASS_NUMBER
         editTextValueBusses = editTextBusses.text
 
+        // Listen to editTextBusses and on complete set busline,
+        // clear editText and hide keyboard
+        editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
 
+                // assign busline
+                busline = (editTextValueBusses.toString())
+
+                // Show spinner
+                spinner.visibility = View.VISIBLE
+
+                // Unsubscribe from previous topics
+                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/#")
+
+                buslineTopic = "/hfp/v2/journey/+/vp/+/+/+/$busline/#"
+                mMQTTViewModel.subscribe(buslineTopic)
+
+                editTextBusses.text.clear()
+                hideKeyboard()
+                view.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
 
         // StopTimes API viewmodel
         val stopTimesRepository = StopTimesRepository()
@@ -209,16 +276,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
 
-        // MQTT viewmodel
-        val mqttRepository = MQTTRepository()
-        val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
-        mMQTTViewModel =
-            ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
-
-        // Connect to MQTT broker, subscribe to topic and start receiving messages
-        GlobalScope.launch {
-            receiveMQTTMessages()
-        }
     }
 
 
@@ -338,7 +395,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         }
     }
 
-    suspend fun receiveMQTTMessages() {
+    suspend fun connectMQTT() {
         val job = GlobalScope.launch(Dispatchers.IO) {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
