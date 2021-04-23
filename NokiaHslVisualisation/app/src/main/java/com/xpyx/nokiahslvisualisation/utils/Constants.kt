@@ -7,5 +7,6 @@ class Constants {
         const val HSL_MQTT_HOST = "tcp://mqtt.hsl.fi:1883"
         const val BASE_URL_HERE_TRAFFIC = "https://traffic.ls.hereapi.com/traffic/6.3/"
         const val TRAFFIC_FILTERS = "trafficFilterSharedPreferences"
+        const val TRAFFIC_API_KEY = "trafficApiKeySharedPreferences"
     }
 }
