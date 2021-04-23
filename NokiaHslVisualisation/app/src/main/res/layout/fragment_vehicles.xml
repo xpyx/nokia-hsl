@@ -123,6 +123,57 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
+
+            <TextView
+                android:id="@+id/see_bus_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/lines_search"
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="?attr/colorOnSecondary" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutBusLines"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="280dp"
+                android:layout_height="63dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/see_bus_lines_hint"
+                app:boxCornerRadiusBottomEnd="5dp"
+                app:boxCornerRadiusBottomStart="5dp"
+                app:boxCornerRadiusTopEnd="5dp"
+                app:boxCornerRadiusTopStart="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_bus_line"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textColor="@color/design_default_color_on_secondary"
+                    android:textColorHint="@color/design_default_color_on_secondary"
+                    tools:ignore="KeyboardInaccessibleWidget" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <ProgressBar
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"

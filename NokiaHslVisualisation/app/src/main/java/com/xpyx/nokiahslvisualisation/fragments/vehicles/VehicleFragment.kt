@@ -63,7 +63,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private lateinit var mapboxMap: MapboxMap
     private lateinit var editText: EditText
+    private lateinit var editTextBusses: EditText
     private lateinit var editTextValue: Editable
+    private lateinit var editTextValueBusses: Editable
     private lateinit var spinner: ProgressBar
     private var lateTime: Int = 0
 
@@ -93,7 +95,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         val topicSetter = TopicSetter()
 
-        // Set up editText
+        // Set up editText for vehicle late time
         editText = view.findViewById(R.id.edit_text_late_time)
         editText.inputType = InputType.TYPE_CLASS_NUMBER
         editTextValue = editText.text
@@ -106,6 +108,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // clear editText and hide keyboard
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
                 // assign late time
                 setLateTime(editTextValue.toString().toInt())
 
@@ -187,6 +190,13 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             }
             false
         })
+
+        // Set up editText for searching a bus line
+        editTextBusses = view.findViewById(R.id.edit_text_bus_line)
+        editTextBusses.inputType = InputType.TYPE_CLASS_NUMBER
+        editTextValueBusses = editTextBusses.text
+
+
 
         // StopTimes API viewmodel
         val stopTimesRepository = StopTimesRepository()
