@@ -5,8 +5,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -123,7 +125,7 @@ class ListFragment : Fragment(){
         hereTrafficViewModelTraffic =
                 ViewModelProvider(this, viewModelFactory).get(TrafficApiViewModel::class.java)
 
-        hereTrafficApiKey = resources.getString(string.here_maps_api_key)
+        hereTrafficApiKey = ""/*resources.getString(string.here_maps_api_key)*/
 
         loadData()
         if (hereTrafficApiKey.isNotEmpty()) {
@@ -143,6 +145,11 @@ class ListFragment : Fragment(){
                 this.height = 80
             }
             parent_linear_layout.requestLayout()
+
+            api_key_link_button.setOnClickListener {
+                val i = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_KEY_LINK_URL))
+                requireContext().startActivity(i)
+            }
 
             edit_text_api_key.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE && !edit_text_api_key.text.isNullOrEmpty()) {

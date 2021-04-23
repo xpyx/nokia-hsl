@@ -27,32 +27,37 @@
 
     <!-- The navigation drawer that comes from the left -->
     <!-- Note that `android:layout_gravity` needs to be set to 'start' -->
-    <LinearLayout
-        android:id="@+id/add_api_key_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="bottom"
-        android:layout_weight="0"
-        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/add_api_key_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="bottom"
+            android:layout_weight="0"
+            android:orientation="horizontal">
 
 
-        <EditText
-            android:id="@+id/edit_text_api_key"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:autofillHints="@string/api_key_edit_text_hint"
-            android:ems="10"
-            android:hint="@string/api_key_edit_text_hint"
-            android:inputType="text" />
+            <EditText
+                android:id="@+id/edit_text_api_key"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:autofillHints="@string/api_key_edit_text_hint"
+                android:ems="10"
+                android:layout_weight="1"
+                android:hint="@string/api_key_edit_text_hint"
+                android:inputType="text" />
 
-        <Button
-            android:id="@+id/add_api_key_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/add_api_key_button" />
-    </LinearLayout>
+            <Button
+                android:id="@+id/api_key_link_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/api_key_link_button_text" />
+
+            <Button
+                android:id="@+id/add_api_key_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/add_api_key_button" />
+        </LinearLayout>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
