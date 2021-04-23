@@ -1,4 +1,3 @@
-
 package com.xpyx.nokiahslvisualisation.fragments.list
 
 import android.Manifest
@@ -6,16 +5,17 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.CheckBox
-import android.widget.RadioButton
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -30,7 +30,6 @@ import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModel
 import com.xpyx.nokiahslvisualisation.api.TrafficApiViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
-import com.xpyx.nokiahslvisualisation.model.traffic.Geoloc
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.TrafficRepository
 import com.xpyx.nokiahslvisualisation.utils.Constants
@@ -38,9 +37,8 @@ import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.osmdroid.util.GeoPoint
+import java.io.File
 import java.util.*
-import kotlin.math.absoluteValue
 
 class ListFragment : Fragment(){
 
@@ -126,18 +124,78 @@ class ListFragment : Fragment(){
         val viewModelFactory = TrafficApiViewModelFactory(repository)
         hereTrafficViewModelTraffic =
                 ViewModelProvider(this, viewModelFactory).get(TrafficApiViewModel::class.java)
-        hereTrafficApiKey = resources.getString(R.string.here_maps_api_key)
-        hereTrafficViewModelTraffic.getTrafficData(hereTrafficApiKey)
-        hereTrafficViewModelTraffic.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response.isSuccessful) {
-                insertToTrafficDatabase(response)
-            } else {
-                Log.d("DBG", response.errorBody().toString())
-            }
-        })
-        loadData()
-        checkFilters()
 
+        hereTrafficApiKey = resources.getString(string.here_maps_api_key)
+
+        loadData()
+        if (hereTrafficApiKey.isNotEmpty()) {
+            hereTrafficViewModelTraffic.getTrafficData(hereTrafficApiKey)
+            hereTrafficViewModelTraffic.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
+                if (response.isSuccessful) {
+                    insertToTrafficDatabase(response)
+                } else {
+                    Log.d("DBG", response.errorBody().toString())
+                }
+            })
+
+        } else /*IF PUBLISHED IN PLAY STORE*/ {
+            Toast.makeText(requireContext(), getString(string.toast_api_key), Toast.LENGTH_LONG).show()
+            add_api_key_layout.layoutParams.apply {
+                (this as LinearLayout.LayoutParams).weight = 1F
+                this.height = 80
+            }
+            parent_linear_layout.requestLayout()
+
+            api_key_link_button.setOnClickListener {
+                val i = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.API_KEY_LINK_URL))
+                requireContext().startActivity(i)
+            }
+
+            edit_text_api_key.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE && !edit_text_api_key.text.isNullOrEmpty()) {
+                    hereTrafficApiKey = edit_text_api_key.text.toString()
+                    hereTrafficViewModelTraffic.getTrafficData(hereTrafficApiKey)
+                    hereTrafficViewModelTraffic.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
+                        if (response.isSuccessful) {
+                            insertToTrafficDatabase(response)
+                        } else {
+                            Log.d("DBG", response.errorBody().toString())
+                        }
+                    })
+                    hideKeyboard()
+                    add_api_key_layout.layoutParams.apply {
+                        (this as LinearLayout.LayoutParams).weight = 0F
+                        this.height = 0
+                    }
+                    parent_linear_layout.requestLayout()
+                    return@OnEditorActionListener true
+                }
+                false
+            })
+
+            add_api_key_button.setOnClickListener {
+                if (!edit_text_api_key.text.isNullOrEmpty()) {
+                    hereTrafficApiKey = edit_text_api_key.text.toString()
+                    hereTrafficViewModelTraffic.getTrafficData(hereTrafficApiKey)
+                    hereTrafficViewModelTraffic.myTrafficApiResponse.observe(viewLifecycleOwner, { response ->
+                        if (response.isSuccessful) {
+                            insertToTrafficDatabase(response)
+                        } else {
+                            Log.d("DBG", response.errorBody().toString())
+                        }
+                    })
+                    hideKeyboard()
+                    add_api_key_layout.layoutParams.apply {
+                        (this as LinearLayout.LayoutParams).weight = 0F
+                        this.height = 0
+                    }
+                    parent_linear_layout.requestLayout()
+                }
+            }
+
+        }
+
+        checkFilters()
         distance_slider.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener{
             override fun onStartTrackingTouch(slider: RangeSlider) {
                 Log.d("RangeSlider", "Started tracking touch")
@@ -308,6 +366,36 @@ class ListFragment : Fragment(){
             editor?.apply()
             Log.d("FILTERSAVED", "$item: $value")
         }
+        if (!hereTrafficApiKey.isNullOrEmpty()) {
+            val apikeyPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_API_KEY, MODE_PRIVATE)
+            val editor2 = apikeyPreferences?.edit()
+            editor2?.putString(Constants.TRAFFIC_API_KEY, hereTrafficApiKey)
+            editor2?.apply()
+        }
+    }
+
+    private fun loadData() {
+        val apikeyPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_API_KEY, MODE_PRIVATE)
+        val buffer: String? = apikeyPreferences?.getString(Constants.TRAFFIC_API_KEY, "")
+        if (!buffer.isNullOrEmpty()) {
+            hereTrafficApiKey = buffer
+        }
+
+        val sPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_FILTERS, MODE_PRIVATE)
+        for (item in listOfBooleanFilterNames) {
+            listOfFilters[item] = sPreferences?.getBoolean(item, false) as Boolean
+        }
+        for (item in listOfDistanceFilterNames) {
+            if (item == "min_lat_difference" || item == "min_lon_difference"){
+                listOfFilters[item] = sPreferences?.getFloat(item, 0.0F)?.toDouble() as Double
+            } else {
+                listOfFilters[item] = sPreferences?.getFloat(item, 1.3565576076507568F)?.toDouble() as Double
+            }
+        }
+        val list = listOf(listOfFilters["min_lat_difference"] as Double, listOfFilters["max_lat_difference"] as Double)
+        distance_slider.setValues(convertFromCoordinates(list)[0], convertFromCoordinates(list)[1])
+
+        checkFilters()
     }
 
     private fun checkFilters() {
@@ -333,24 +421,6 @@ class ListFragment : Fragment(){
         }
 
         adapter.filter.filter(filterText)
-    }
-
-    private fun loadData() {
-        val sPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_FILTERS, MODE_PRIVATE)
-        for (item in listOfBooleanFilterNames) {
-            listOfFilters[item] = sPreferences?.getBoolean(item, false) as Boolean
-        }
-        for (item in listOfDistanceFilterNames) {
-            if (item == "min_lat_difference" || item == "min_lon_difference"){
-                listOfFilters[item] = sPreferences?.getFloat(item, 0.0F)?.toDouble() as Double
-            } else {
-                listOfFilters[item] = sPreferences?.getFloat(item, 1.3565576076507568F)?.toDouble() as Double
-            }
-        }
-        val list = listOf(listOfFilters["min_lat_difference"] as Double, listOfFilters["max_lat_difference"] as Double)
-        distance_slider.setValues(convertFromCoordinates(list)[0], convertFromCoordinates(list)[1])
-
-        checkFilters()
     }
 
     private fun getLocationUpdates() {
@@ -411,6 +481,17 @@ class ListFragment : Fragment(){
 
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    // For hiding the soft keyboard
+    private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+                getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 }

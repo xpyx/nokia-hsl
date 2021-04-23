@@ -9,8 +9,12 @@
     <string name="alert_details_view">Alert details</string>
     <string name="menu_ar">AR View</string>
 
-    // List view
-    <string name="button_text">Refresh</string>
+    // Traffic list view
+    <string name="toast_api_key">To use traffic data, you need HERE maps API key. You can sign up for it in https://developer.here.com/tutorials/getting-here-credentials/</string>
+    <string name="add_api_key_button">Add key</string>
+    <string name="api_key_edit_text_hint">API-key here</string>
+    <string name="api_key_link_button_text">LINK</string>
+
     // Content descriptions
     <string name="warning_icon_content_description">Warning icon</string>
 
