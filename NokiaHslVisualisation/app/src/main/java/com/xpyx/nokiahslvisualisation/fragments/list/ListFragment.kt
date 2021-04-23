@@ -135,7 +135,8 @@ class ListFragment : Fragment(){
                     Log.d("DBG", response.errorBody().toString())
                 }
             })
-        } else {
+
+        } else /*IF PUBLISHED IN PLAY STORE*/ {
             Toast.makeText(requireContext(), getString(string.toast_api_key), Toast.LENGTH_LONG).show()
             add_api_key_layout.layoutParams.apply {
                 (this as LinearLayout.LayoutParams).weight = 1F
