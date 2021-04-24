@@ -13,10 +13,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.BounceInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -36,6 +39,8 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.markerview.MarkerView
+import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.sources.RasterSource
 import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
@@ -54,6 +59,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+
 
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
@@ -72,6 +79,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     var topic: String = ""
     var busline: String = ""
     var buslineTopic: String = ""
+    var positions = mutableMapOf<String, VehiclePosition>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -96,7 +104,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
@@ -164,68 +171,74 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
                 // Get stoptimes
                 mStopTimesApiViewModel.getStopTimesData()
-                mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
-                    if (response != null) {
+                mStopTimesApiViewModel.myStopTimesApiResponse.observe(
+                    viewLifecycleOwner,
+                    { response ->
+                        if (response != null) {
 
-                        // Hide spinner
-                        spinner.visibility = View.GONE
+                            // Hide spinner
+                            spinner.visibility = View.GONE
 
-                        // The stoptimes data is here, iterate over the whole response
-                        response.data?.stops()?.forEach {
+                            // The stoptimes data is here, iterate over the whole response
+                            response.data?.stops()?.forEach {
 
-                            if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
+                                if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
 
-                                val routeId =
-                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()
-                                        ?.gtfsId()?.substring(
-                                            4
-                                        )
+                                    val routeId =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.trip()?.route()
+                                            ?.gtfsId()?.substring(
+                                                4
+                                            )
 
-                                val transportMode =
-                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()?.route()
-                                        ?.mode()
+                                    val transportMode =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.trip()?.route()
+                                            ?.mode()
 
-                                val arrivalDelay =
-                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.arrivalDelay()
+                                    val arrivalDelay =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.arrivalDelay()
 
-                                var directionId =
-                                    it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)?.trip()
-                                        ?.directionId()
+                                    var directionId =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.trip()
+                                            ?.directionId()
 
-                                // Change direction id according to instructions. Also note if null, then -> "+"
-                                if (directionId.equals("0")) {
-                                    directionId = "1"
-                                } else if (directionId.equals("1")) {
-                                    directionId = "2"
-                                }
+                                    // Change direction id according to instructions. Also note if null, then -> "+"
+                                    if (directionId.equals("0")) {
+                                        directionId = "1"
+                                    } else if (directionId.equals("1")) {
+                                        directionId = "2"
+                                    }
 
-                                if (arrivalDelay != null) {
-                                    if (arrivalDelay > lateTime) {
+                                    if (arrivalDelay != null) {
+                                        if (arrivalDelay > lateTime) {
 
-                                        val late = Late(
-                                            routeId,
-                                            transportMode.toString().toLowerCase(),
-                                            arrivalDelay.toString(),
-                                            directionId
-                                        )
+                                            val late = Late(
+                                                routeId,
+                                                transportMode.toString().toLowerCase(),
+                                                arrivalDelay.toString(),
+                                                directionId
+                                            )
 
-                                        val topicString = topicSetter.setTopic(late)
-                                        Log.d("DBG topicString", topicString)
-                                        mMQTTViewModel.subscribe(topicString)
+                                            val topicString = topicSetter.setTopic(late)
+                                            Log.d("DBG topicString", topicString)
+                                            mMQTTViewModel.subscribe(topicString)
 
-                                        Log.d("DBG late vehicles", "routeId         : $routeId")
-                                        Log.d("DBG late vehicles", "transportMode   : $transportMode")
-                                        Log.d("DBG late vehicles", "arrivalDelay    : $arrivalDelay")
-                                        Log.d("DBG late vehicles", "directionId     : $directionId")
-                                        Log.d("DBG late vehicles", "---------------------------")
+                                            Log.d("DBG late vehicles", "routeId         : $routeId")
+                                            Log.d("DBG late vehicles", "transportMode   : $transportMode")
+                                            Log.d("DBG late vehicles","arrivalDelay     : $arrivalDelay")
+                                            Log.d("DBG late vehicles","directionId      : $directionId")
+                                            Log.d("DBG late vehicles","---------------------------")
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            // Log.d("DBG", response.toString())
                         }
-                    } else {
-                        // Log.d("DBG", response.toString())
-                    }
-                })
+                    })
 
                 editText.text.clear()
                 hideKeyboard()
@@ -252,9 +265,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 spinner.visibility = View.VISIBLE
 
                 // Unsubscribe from previous topics
-                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/#")
+                mMQTTViewModel.unsubscribe(buslineTopic)
 
-                buslineTopic = "/hfp/v2/journey/+/vp/+/+/+/$busline/#"
+                buslineTopic = "/hfp/v2/journey/+/vp/+/+/+/10$busline/#"
                 mMQTTViewModel.subscribe(buslineTopic)
 
                 editTextBusses.text.clear()
@@ -301,7 +314,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             )
 
             val position = CameraPosition.Builder()
-                .zoom(15.0)
+                .zoom(25.0)
                 .tilt(20.0)
                 .build()
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
@@ -405,10 +418,25 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
+        spinner.visibility = View.GONE
 
-        val description = """ 
+        // If positions map contains the vehicle, just update it's info
+        if (positions.containsKey(vehiclePosition.VP.oper.toString()+
+                    vehiclePosition.VP.veh.toString())) {
+
+        // If positions map doesn't contain the vehicle, add it there
+        } else {
+            positions[vehiclePosition.VP.oper.toString()+
+                    vehiclePosition.VP.veh.toString()] = vehiclePosition
+        }
+
+        Log.d("DBG positions map", positions.toString())
+
+        val title = "Line: ${vehiclePosition.VP.desi}"
+
+        val snippet = """ 
             Operator: ${vehiclePosition.VP.oper}
-            Vehicle: ${vehiclePosition.VP.veh}            
+            Vehicle: ${vehiclePosition.VP.veh}   
             
             Speed: ${vehiclePosition.VP.spd} m/s
             Heading: ${vehiclePosition.VP.hdg} degrees
@@ -424,13 +452,41 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             var d = vehiclePosition.VP.long
         }
 
+
+
         mapView?.getMapAsync { mapbox ->
+
+/*            // Initialize the MarkerViewManager
+            var markerViewManager = MarkerViewManager(mapView, mapboxMap)
+
+            // Use an XML layout to create a View object
+            val customView: View = LayoutInflater.from(context).inflate(
+                R.layout.marker, null
+            )
+            customView.layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+
+            // Set the View's TextViews with content
+            val titleTextView = customView.findViewById<TextView>(R.id.marker_window_title)
+            titleTextView.text = vehiclePosition.VP.oper.toString()
+
+            val snippetTextView = customView.findViewById<TextView>(R.id.marker_window_snippet)
+            snippetTextView.text = description
+
+            // Use the View to create a MarkerView which will eventually be given to
+            // the plugin's MarkerViewManager class
+
+            // Use the View to create a MarkerView which will eventually be given to
+            // the plugin's MarkerViewManager class
+            var markerView = MarkerView(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble()), customView)
+            markerViewManager.addMarker(markerView)*/
 
             val mark = mapbox.addMarker(
                 MarkerOptions()
                     .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
-                    .title(description)
+                    .title(title)
+                    .snippet(snippet)
             )
+
             Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 4000)
         }
     }
