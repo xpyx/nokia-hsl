@@ -127,16 +127,26 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
                     if (name == "Show only trams") {
+                        // Clear positions map
+                        positions.clear()
+                        // First clear other topics
+                        mMQTTViewModel.unsubscribe(topic)
+                        mMQTTViewModel.unsubscribe(lineTopic)
+                        // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/tram/#"
-                        Log.d("DBG topic", topic)
                         mMQTTViewModel.subscribe(topic)
                     } else if (name == "Show only busses") {
+                        // Clear positions map
+                        positions.clear()
+                        // First clear other topics
+                        mMQTTViewModel.unsubscribe(topic)
+                        mMQTTViewModel.unsubscribe(lineTopic)
+                        // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/bus/#"
-                        Log.d("DBG topic", topic)
                         mMQTTViewModel.subscribe(topic)
                     }
                 } else {
-                    // clear map markers
+                    // Clear other topics
                     mMQTTViewModel.unsubscribe(topic)
                 }
             }
@@ -156,6 +166,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // clear editText and hide keyboard
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // Clear positions map
+                positions.clear()
 
                 // assign late time
                 setLateTime(editTextValue.toString().toInt())
@@ -253,6 +266,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // clear editText and hide keyboard
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // Clear positions map
+                positions.clear()
 
                 // Convert line to route ID
                 val line = (editTextValueLine.toString())
@@ -427,10 +443,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     vehiclePosition.VP.veh.toString()] = vehiclePosition
         }
 
-        Log.d("DBG positions map", positions.toString())
+        Log.d("DBG positions size", "Size of positions map: ${positions.size.toString()}")
 
+        // Details of the vehicle on the marker
         val title = "Line: ${vehiclePosition.VP.desi}"
-
         val snippet = """ 
             Operator: ${vehiclePosition.VP.oper}
             Vehicle: ${vehiclePosition.VP.veh}   
