@@ -10,17 +10,56 @@
     android:theme="@style/Theme.NokiaHslVisualisation">
 
 
+    <LinearLayout
+        android:id="@+id/parent_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bus_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
-        android:layout_weight="1">
+        android:layout_marginHorizontal="16dp"
+        android:layout_weight="15">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <!-- The navigation drawer that comes from the left -->
     <!-- Note that `android:layout_gravity` needs to be set to 'start' -->
+        <LinearLayout
+            android:id="@+id/add_api_key_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="bottom"
+            android:layout_weight="0"
+            android:orientation="horizontal">
+
+
+            <EditText
+                android:id="@+id/edit_text_api_key"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:autofillHints="@string/api_key_edit_text_hint"
+                android:ems="10"
+                android:layout_weight="1"
+                android:hint="@string/api_key_edit_text_hint"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/api_key_link_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/api_key_link_button_text" />
+
+            <Button
+                android:id="@+id/add_api_key_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/add_api_key_button" />
+        </LinearLayout>
+    </LinearLayout>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/filter_card_view"
         android:layout_width="200dp"
@@ -34,16 +73,23 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
+                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/criticality_menu_item"
                 android:textColor="?attr/colorOnSecondary"
                 android:layout_marginHorizontal="5dp"
                 android:textSize="24sp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOnSecondary"
+                android:layout_marginVertical="3dp"/>
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/critical_checkbox"
+                android:layout_marginVertical="5dp"
                 android:text="@string/critical_menu_item"
                 android:layout_marginHorizontal="5dp"
                 android:gravity="fill"
@@ -52,6 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/major_checkbox"
+                android:layout_marginVertical="5dp"
                 android:text="@string/major_menu_item"
                 android:layout_marginHorizontal="5dp"
                 android:gravity="fill"
@@ -60,18 +107,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/minor_checkbox"
+                android:layout_marginBottom="5dp"
                 android:text="@string/minor_menu_item"
                 android:layout_marginHorizontal="5dp"
                 android:gravity="fill"
                 />
+
             <com.google.android.material.textview.MaterialTextView
+                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/distance_menu_item"
                 android:textColor="?attr/colorOnSecondary"
                 android:layout_marginHorizontal="5dp"
                 android:textSize="24sp"/>
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOnSecondary"
+                android:layout_marginVertical="3dp"/>
             <com.google.android.material.slider.RangeSlider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,17 +137,23 @@
                 android:stepSize="2.5"/>
 
             <com.google.android.material.textview.MaterialTextView
+                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/miscellaneous_menu_item"
                 android:textColor="?attr/colorOnSecondary"
                 android:layout_marginHorizontal="5dp"
                 android:textSize="24sp"/>
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOnSecondary"
+                android:layout_marginVertical="3dp"/>
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/response_vehicles_checkbox"
+                android:layout_marginVertical="5dp"
                 android:text="@string/response_vehicles_menu_item"
                 android:layout_marginHorizontal="5dp"
                 android:gravity="fill"
@@ -102,23 +162,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/road_closed_checkbox"
+                android:layout_marginBottom="5dp"
                 android:text="@string/road_closed_menu_item"
                 android:layout_marginHorizontal="5dp"
                 android:gravity="fill"
                 />
 
             <com.google.android.material.textview.MaterialTextView
+                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/type_menu_item"
                 android:textColor="?attr/colorOnSecondary"
                 android:layout_marginHorizontal="5dp"
                 android:textSize="24sp"/>
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOnSecondary"
+                android:layout_marginVertical="3dp"/>
             <RadioGroup
                 android:id="@+id/radio_group_criticality"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:orientation="vertical">
 
@@ -128,6 +194,7 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
                     android:layout_gravity="start"
+                    android:layout_marginVertical="5dp"
                     android:textColor="?attr/colorOnSecondary"
                     android:text="@string/incident_menu_item"
                     android:textSize="14sp" />
@@ -137,6 +204,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
+                    android:layout_marginBottom="5dp"
                     android:layout_gravity="start"
                     android:textColor="?attr/colorOnSecondary"
                     android:text="@string/event_menu_item"
@@ -144,7 +212,9 @@
             </RadioGroup>
             <Button
                 android:layout_width="match_parent"
+                android:background="?attr/colorPrimary"
                 android:layout_height="50dp"
+                android:layout_margin="4dp"
                 android:id="@+id/clear_all_button"
                 android:text="@string/clear_all_button_text"/>
         </LinearLayout>

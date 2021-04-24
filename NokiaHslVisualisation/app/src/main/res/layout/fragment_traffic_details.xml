@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginHorizontal="5dp"
     android:layout_marginTop="5dp"
     android:orientation="vertical"
@@ -13,40 +14,51 @@
         android:id="@+id/map_view_traffic"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="2"
+        android:background="@drawable/border"/>
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingHorizontal="20dp"
-        android:orientation="vertical"
-        android:gravity="center">
-        <TextView
-            android:id="@+id/traffic_title"
+        app:cardElevation="5dp"
+        android:background="@drawable/border">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="24sp" />
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp"
+            android:layout_marginVertical="20dp"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/border">
+            <TextView
+                android:id="@+id/traffic_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/traffic_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnSecondary"
-            android:minLines="3"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/traffic_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSecondary"
+                android:minLines="3"
+                android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/traffic_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnSecondary"
-            android:minLines="3"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/traffic_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSecondary"
+                android:minLines="3"
+                android:textSize="18sp" />
 
-    </LinearLayout>
-
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 
 </LinearLayout>
