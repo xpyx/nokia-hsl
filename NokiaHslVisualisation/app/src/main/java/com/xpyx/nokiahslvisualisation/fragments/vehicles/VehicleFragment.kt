@@ -13,12 +13,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.BounceInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -39,8 +37,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.markerview.MarkerView
-import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.sources.RasterSource
 import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
@@ -53,13 +49,13 @@ import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.networking.mqttHelper.TopicSetter
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
+import com.xpyx.nokiahslvisualisation.utils.LineToRoute
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_vehicles.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
@@ -73,12 +69,12 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private lateinit var editText: EditText
     private lateinit var editTextBusses: EditText
     private lateinit var editTextValue: Editable
-    private lateinit var editTextValueBusses: Editable
+    private lateinit var editTextValueLine: Editable
     private lateinit var spinner: ProgressBar
     private var lateTime: Int = 0
     var topic: String = ""
-    var busline: String = ""
-    var buslineTopic: String = ""
+    var lineToSearch: String = ""
+    var lineTopic: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
 
     override fun onAttach(context: Context) {
@@ -117,6 +113,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         }
 
         val topicSetter = TopicSetter()
+        val lineToRoute = LineToRoute()
 
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
@@ -250,25 +247,25 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Set up editText for searching a bus line
         editTextBusses = view.findViewById(R.id.edit_text_bus_line)
-        editTextBusses.inputType = InputType.TYPE_CLASS_NUMBER
-        editTextValueBusses = editTextBusses.text
+        editTextValueLine = editTextBusses.text
 
         // Listen to editTextBusses and on complete set busline,
         // clear editText and hide keyboard
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                // assign busline
-                busline = (editTextValueBusses.toString())
+                // Convert line to route ID
+                val line = (editTextValueLine.toString())
+                lineToSearch = lineToRoute.convertLineToRoute(line)
 
                 // Show spinner
                 spinner.visibility = View.VISIBLE
 
                 // Unsubscribe from previous topics
-                mMQTTViewModel.unsubscribe(buslineTopic)
+                mMQTTViewModel.unsubscribe(lineTopic)
 
-                buslineTopic = "/hfp/v2/journey/+/vp/+/+/+/10$busline/#"
-                mMQTTViewModel.subscribe(buslineTopic)
+                lineTopic = "/hfp/v2/journey/+/vp/+/+/+/$lineToSearch/#"
+                mMQTTViewModel.subscribe(lineTopic)
 
                 editTextBusses.text.clear()
                 hideKeyboard()
@@ -445,49 +442,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             Offset from timetable: ${vehiclePosition.VP.dl} seconds
         """.trimIndent()
 
-        val sumOF = object {
-            var a = vehiclePosition.VP.oper
-            var b = vehiclePosition.VP.veh
-            var c = vehiclePosition.VP.lat
-            var d = vehiclePosition.VP.long
-        }
-
-
-
         mapView?.getMapAsync { mapbox ->
-
-/*            // Initialize the MarkerViewManager
-            var markerViewManager = MarkerViewManager(mapView, mapboxMap)
-
-            // Use an XML layout to create a View object
-            val customView: View = LayoutInflater.from(context).inflate(
-                R.layout.marker, null
-            )
-            customView.layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-
-            // Set the View's TextViews with content
-            val titleTextView = customView.findViewById<TextView>(R.id.marker_window_title)
-            titleTextView.text = vehiclePosition.VP.oper.toString()
-
-            val snippetTextView = customView.findViewById<TextView>(R.id.marker_window_snippet)
-            snippetTextView.text = description
-
-            // Use the View to create a MarkerView which will eventually be given to
-            // the plugin's MarkerViewManager class
-
-            // Use the View to create a MarkerView which will eventually be given to
-            // the plugin's MarkerViewManager class
-            var markerView = MarkerView(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble()), customView)
-            markerViewManager.addMarker(markerView)*/
 
             val mark = mapbox.addMarker(
                 MarkerOptions()
-                    .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
+                    .position(LatLng(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble(), 1.0))
                     .title(title)
                     .snippet(snippet)
             )
 
-            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 4000)
+            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
         }
     }
 
