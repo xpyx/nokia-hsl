@@ -8,10 +8,12 @@ query StopTimesList {
         ) {
             stoptimes {
                 trip {
+                    directionId
                     gtfsId
                     routeShortName
                     route {
                         gtfsId
+                        mode
                     }
                 }
                 arrivalDelay
@@ -28,42 +30,3 @@ query StopTimesList {
         }
     }
 }
-
-
-
-
-
-#    stops {
-#        id
-#        name
-#        stoptimesWithoutPatterns(
-#            timeRange: 100,
-#            numberOfDepartures: 2
-#        ) {
-#            scheduledArrival
-#            realtimeArrival
-#            arrivalDelay
-#            scheduledDeparture
-#            realtimeDeparture
-#            departureDelay
-#            realtime
-#            realtimeState
-#            serviceDay
-#            headsign
-#            trip {
-#                gtfsId
-#                route {
-#                    gtfsId
-#                    shortName
-#                    longName
-#                    mode
-#                    type
-#                    desc
-#                    url
-#                }
-#                serviceId
-#                activeDates
-#            }
-#        }
-#    }
-#}
