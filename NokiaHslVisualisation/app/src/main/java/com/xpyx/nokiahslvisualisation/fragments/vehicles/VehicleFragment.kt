@@ -74,8 +74,8 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private var lateTime: Int = 0
     var topic: String = ""
     var lineToSearch: String = ""
-    var lineTopic: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
+    var listOfTopics = mutableListOf<String>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -100,6 +100,27 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Clear button
+        btn_clear.setOnClickListener {
+            if (topic.isNotEmpty()) {
+                mMQTTViewModel.unsubscribe(topic)
+                if (tram.isChecked) {
+                    tram.toggle()
+                } else if (bus.isChecked) {
+                    bus.toggle()
+                }
+
+            }
+            
+            if (!listOfTopics.isEmpty()) {
+                listOfTopics.forEach {
+                    mMQTTViewModel.unsubscribe(it)
+                }
+            }
+
+            Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
+        }
 
         // Hide vehicle count textviews
         vehicle_count.visibility = View.GONE
@@ -134,7 +155,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         positions.clear()
                         // First clear other topics
                         mMQTTViewModel.unsubscribe(topic)
-                        mMQTTViewModel.unsubscribe(lineTopic)
                         // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/tram/#"
                         mMQTTViewModel.subscribe(topic)
@@ -143,7 +163,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         positions.clear()
                         // First clear other topics
                         mMQTTViewModel.unsubscribe(topic)
-                        mMQTTViewModel.unsubscribe(lineTopic)
                         // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/bus/#"
                         mMQTTViewModel.subscribe(topic)
@@ -238,28 +257,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                                                 directionId
                                             )
 
-                                            val topicString = topicSetter.setTopic(late)
-                                            Log.d("DBG topicString", topicString)
-                                            mMQTTViewModel.subscribe(topicString)
+                                            topic = topicSetter.setTopic(late)
+                                            listOfTopics.add(topic)
+                                            mMQTTViewModel.subscribe(topic)
 
                                             Log.d("DBG late vehicles",
-                                                """routeId         : $routeId""")
-                                            Log.d(
-                                                "DBG late vehicles",
-                                                "transportMode   : $transportMode"
-                                            )
-                                            Log.d(
-                                                "DBG late vehicles",
-                                                "arrivalDelay     : $arrivalDelay"
-                                            )
-                                            Log.d(
-                                                "DBG late vehicles",
-                                                "directionId      : $directionId"
-                                            )
-                                            Log.d(
-                                                "DBG late vehicles",
-                                                "---------------------------"
-                                            )
+                                                """routeId          : $routeId
+                                                transportMode    : $transportMode
+                                                arrivalDelay     : $arrivalDelay
+                                                directionId      : $directionId
+                                                ---------------------------""".trimIndent())
                                         }
                                     }
                                 }
@@ -297,10 +304,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 spinner.visibility = View.VISIBLE
 
                 // Unsubscribe from previous topics
-                mMQTTViewModel.unsubscribe(lineTopic)
+                mMQTTViewModel.unsubscribe(topic)
 
-                lineTopic = "/hfp/v2/journey/+/vp/+/+/+/$lineToSearch/#"
-                mMQTTViewModel.subscribe(lineTopic)
+                topic = "/hfp/v2/journey/+/vp/+/+/+/$lineToSearch/#"
+                mMQTTViewModel.subscribe(topic)
 
                 editTextBusses.text.clear()
                 hideKeyboard()
