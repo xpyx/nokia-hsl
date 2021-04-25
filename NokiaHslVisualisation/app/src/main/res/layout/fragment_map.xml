@@ -90,6 +90,35 @@
 
 
             <TextView
+                android:id="@+id/show_traffic_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/traffic_info_title"
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="?attr/colorOnSecondary" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/traffic_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/show_traffic_items" />
+
+
+            <TextView
                 android:id="@+id/vehicle_problems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +155,6 @@
                 android:layout_marginTop="16dp"
                 android:gravity="fill"
                 android:text="@string/show_trams" />
-
 
 
             <TextView
@@ -177,7 +205,6 @@
                     tools:ignore="KeyboardInaccessibleWidget" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
 
 
             <TextView
@@ -236,7 +263,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/clear_map"/>
+                android:text="@string/clear_map" />
 
             <ProgressBar
                 android:id="@+id/spinner"
@@ -257,7 +284,7 @@
                 android:gravity="fill"
                 android:text="@string/vehicle_count"
                 android:textColor="?attr/colorOnSecondary"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
         </LinearLayout>
     </ScrollView>

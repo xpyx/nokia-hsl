@@ -14,19 +14,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
@@ -56,7 +49,6 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 
-
 class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     private lateinit var arFrag: ArFragment
@@ -65,7 +57,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     private var mHeightBar: SeekBar? = null
     private var mWidthBar: SeekBar? = null
 
-    private lateinit var trafficList : List<DataTrafficItem>
+    private lateinit var trafficList: List<DataTrafficItem>
     private lateinit var mTrafficViewModel: TrafficItemViewModel
 
     private lateinit var map: org.osmdroid.views.MapView
@@ -74,10 +66,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     private var width = 900
     private lateinit var apa: LinearLayout
 
-    // From vehicles
     private lateinit var mMQTTViewModel: MQTTViewModel
     private lateinit var mStopTimesApiViewModel: StopTimesViewModel
-//    private lateinit var listener: FragmentActivity
     private lateinit var editText: EditText
     private lateinit var editTextBusses: EditText
     private lateinit var editTextValue: Editable
@@ -90,20 +80,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var listOfTopics = mutableListOf<String>()
 
 
-//      THIS IS FROM VEHICLES
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        if (context is Activity) {
-//            this.listener = context as FragmentActivity
-//        }
-//    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu, inflater)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,12 +96,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         return view
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ctx = requireActivity().applicationContext
 
-        // From vehicles starts here ------------------------------------------------->
+        // Code from vehicles starts here ------------------------------------------------->
 
         // Clear button
         btn_clear.setOnClickListener {
@@ -163,10 +143,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
             bus,
-            tram
+            tram,
+            traffic_items
         )
 
-        listOfCheckBoxes.forEach {
+        listOfCheckBoxes.forEach { it ->
             val name = it.text.toString()
             it.setOnCheckedChangeListener { _, _ ->
                 if (it.isChecked) {
@@ -187,8 +168,18 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                         // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/bus/#"
                         mMQTTViewModel.subscribe(topic)
+                    } else if (name == "Show Traffic Info") {
+                        setMapMarkers()
                     }
                 } else {
+                    if (name == "Show Traffic Info") {
+                        // remove traffic markers
+                        map.overlays.forEach {
+                            if (it is Marker) {
+                                map.overlays.remove(it)
+                            }
+                        }
+                    }
                     // Clear other topics
                     mMQTTViewModel.unsubscribe(topic)
 
@@ -282,12 +273,14 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                                             listOfTopics.add(topic)
                                             mMQTTViewModel.subscribe(topic)
 
-                                            Log.d("DBG late vehicles",
+                                            Log.d(
+                                                "DBG late vehicles",
                                                 """routeId          : $routeId
                                                 transportMode    : $transportMode
                                                 arrivalDelay     : $arrivalDelay
                                                 directionId      : $directionId
-                                                ---------------------------""".trimIndent())
+                                                ---------------------------""".trimIndent()
+                                            )
                                         }
                                     }
                                 }
@@ -305,11 +298,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             false
         })
 
-
         // Set up editText for searching a bus line
         editTextBusses = view.findViewById(R.id.edit_text_bus_line)
         editTextValueLine = editTextBusses.text
-
 
         // Listen to editTextBusses and on complete set busline,
         // clear editText and hide keyboard
@@ -346,11 +337,14 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         mStopTimesApiViewModel =
             ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
 
-
         // From vehicles ends here ---------------------------------------------------->
 
+
         //important! set your user agent to prevent getting banned from the osm servers
-        Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext()))
+        Configuration.getInstance().load(
+            ctx,
+            androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+        )
         setSeekBars()
 
 
@@ -412,8 +406,14 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             viewNode.select()
 
-            setMapMarkers()
-
+            // Center the map to Helsinki area
+            val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
+            map.post(Runnable {
+                map.zoomToBoundingBox(
+                    b, true, 100
+                )
+                map.minZoomLevel = 10.0
+            })
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
@@ -423,7 +423,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        when (seekBar){
+        when (seekBar) {
             mTransparencyBar -> {
                 transparency = progress.toFloat() / TRANSPARENCY_MAX.toFloat()
                 map.alpha = transparency
@@ -455,7 +455,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         private const val WIDTH_MIN = 200
     }
 
-    fun setSeekBars(){
+    fun setSeekBars() {
         mTransparencyBar = activity?.findViewById(R.id.transparencySeekBar)
         mTransparencyBar?.max = TRANSPARENCY_MAX
         mTransparencyBar?.progress = 100
@@ -471,49 +471,73 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         mWidthBar?.progress = 2475
 
     }
-    fun setMapMarkers(){
+
+    fun setMapMarkers() {
         var lathigh = 0.0
         var lgthigh = 0.0
         var latlow = 90.0
         var lgtlow = 90.0
 
+        for (item in trafficList) {
 
-        for (item in trafficList){
-
-
-        val trafficItemLatitude = item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
-        val trafficItemLongitude = item.location.locationGeoloc.geolocOrigin.geolocLocationLongitude!!
+            val trafficItemLatitude =
+                item.location?.locationGeoloc?.geolocOrigin?.geolocLocationLatitude!!
+            val trafficItemLongitude =
+                item.location.locationGeoloc.geolocOrigin.geolocLocationLongitude!!
             val trafficTitle = item.traffic_item_type_desc
             val defined = item.location.locationDefined
 
             val locationText: String = if (defined != null) {
                 if (defined.definedOrigin?.definedLocationDirection != null) {
-                    "From: ${defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} towards ${defined.definedOrigin.definedLocationDirection.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                    "From: ${
+                        defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(
+                            0
+                        )?.trafficItemDescriptionElementValue
+                    } towards ${
+                        defined.definedOrigin.definedLocationDirection.directionClassDescription?.get(
+                            0
+                        )?.trafficItemDescriptionElementValue
+                    } from ${
+                        defined.definedOrigin.definedLocationPoint?.directionClassDescription?.get(
+                            0
+                        )?.trafficItemDescriptionElementValue
+                    } to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 } else {
-                    "From: ${defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} from ${defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue} to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
+                    "From: ${
+                        defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(
+                            0
+                        )?.trafficItemDescriptionElementValue
+                    } from ${
+                        defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(
+                            0
+                        )?.trafficItemDescriptionElementValue
+                    } to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 }
             } else {
                 val address = getAddress(trafficItemLatitude, trafficItemLongitude)
                 "Problem: ${item.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue} Location: $address"
             }
+
             lathigh = Math.max(trafficItemLatitude, lathigh)
             latlow = Math.min(trafficItemLatitude, latlow)
             lgthigh = Math.max(trafficItemLongitude, lgthigh)
             lgtlow = Math.min(trafficItemLongitude, lgtlow)
 
+            addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
 
-        addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
-    }
-        val b= BoundingBox(lathigh, lgthigh, latlow, lgtlow)
+        }
+
+        val b = BoundingBox(lathigh, lgthigh, latlow, lgtlow)
         map.post(Runnable {
             map.zoomToBoundingBox(
-                b, true,100
+                b, true, 100
             )
             map.minZoomLevel = 10.0
         })
 
         //map.invalidate()
     }
+
     private fun addMarker(lat: Double, lon: Double, trafficTitle: String?, locationText: String) {
 
         // Custom markers if needed
@@ -522,7 +546,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         marker.position = GeoPoint(lat, lon)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         // Icon made by Freepik from www.flaticon.com
-        marker.icon = ResourcesCompat.getDrawable(resources,R.drawable.map_warning_icon, requireContext().theme)
+        marker.icon = ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.map_warning_icon,
+            requireContext().theme
+        )
         marker.title = "$trafficTitle"
         marker.subDescription = "$locationText"
         //marker.setInfoWindow(null)
@@ -560,6 +588,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Details of the vehicle on the marker
         val title = "Line: ${vehiclePosition.VP.desi}"
+
+        // TODO: Fix snippet layout, now it doesn't do new lines like it should
         val snippet = """ 
             Operator: ${vehiclePosition.VP.oper}
             Vehicle: ${vehiclePosition.VP.veh}   
@@ -571,28 +601,24 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             Offset from timetable: ${vehiclePosition.VP.dl} seconds
         """.trimIndent()
 
+        val marker = Marker(map)
+        marker.position =
+            GeoPoint(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble())
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        marker.icon = ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.vehicle_location,
+            requireContext().theme
+        )
+        marker.title = title
+        marker.subDescription = snippet
 
-        // TODO: Change this to OSMDroid map marker
-    //        mapView?.getMapAsync { mapbox ->
-//
-//            val mark = mapbox.addMarker(
-//                MarkerOptions()
-//                    .position(
-//                        LatLng(
-//                            vehiclePosition.VP.lat.toDouble(),
-//                            vehiclePosition.VP.long.toDouble(),
-//                            1.0
-//                        )
-//                    )
-//                    .title(title)
-//                    .snippet(snippet)
-//            )
-//
-//            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
-//        }
+        // Add marker
+        map.overlays.add(marker)
+
+        // Remove marker after 2 seconds
+        Handler().postDelayed(Runnable { map.overlays.remove(marker) }, 2000)
     }
-
-
 
     suspend fun connectMQTT() {
         val job = GlobalScope.launch(Dispatchers.IO) {
@@ -608,7 +634,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         return true
     }
 
-
     // For hiding the soft keyboard
     private fun Fragment.hideKeyboard() {
         view?.let { activity?.hideKeyboard(it) }
@@ -619,7 +644,4 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
-
-
-
 }
