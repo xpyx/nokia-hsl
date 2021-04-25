@@ -48,6 +48,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import java.util.*
 
 class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
@@ -111,16 +112,15 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 } else if (bus.isChecked) {
                     bus.toggle()
                 }
-
             }
 
-            if (!listOfTopics.isEmpty()) {
+            if (listOfTopics.isNotEmpty()) {
                 listOfTopics.forEach {
                     mMQTTViewModel.unsubscribe(it)
                 }
             }
 
-            Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
+            Handler().postDelayed({ vehicle_count.visibility = View.GONE }, 1500)
         }
 
         // Hide vehicle count textviews
@@ -152,24 +152,28 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             it.setOnCheckedChangeListener { _, _ ->
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
-                    if (name == "Show only trams") {
-                        // Clear positions map
-                        positions.clear()
-                        // First clear other topics
-                        mMQTTViewModel.unsubscribe(topic)
-                        // Set topic and subscribe
-                        topic = "/hfp/v2/journey/ongoing/vp/tram/#"
-                        mMQTTViewModel.subscribe(topic)
-                    } else if (name == "Show only busses") {
-                        // Clear positions map
-                        positions.clear()
-                        // First clear other topics
-                        mMQTTViewModel.unsubscribe(topic)
-                        // Set topic and subscribe
-                        topic = "/hfp/v2/journey/ongoing/vp/bus/#"
-                        mMQTTViewModel.subscribe(topic)
-                    } else if (name == "Show Traffic Info") {
-                        setMapMarkers()
+                    when (name) {
+                        "Show only trams" -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+                            // Set topic and subscribe
+                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        "Show only busses" -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+                            // Set topic and subscribe
+                            topic = "/hfp/v2/journey/ongoing/vp/bus/#"
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        "Show Traffic Info" -> {
+                            setMapMarkers()
+                        }
                     }
                 } else {
                     if (name == "Show Traffic Info") {
@@ -184,7 +188,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                     mMQTTViewModel.unsubscribe(topic)
 
                     // Hide the vehicle count textview after 2,5 seconds after unchecking
-                    Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
+                    Handler().postDelayed({ vehicle_count.visibility = View.GONE }, 1500)
                 }
             }
         }
@@ -264,7 +268,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
                                             val late = Late(
                                                 routeId,
-                                                transportMode.toString().toLowerCase(),
+                                                transportMode.toString().toLowerCase(Locale.ROOT),
                                                 arrivalDelay.toString(),
                                                 directionId
                                             )
@@ -385,9 +389,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 return@setOnTapArPlaneListener
             }
 
-            arFrag.getPlaneDiscoveryController().hide();
-            arFrag.getPlaneDiscoveryController().setInstructionView(null);
-            arFrag.getArSceneView().getPlaneRenderer().setEnabled(false);
+            arFrag.getPlaneDiscoveryController().hide()
+            arFrag.getPlaneDiscoveryController().setInstructionView(null)
+            arFrag.getArSceneView().getPlaneRenderer().setEnabled(false)
             //Creates a new anchor at the hit location
             val anchor = hitResult!!.createAnchor()
             //Creates a new anchorNode attaching it to anchor
@@ -408,7 +412,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             // Center the map to Helsinki area
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
-            map.post(Runnable {
+            map.post({
                 map.zoomToBoundingBox(
                     b, true, 100
                 )
@@ -436,7 +440,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             }
             mWidthBar -> {
                 width = progress
-                var params = apa.layoutParams
+                val params = apa.layoutParams
                 params.width = width
                 apa.layoutParams = params
             }
@@ -528,12 +532,12 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         }
 
         val b = BoundingBox(lathigh, lgthigh, latlow, lgtlow)
-        map.post(Runnable {
+        map.post {
             map.zoomToBoundingBox(
                 b, true, 100
             )
             map.minZoomLevel = 10.0
-        })
+        }
 
         //map.invalidate()
     }
@@ -552,7 +556,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             requireContext().theme
         )
         marker.title = "$trafficTitle"
-        marker.subDescription = "$locationText"
+        marker.subDescription = locationText
         //marker.setInfoWindow(null)
 
         map.overlays.add(marker)
@@ -565,7 +569,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         return list[0].getAddressLine(0)
     }
 
-    // These are from Vehicles
+
+
+    // These following methods are from Vehicles
 
     fun updateUI(vehiclePosition: VehiclePosition) {
         spinner.visibility = View.GONE
@@ -617,7 +623,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         map.overlays.add(marker)
 
         // Remove marker after 2 seconds
-        Handler().postDelayed(Runnable { map.overlays.remove(marker) }, 2000)
+        Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
     }
 
     suspend fun connectMQTT() {
@@ -644,4 +650,5 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
 }
