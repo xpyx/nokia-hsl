@@ -63,16 +63,17 @@
                 android:gravity="fill"
                 android:text="@string/show_trams" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/speeding"
+            <TextView
+                android:id="@+id/vehicle_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"
                 android:gravity="fill"
-                android:text="@string/speeding" />
+                android:text="@string/vehicle_count"
+                android:textColor="?attr/colorOnSecondary" />
+
 
             <TextView
                 android:id="@+id/late_time"

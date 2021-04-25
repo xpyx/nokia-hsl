@@ -101,6 +101,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Hide vehicle count textviews
+        vehicle_count.visibility = View.GONE
+
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
         val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
@@ -148,6 +151,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 } else {
                     // Clear other topics
                     mMQTTViewModel.unsubscribe(topic)
+
+                    // Hide the vehicle count textview after 2,5 seconds after unchecking
+                    Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
                 }
             }
         }
@@ -237,10 +243,22 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                                             mMQTTViewModel.subscribe(topicString)
 
                                             Log.d("DBG late vehicles", "routeId         : $routeId")
-                                            Log.d("DBG late vehicles", "transportMode   : $transportMode")
-                                            Log.d("DBG late vehicles","arrivalDelay     : $arrivalDelay")
-                                            Log.d("DBG late vehicles","directionId      : $directionId")
-                                            Log.d("DBG late vehicles","---------------------------")
+                                            Log.d(
+                                                "DBG late vehicles",
+                                                "transportMode   : $transportMode"
+                                            )
+                                            Log.d(
+                                                "DBG late vehicles",
+                                                "arrivalDelay     : $arrivalDelay"
+                                            )
+                                            Log.d(
+                                                "DBG late vehicles",
+                                                "directionId      : $directionId"
+                                            )
+                                            Log.d(
+                                                "DBG late vehicles",
+                                                "---------------------------"
+                                            )
                                         }
                                     }
                                 }
@@ -437,16 +455,20 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         spinner.visibility = View.GONE
 
         // If positions map contains the vehicle, just update it's info
-        if (positions.containsKey(vehiclePosition.VP.oper.toString()+
-                    vehiclePosition.VP.veh.toString())) {
+        if (positions.containsKey(
+                vehiclePosition.VP.oper.toString() +
+                        vehiclePosition.VP.veh.toString()
+            )
+        ) {
 
-        // If positions map doesn't contain the vehicle, add it there
+            // If positions map doesn't contain the vehicle, add it there
         } else {
-            positions[vehiclePosition.VP.oper.toString()+
+            positions[vehiclePosition.VP.oper.toString() +
                     vehiclePosition.VP.veh.toString()] = vehiclePosition
         }
 
-        Log.d("DBG positions size", "Size of positions map: ${positions.size.toString()}")
+        vehicle_count.visibility = View.VISIBLE
+        vehicle_count.text = context?.getString(R.string.vehicle_count, positions.size.toString())
 
         // Details of the vehicle on the marker
         val title = "Line: ${vehiclePosition.VP.desi}"
@@ -465,7 +487,13 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
             val mark = mapbox.addMarker(
                 MarkerOptions()
-                    .position(LatLng(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble(), 1.0))
+                    .position(
+                        LatLng(
+                            vehiclePosition.VP.lat.toDouble(),
+                            vehiclePosition.VP.long.toDouble(),
+                            1.0
+                        )
+                    )
                     .title(title)
                     .snippet(snippet)
             )

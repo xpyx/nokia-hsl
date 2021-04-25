@@ -5,7 +5,7 @@ data class VehiclePosition(
 )
 
 data class SingleVehiclePositionData(
-    val desi: Int,
+    val desi: String,
     val dir: Int,
     val oper: Int,
     val veh: Int,
