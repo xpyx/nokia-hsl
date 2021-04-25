@@ -3,6 +3,7 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import com.xpyx.nokiahslvisualisation.fragments.map.MapFragment
 import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
@@ -109,6 +110,41 @@ class MqttHelper() {
             }
         })
     }
+
+    fun receiveMessagesInARMap(mapFragment: MapFragment) {
+
+        val gson = Gson()
+
+        mqttAndroidClient.setCallback(object : MqttCallback {
+            override fun connectionLost(cause: Throwable) {
+                connectionStatus = false
+                // Give your callback on failure here
+                Log.d("DBG", "MQTT connection lost")
+
+            }
+
+            override fun messageArrived(topic: String, message: MqttMessage) {
+
+                try {
+                    val data = String(message.payload, charset("UTF-8"))
+                    val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+
+                    // Here I update the fragment that shows the data
+                    mapFragment.updateUI(vehiclePosition)
+
+                } catch (e: Exception) {
+                    // Give your callback on error here
+                    Log.d("DBG", "MQTT exception: $e")
+
+                }
+            }
+
+            override fun deliveryComplete(token: IMqttDeliveryToken) {
+                // Acknowledgement on delivery complete
+            }
+        })
+    }
+
 
     fun unSubscribe(topic: String) {
 

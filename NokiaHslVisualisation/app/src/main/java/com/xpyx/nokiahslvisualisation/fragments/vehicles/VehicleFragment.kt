@@ -56,7 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import java.util.*
 
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
@@ -94,8 +94,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         )
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_vehicles, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_vehicles, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -113,13 +112,13 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
             }
             
-            if (!listOfTopics.isEmpty()) {
+            if (listOfTopics.isNotEmpty()) {
                 listOfTopics.forEach {
                     mMQTTViewModel.unsubscribe(it)
                 }
             }
 
-            Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
+            Handler().postDelayed({ vehicle_count.visibility = View.GONE }, 1500)
         }
 
         // Hide vehicle count textviews
@@ -172,7 +171,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     mMQTTViewModel.unsubscribe(topic)
 
                     // Hide the vehicle count textview after 2,5 seconds after unchecking
-                    Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
+                    Handler().postDelayed({ vehicle_count.visibility = View.GONE }, 1500)
                 }
             }
         }
@@ -252,7 +251,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
                                             val late = Late(
                                                 routeId,
-                                                transportMode.toString().toLowerCase(),
+                                                transportMode.toString().toLowerCase(Locale.ROOT),
                                                 arrivalDelay.toString(),
                                                 directionId
                                             )
@@ -401,12 +400,12 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 ) {
                     ActivityCompat.requestPermissions(
                         requireActivity(),
-                        arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),
+                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
                         0
                     )
                     ActivityCompat.requestPermissions(
                         requireActivity(),
-                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                         0
                     )
                     return
@@ -450,7 +449,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         }
     }
 
-    suspend fun connectMQTT() {
+    private suspend fun connectMQTT() {
         val job = GlobalScope.launch(Dispatchers.IO) {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
@@ -506,7 +505,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     .snippet(snippet)
             )
 
-            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
+            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
         }
     }
 

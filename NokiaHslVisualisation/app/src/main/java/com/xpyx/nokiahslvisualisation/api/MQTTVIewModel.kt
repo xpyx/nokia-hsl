@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xpyx.nokiahslvisualisation.fragments.map.MapFragment
 import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
@@ -28,6 +29,12 @@ class MQTTViewModel(private val mqttRepository: MQTTRepository): ViewModel() {
     fun receiveMessages(vehicleFragment: VehicleFragment) {
         viewModelScope.launch {
             mqttRepository.mqtt.receiveMessages(vehicleFragment)
+        }
+    }
+
+    fun receiveMessagesInARMAp(mapFragment: MapFragment) {
+        viewModelScope.launch {
+            mqttRepository.mqtt.receiveMessagesInARMap(mapFragment)
         }
     }
 

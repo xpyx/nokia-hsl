@@ -114,4 +114,6 @@
     <string name="tram_count">Active trams on map: %1$s</string>
     <string name="vehicle_count">"Active vehicles on map: %1$s"</string>
     <string name="clear_map">Clear map</string>
+    <string name="show_traffic_items">Show Traffic Info</string>
+    <string name="traffic_info_title">HERE Maps Traffic Info</string>
 </resources>
