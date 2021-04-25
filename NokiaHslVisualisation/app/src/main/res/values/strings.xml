@@ -113,4 +113,5 @@
     <string name="bus_count">Active busses on map: %1$s</string>
     <string name="tram_count">Active trams on map: %1$s</string>
     <string name="vehicle_count">"Active vehicles on map: %1$s"</string>
+    <string name="clear_map">Clear map</string>
 </resources>

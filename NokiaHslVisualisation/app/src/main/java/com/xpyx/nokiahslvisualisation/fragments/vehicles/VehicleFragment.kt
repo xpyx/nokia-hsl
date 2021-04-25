@@ -183,7 +183,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 spinner.visibility = View.VISIBLE
 
                 // Unsubscribe from previous topics
-                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/#")
+                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/vp/#")
 
                 // Get stoptimes
                 mStopTimesApiViewModel.getStopTimesData()
@@ -242,7 +242,8 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                                             Log.d("DBG topicString", topicString)
                                             mMQTTViewModel.subscribe(topicString)
 
-                                            Log.d("DBG late vehicles", "routeId         : $routeId")
+                                            Log.d("DBG late vehicles",
+                                                """routeId         : $routeId""")
                                             Log.d(
                                                 "DBG late vehicles",
                                                 "transportMode   : $transportMode"
