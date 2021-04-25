@@ -74,8 +74,8 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private var lateTime: Int = 0
     var topic: String = ""
     var lineToSearch: String = ""
-    var lineTopic: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
+    var listOfTopics = mutableListOf<String>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -100,6 +100,30 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Clear button
+        btn_clear.setOnClickListener {
+            if (topic.isNotEmpty()) {
+                mMQTTViewModel.unsubscribe(topic)
+                if (tram.isChecked) {
+                    tram.toggle()
+                } else if (bus.isChecked) {
+                    bus.toggle()
+                }
+
+            }
+            
+            if (!listOfTopics.isEmpty()) {
+                listOfTopics.forEach {
+                    mMQTTViewModel.unsubscribe(it)
+                }
+            }
+
+            Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
+        }
+
+        // Hide vehicle count textviews
+        vehicle_count.visibility = View.GONE
 
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
@@ -131,7 +155,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         positions.clear()
                         // First clear other topics
                         mMQTTViewModel.unsubscribe(topic)
-                        mMQTTViewModel.unsubscribe(lineTopic)
                         // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/tram/#"
                         mMQTTViewModel.subscribe(topic)
@@ -140,7 +163,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         positions.clear()
                         // First clear other topics
                         mMQTTViewModel.unsubscribe(topic)
-                        mMQTTViewModel.unsubscribe(lineTopic)
                         // Set topic and subscribe
                         topic = "/hfp/v2/journey/ongoing/vp/bus/#"
                         mMQTTViewModel.subscribe(topic)
@@ -148,6 +170,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 } else {
                     // Clear other topics
                     mMQTTViewModel.unsubscribe(topic)
+
+                    // Hide the vehicle count textview after 2,5 seconds after unchecking
+                    Handler().postDelayed(Runnable { vehicle_count.visibility = View.GONE }, 1500)
                 }
             }
         }
@@ -177,7 +202,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 spinner.visibility = View.VISIBLE
 
                 // Unsubscribe from previous topics
-                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/#")
+                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/vp/#")
 
                 // Get stoptimes
                 mStopTimesApiViewModel.getStopTimesData()
@@ -232,15 +257,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                                                 directionId
                                             )
 
-                                            val topicString = topicSetter.setTopic(late)
-                                            Log.d("DBG topicString", topicString)
-                                            mMQTTViewModel.subscribe(topicString)
+                                            topic = topicSetter.setTopic(late)
+                                            listOfTopics.add(topic)
+                                            mMQTTViewModel.subscribe(topic)
 
-                                            Log.d("DBG late vehicles", "routeId         : $routeId")
-                                            Log.d("DBG late vehicles", "transportMode   : $transportMode")
-                                            Log.d("DBG late vehicles","arrivalDelay     : $arrivalDelay")
-                                            Log.d("DBG late vehicles","directionId      : $directionId")
-                                            Log.d("DBG late vehicles","---------------------------")
+                                            Log.d("DBG late vehicles",
+                                                """routeId          : $routeId
+                                                transportMode    : $transportMode
+                                                arrivalDelay     : $arrivalDelay
+                                                directionId      : $directionId
+                                                ---------------------------""".trimIndent())
                                         }
                                     }
                                 }
@@ -278,10 +304,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 spinner.visibility = View.VISIBLE
 
                 // Unsubscribe from previous topics
-                mMQTTViewModel.unsubscribe(lineTopic)
+                mMQTTViewModel.unsubscribe(topic)
 
-                lineTopic = "/hfp/v2/journey/+/vp/+/+/+/$lineToSearch/#"
-                mMQTTViewModel.subscribe(lineTopic)
+                topic = "/hfp/v2/journey/+/vp/+/+/+/$lineToSearch/#"
+                mMQTTViewModel.subscribe(topic)
 
                 editTextBusses.text.clear()
                 hideKeyboard()
@@ -373,13 +399,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         )
                     } != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),
+                        0
+                    )
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        0
+                    )
                     return
                 }
                 isLocationComponentEnabled = true
@@ -434,16 +463,20 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         spinner.visibility = View.GONE
 
         // If positions map contains the vehicle, just update it's info
-        if (positions.containsKey(vehiclePosition.VP.oper.toString()+
-                    vehiclePosition.VP.veh.toString())) {
+        if (positions.containsKey(
+                vehiclePosition.VP.oper.toString() +
+                        vehiclePosition.VP.veh.toString()
+            )
+        ) {
 
-        // If positions map doesn't contain the vehicle, add it there
+            // If positions map doesn't contain the vehicle, add it there
         } else {
-            positions[vehiclePosition.VP.oper.toString()+
+            positions[vehiclePosition.VP.oper.toString() +
                     vehiclePosition.VP.veh.toString()] = vehiclePosition
         }
 
-        Log.d("DBG positions size", "Size of positions map: ${positions.size.toString()}")
+        vehicle_count.visibility = View.VISIBLE
+        vehicle_count.text = context?.getString(R.string.vehicle_count, positions.size.toString())
 
         // Details of the vehicle on the marker
         val title = "Line: ${vehiclePosition.VP.desi}"
@@ -462,7 +495,13 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
             val mark = mapbox.addMarker(
                 MarkerOptions()
-                    .position(LatLng(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble(), 1.0))
+                    .position(
+                        LatLng(
+                            vehiclePosition.VP.lat.toDouble(),
+                            vehiclePosition.VP.long.toDouble(),
+                            1.0
+                        )
+                    )
                     .title(title)
                     .snippet(snippet)
             )

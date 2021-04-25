@@ -63,16 +63,7 @@
                 android:gravity="fill"
                 android:text="@string/show_trams" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/speeding"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"
-                android:gravity="fill"
-                android:text="@string/speeding" />
+
 
             <TextView
                 android:id="@+id/late_time"
@@ -174,12 +165,35 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <Button
+                android:id="@+id/btn_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/clear_map"/>
+
             <ProgressBar
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="36dp"
                 android:layout_weight="1" />
+
+
+            <TextView
+                android:id="@+id/vehicle_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:gravity="fill"
+                android:text="@string/vehicle_count"
+                android:textColor="?attr/colorOnSecondary"
+                android:textSize="20sp"/>
 
         </LinearLayout>
     </ScrollView>
