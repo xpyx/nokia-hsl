@@ -16,9 +16,9 @@
         android:icon="@drawable/map_icon"
         android:iconTint="@color/design_default_color_on_secondary"/>
 
-    <item android:id="@+id/action_list"
-        android:title="@string/menu_list"
-        android:icon="@drawable/list_icon"
+    <item android:id="@+id/action_traffic_list"
+        android:title="@string/menu_traffic_list"
+        android:icon="@drawable/traffic_icon"
         android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/ar_view"

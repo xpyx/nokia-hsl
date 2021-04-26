@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="menu_home">Hälytykset</string>
-    <string name="menu_list">Listanäkymä</string>
+    <string name="menu_traffic_list">Liikenne -listanäkymä</string>
     <string name="menu_map">Kartta</string>
     <string name="details_view">Liikennetapahtuma-yksityiskohdat</string>
     <string name="alert_details_view">Hälytystapahtuma-yksityiskohdat</string>

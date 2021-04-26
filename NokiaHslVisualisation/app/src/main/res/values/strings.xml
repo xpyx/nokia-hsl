@@ -3,7 +3,7 @@
 
     // Fragment titles
     <string name="menu_home">Alerts</string>
-    <string name="menu_list">List View</string>
+    <string name="menu_traffic_list">Traffic list view</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Traffic details</string>
     <string name="alert_details_view">Alert details</string>
