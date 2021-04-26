@@ -375,27 +375,7 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
 
-    private fun checkAndRequestPermissions() {
-        if (!PermissionUtils.hasLocationAndCameraPermissions(activity = Activity())) {
-            PermissionUtils.requestCameraAndLocationPermissions(Activity())
-        } else {
-            setupSession()
-        }
-    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, results: IntArray) {
-        if (!PermissionUtils.hasLocationAndCameraPermissions(Activity())) {
-            Toast.makeText(
-                context, R.string.camera_and_location_permission_request, Toast.LENGTH_LONG
-            )
-                .show()
-            if (!PermissionUtils.shouldShowRequestPermissionRationale(Activity())) {
-                // Permission denied with checking "Do not ask again".
-                PermissionUtils.launchPermissionSettings(Activity())
-            }
-            //finish()
-        }
-    }
 
 
 
@@ -408,7 +388,6 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onResume() {
         super.onResume()
-        //checkAndRequestPermissions()
         mapView?.onResume()
     }
 
