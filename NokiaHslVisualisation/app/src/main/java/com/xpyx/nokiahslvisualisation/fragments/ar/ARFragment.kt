@@ -55,7 +55,7 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         )
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.ar_scene, container, false)
+        return inflater.inflate(R.layout.fragment_ar, container, false)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

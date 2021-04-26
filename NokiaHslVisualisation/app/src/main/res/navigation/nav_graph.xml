@@ -24,7 +24,7 @@
         android:id="@+id/action_traffic_list"
         android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
         android:label="@string/menu_traffic_list"
-        tools:layout="@layout/fragment_list">
+        tools:layout="@layout/fragment_traffic_list">
         <argument
             android:name="TRAFFIC"
             app:argType="long" />
@@ -54,6 +54,6 @@
         android:id="@+id/ar_view"
         android:name="com.xpyx.nokiahslvisualisation.fragments.ar.ARFragment"
         android:label="@string/menu_ar"
-        tools:layout="@layout/ar_scene" />
+        tools:layout="@layout/fragment_ar" />
 
 </navigation>
