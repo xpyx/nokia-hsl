@@ -450,7 +450,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             }
             mHeightBar -> {
                 height = progress
-                var params = apa.layoutParams
+                val params = apa.layoutParams
                 params.height = height
                 apa.layoutParams = params
             }
@@ -475,7 +475,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         private const val WIDTH_MIN = 200
     }
 
-    fun setSeekBars() {
+    private fun setSeekBars() {
         mTransparencyBar = activity?.findViewById(R.id.transparencySeekBar)
         mTransparencyBar?.max = TRANSPARENCY_MAX
         mTransparencyBar?.progress = 100
@@ -492,7 +492,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     }
 
-    fun setMapMarkers() {
+    private fun setMapMarkers() {
         var lathigh = 0.0
         var lgthigh = 0.0
         var latlow = 90.0

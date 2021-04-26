@@ -33,11 +33,10 @@ import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
 import com.xpyx.nokiahslvisualisation.model.traffic.TrafficData
 import com.xpyx.nokiahslvisualisation.repository.TrafficRepository
 import com.xpyx.nokiahslvisualisation.utils.Constants
-import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.android.synthetic.main.fragment_traffic_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.io.File
 import java.util.*
 
 class ListFragment : Fragment(){
@@ -81,7 +80,7 @@ class ListFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        viewHere = inflater.inflate(layout.fragment_list, container, false)
+        viewHere = inflater.inflate(layout.fragment_traffic_list, container, false)
 
         adapter = context?.let { TrafficListAdapter(requireContext()) }!!
 
