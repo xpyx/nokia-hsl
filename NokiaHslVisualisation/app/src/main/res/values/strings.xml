@@ -107,6 +107,7 @@
     <string name="vehicle_late_time_hint">Seconds late</string>
     <string name="show_trams">Show only trams</string>
     <string name="show_busses">Show only busses</string>
+    <string name="show_metro">Show only metro</string>
     <string name="see_bus_lines_hint">Enter a line number</string>
     <string name="lines_search">See all vehicles on a line</string>
     <string name="ar_map_refresh_button_text">Refresh Map</string>
