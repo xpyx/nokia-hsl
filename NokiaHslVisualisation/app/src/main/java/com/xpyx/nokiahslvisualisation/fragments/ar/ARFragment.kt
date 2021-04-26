@@ -137,7 +137,9 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-        Toast.makeText(listener, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show()
+        for (permission in permissionsToExplain) {
+            Toast.makeText(listener, permission, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onPermissionResult(granted: Boolean) {
