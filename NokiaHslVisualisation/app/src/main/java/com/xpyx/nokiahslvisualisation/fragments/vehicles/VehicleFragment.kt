@@ -7,13 +7,17 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -40,24 +44,38 @@ import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
 import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
-import com.xpyx.nokiahslvisualisation.data.StopTimesItemRepository
-import com.xpyx.nokiahslvisualisation.data.StopTimesItemViewModel
+import com.xpyx.nokiahslvisualisation.model.late.Late
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
+import com.xpyx.nokiahslvisualisation.networking.mqttHelper.TopicSetter
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
+import com.xpyx.nokiahslvisualisation.utils.LineToRoute
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_vehicles.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 
 class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private lateinit var mMQTTViewModel: MQTTViewModel
-    private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
+    private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var listener: FragmentActivity
     private var mapView: MapView? = null
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private lateinit var mapboxMap: MapboxMap
+    private lateinit var editText: EditText
+    private lateinit var editTextBusses: EditText
+    private lateinit var editTextValue: Editable
+    private lateinit var editTextValueLine: Editable
+    private lateinit var spinner: ProgressBar
+    private var lateTime: Int = 0
+    var topic: String = ""
+    var lineToSearch: String = ""
+    var positions = mutableMapOf<String, VehiclePosition>()
+    var listOfTopics = mutableListOf<String>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -76,21 +94,35 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         )
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_vehicles, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_vehicles, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mapView = view.findViewById(R.id.mapView)
-        mapView?.onCreate(savedInstanceState)
-        mapView?.getMapAsync(this)
+        // Clear button
+        btn_clear.setOnClickListener {
+            if (topic.isNotEmpty()) {
+                mMQTTViewModel.unsubscribe(topic)
+                if (tram.isChecked) {
+                    tram.toggle()
+                } else if (bus.isChecked) {
+                    bus.toggle()
+                }
 
-        // Get late busses info and apply to MQTT topic
-        mStopTimesItemViewModel = ViewModelProvider(this).get(StopTimesItemViewModel::class.java)
-        //mStopTimesItemViewModel.getStopTimesItem()
+            }
+            
+            if (listOfTopics.isNotEmpty()) {
+                listOfTopics.forEach {
+                    mMQTTViewModel.unsubscribe(it)
+                }
+            }
 
+            Handler().postDelayed({ vehicle_count.visibility = View.GONE }, 1500)
+        }
+
+        // Hide vehicle count textviews
+        vehicle_count.visibility = View.GONE
 
         // MQTT viewmodel
         val mqttRepository = MQTTRepository()
@@ -100,10 +132,208 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Connect to MQTT broker, subscribe to topic and start receiving messages
         GlobalScope.launch {
-            receiveMQTTMessages()
+            connectMQTT()
         }
+
+        val topicSetter = TopicSetter()
+        val lineToRoute = LineToRoute()
+
+        // Checkboxes
+        val listOfCheckBoxes = listOf<CheckBox>(
+            bus,
+            tram
+        )
+
+        listOfCheckBoxes.forEach {
+            val name = it.text.toString()
+            it.setOnCheckedChangeListener { _, _ ->
+                if (it.isChecked) {
+                    // subscribe to topic containing only trams or busses
+                    if (name == "Show only trams") {
+                        // Clear positions map
+                        positions.clear()
+                        // First clear other topics
+                        mMQTTViewModel.unsubscribe(topic)
+                        // Set topic and subscribe
+                        topic = "/hfp/v2/journey/ongoing/vp/tram/#"
+                        mMQTTViewModel.subscribe(topic)
+                    } else if (name == "Show only busses") {
+                        // Clear positions map
+                        positions.clear()
+                        // First clear other topics
+                        mMQTTViewModel.unsubscribe(topic)
+                        // Set topic and subscribe
+                        topic = "/hfp/v2/journey/ongoing/vp/bus/#"
+                        mMQTTViewModel.subscribe(topic)
+                    }
+                } else {
+                    // Clear other topics
+                    mMQTTViewModel.unsubscribe(topic)
+
+                    // Hide the vehicle count textview after 2,5 seconds after unchecking
+                    Handler().postDelayed({ vehicle_count.visibility = View.GONE }, 1500)
+                }
+            }
+        }
+
+
+        // Set up editText for vehicle late time
+        editText = view.findViewById(R.id.edit_text_late_time)
+        editText.inputType = InputType.TYPE_CLASS_NUMBER
+        editTextValue = editText.text
+
+        // Spinner set up and hide
+        spinner = view.findViewById(R.id.spinner)
+        spinner.visibility = View.GONE
+
+        // Listen to editText and on complete set lateTime,
+        // clear editText and hide keyboard
+        editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // Clear positions map
+                positions.clear()
+
+                // assign late time
+                setLateTime(editTextValue.toString().toInt())
+
+                // Show spinner
+                spinner.visibility = View.VISIBLE
+
+                // Unsubscribe from previous topics
+                mMQTTViewModel.unsubscribe("/hfp/v2/journey/ongoing/vp/#")
+
+                // Get stoptimes
+                mStopTimesApiViewModel.getStopTimesData()
+                mStopTimesApiViewModel.myStopTimesApiResponse.observe(
+                    viewLifecycleOwner,
+                    { response ->
+                        if (response != null) {
+
+                            // Hide spinner
+                            spinner.visibility = View.GONE
+
+                            // The stoptimes data is here, iterate over the whole response
+                            response.data?.stops()?.forEach {
+
+                                if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
+
+                                    val routeId =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.trip()?.route()
+                                            ?.gtfsId()?.substring(
+                                                4
+                                            )
+
+                                    val transportMode =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.trip()?.route()
+                                            ?.mode()
+
+                                    val arrivalDelay =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.arrivalDelay()
+
+                                    var directionId =
+                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                            ?.trip()
+                                            ?.directionId()
+
+                                    // Change direction id according to instructions. Also note if null, then -> "+"
+                                    if (directionId.equals("0")) {
+                                        directionId = "1"
+                                    } else if (directionId.equals("1")) {
+                                        directionId = "2"
+                                    }
+
+                                    if (arrivalDelay != null) {
+                                        if (arrivalDelay > lateTime) {
+
+                                            val late = Late(
+                                                routeId,
+                                                transportMode.toString().toLowerCase(Locale.ROOT),
+                                                arrivalDelay.toString(),
+                                                directionId
+                                            )
+
+                                            topic = topicSetter.setTopic(late)
+                                            listOfTopics.add(topic)
+                                            mMQTTViewModel.subscribe(topic)
+
+                                            Log.d("DBG late vehicles",
+                                                """routeId          : $routeId
+                                                transportMode    : $transportMode
+                                                arrivalDelay     : $arrivalDelay
+                                                directionId      : $directionId
+                                                ---------------------------""".trimIndent())
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            // Log.d("DBG", response.toString())
+                        }
+                    })
+
+                editText.text.clear()
+                hideKeyboard()
+                view.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+        // Set up editText for searching a bus line
+        editTextBusses = view.findViewById(R.id.edit_text_bus_line)
+        editTextValueLine = editTextBusses.text
+
+        // Listen to editTextBusses and on complete set busline,
+        // clear editText and hide keyboard
+        editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // Clear positions map
+                positions.clear()
+
+                // Convert line to route ID
+                val line = (editTextValueLine.toString())
+                lineToSearch = lineToRoute.convertLineToRoute(line)
+
+                // Show spinner
+                spinner.visibility = View.VISIBLE
+
+                // Unsubscribe from previous topics
+                mMQTTViewModel.unsubscribe(topic)
+
+                topic = "/hfp/v2/journey/+/vp/+/+/+/$lineToSearch/#"
+                mMQTTViewModel.subscribe(topic)
+
+                editTextBusses.text.clear()
+                hideKeyboard()
+                view.clearFocus()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+
+        // StopTimes API viewmodel
+        val stopTimesRepository = StopTimesRepository()
+        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
+        mStopTimesApiViewModel =
+            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
+
+        // MAP
+        mapView = view.findViewById(R.id.mapView)
+        mapView?.onCreate(savedInstanceState)
+        mapView?.getMapAsync(this)
+
     }
 
+
+    private fun setLateTime(seconds: Int): Boolean {
+        lateTime = seconds
+        return true
+    }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
@@ -122,7 +352,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             )
 
             val position = CameraPosition.Builder()
-                .zoom(15.0)
+                .zoom(25.0)
                 .tilt(20.0)
                 .build()
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
@@ -168,13 +398,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         )
                     } != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                        0
+                    )
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        0
+                    )
                     return
                 }
                 isLocationComponentEnabled = true
@@ -213,11 +446,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 R.string.user_location_permission_not_granted,
                 Toast.LENGTH_LONG
             ).show()
-
         }
     }
 
-    suspend fun receiveMQTTMessages() {
+    private suspend fun connectMQTT() {
         val job = GlobalScope.launch(Dispatchers.IO) {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
@@ -227,21 +459,53 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
-        val sumOF = object {
-            var a = vehiclePosition.VP.oper
-            var b = vehiclePosition.VP.veh
-            var c = vehiclePosition.VP.lat
-            var d = vehiclePosition.VP.long
+        spinner.visibility = View.GONE
+
+        // If positions map contains the vehicle, just update it's info
+        if (positions.containsKey(
+                vehiclePosition.VP.oper.toString() +
+                        vehiclePosition.VP.veh.toString()
+            )
+        ) {
+
+            // If positions map doesn't contain the vehicle, add it there
+        } else {
+            positions[vehiclePosition.VP.oper.toString() +
+                    vehiclePosition.VP.veh.toString()] = vehiclePosition
         }
+
+        vehicle_count.visibility = View.VISIBLE
+        vehicle_count.text = context?.getString(R.string.vehicle_count, positions.size.toString())
+
+        // Details of the vehicle on the marker
+        val title = "Line: ${vehiclePosition.VP.desi}"
+        val snippet = """ 
+            Operator: ${vehiclePosition.VP.oper}
+            Vehicle: ${vehiclePosition.VP.veh}   
+            
+            Speed: ${vehiclePosition.VP.spd} m/s
+            Heading: ${vehiclePosition.VP.hdg} degrees
+            Acceleration: ${vehiclePosition.VP.acc} m/s2
+            Odometer reading: ${vehiclePosition.VP.odo} m
+            Offset from timetable: ${vehiclePosition.VP.dl} seconds
+        """.trimIndent()
 
         mapView?.getMapAsync { mapbox ->
 
             val mark = mapbox.addMarker(
                 MarkerOptions()
-                    .position(LatLng(sumOF.c.toDouble(), sumOF.d.toDouble(), 1.0))
-                    .title("Operator: ${sumOF.a} Vehicle: ${sumOF.b}")
+                    .position(
+                        LatLng(
+                            vehiclePosition.VP.lat.toDouble(),
+                            vehiclePosition.VP.long.toDouble(),
+                            1.0
+                        )
+                    )
+                    .title(title)
+                    .snippet(snippet)
             )
-            Handler().postDelayed(Runnable { mapboxMap.removeMarker(mark) }, 2000)
+
+            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
         }
     }
 
@@ -260,7 +524,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
-        mMQTTViewModel.unsubscribe()
+        mMQTTViewModel.unsubscribe("#")
     }
 
     // When exiting this app, unsubscribe from the topic
@@ -283,5 +547,16 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onLowMemory() {
         super.onLowMemory()
         mapView?.onLowMemory()
+    }
+
+    // For hiding the soft keyboard
+    private fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

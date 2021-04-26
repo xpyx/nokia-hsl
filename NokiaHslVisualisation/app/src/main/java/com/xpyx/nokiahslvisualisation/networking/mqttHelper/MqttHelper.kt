@@ -3,76 +3,19 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import com.xpyx.nokiahslvisualisation.fragments.map.MapFragment
 import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
+import kotlin.properties.Delegates
 
-class MqttHelper {
+class MqttHelper() {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
-
-    // Topic variables:
-    // See for more information -> https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/#event-types
-
-    // Use "+" for wildcard
-
-    private var temporal_type = "ongoing"   // The status of the journey, ongoing or upcoming
-
-    private var event_type = "vp"           // One of vp, due, arr, dep, ars, pde, pas, wait, doo,
-                                            // doc, tlr, tla, da, dout, ba, bout, vja, vjout
-                                            // Note: events are not available for metros (metro),
-                                            // U-line buses (ubus), robot buses (robot) and ferries (ferry).
-
-    private var transport_mode = "bus"      // The type of the vehicle. One of bus, tram, train,
-                                            // ferry, metro, ubus (used by U-line buses and other
-                                            // vehicles with limited realtime information) or robot (used by robot buses).
-
-    private var route_id = "1039"           // The ID of the route the vehicle is running on. This
-                                            // matches route_id in GTFS (field gtfsId of Route in the routing API).
-
-    private var direction_id = "1"          // The line direction of the trip, either 1 or 2.
-                                            // Note: This does not exactly match direction_id in GTFS or the routing API.
-                                            // Value 1 here is same as 0 in GTFS and the Routing API.
-                                            // Value 2 here is same as 1 in GTFS and the Routing API.
-
-    private var start_time = "+"            // The scheduled start time of the trip, i.e. the scheduled departure time
-                                            // from the first stop of the trip. The format follows HH:mm in 24-hour
-                                            // local time, not the 30-hour overlapping operating days present in GTFS.
-
-    private var next_stop = "+"             // The ID of next stop or station. Updated on each departure from or
-                                            // passing of a stop. EOL (end of line) after final stop and empty if the vehicle
-                                            // is leaving HSL area. Matches stop_id in GTFS (value of gtfsId field, without
-                                            // HSL: prefix, in Stop type in the routing API).
-
-    private var geohash_level = "+"         // By subscribing to specific geohash levels, you can reduce the amount of
-                                            // traffic into the client. By only subscribing to level 0 the client gets
-                                            // the most important status changes. The rough percentages of messages with a
-                                            // specific geohash_level value out of all ongoing messages are:
-                                            // 0: 3 % / 1: 0.09 % / 2: 0.9 % / 3: 8 % / 4: 43 % / 5: 44 %
-
-    private var geohash = "+"               // The latitude and the longitude of the vehicle. The digits of the integer
-                                            // parts are separated into their own level in the format <lat>;<long>, e.g. 60;24.
-                                            // The digits of the fractional parts are split and interleaved into a custom format
-                                            // so that e.g. (60.123, 24.789) becomes 60;24/17/28/39.
-                                            // This format enables subscribing to specific geographic boundaries easily.
-                                            // If the coordinates are missing, geohash_level and geohash have the concatenated
-                                            // value 0////. This geohash scheme is greatly simplified from the original geohash scheme
-
-    private var topic: String =
-        "/hfp/v2/journey" +
-        "/$temporal_type" +
-        "/$event_type" +
-        "/$transport_mode" +
-        "/+/+" +
-        "/$route_id" +
-        "/$direction_id" +
-        "/$start_time" +
-        "/$next_stop" +
-        "/$geohash_level" +
-        "/$geohash/#"
+    private var connectionStatus by Delegates.notNull<Boolean>()
 
     fun connect(applicationContext: Context) {
 
@@ -86,13 +29,14 @@ class MqttHelper {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    subscribe(topic)
-                    //connectionStatus = true
+                    // subscribe(topic)
+                    Log.d("DBG", "MQTT connect done")
+                    connectionStatus = true
                     // Give your callback on connection established here
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    //connectionStatus = false
+                    connectionStatus = false
                     // Give your callback on connection failure here
                     exception.printStackTrace()
                 }
@@ -104,26 +48,33 @@ class MqttHelper {
     }
 
     fun subscribe(topic: String) {
-        val qos = 2 // Mention your qos value
-        try {
-            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on Subscription here
-                    Log.d("DBG", "subscription OK")
 
-                }
+        if (connectionStatus) {
 
-                override fun onFailure(
-                    asyncActionToken: IMqttToken,
-                    exception: Throwable
-                ) {
-                    // Give your subscription failure callback here
-                }
-            })
-        } catch (e: MqttException) {
-            System.err.println("Exception whilst subscribing to topic '$topic'")
-            e.printStackTrace()
+            val qos = 2 // Mention your qos value
+            try {
+                mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
+                    override fun onSuccess(asyncActionToken: IMqttToken) {
+                        // Give your callback on Subscription here
+                        Log.d("DBG", "subscription to topic: $topic OK")
+
+                    }
+
+                    override fun onFailure(
+                        asyncActionToken: IMqttToken,
+                        exception: Throwable
+                    ) {
+                        // Give your subscription failure callback here
+                    }
+                })
+            } catch (e: MqttException) {
+                System.err.println("Exception whilst subscribing to topic '$topic'")
+                e.printStackTrace()
+            }
+        } else {
+            Log.d("DBG", "Subscribing not working because no connection")
         }
+
     }
 
     fun receiveMessages(vehicleFragment: VehicleFragment) {
@@ -132,8 +83,10 @@ class MqttHelper {
 
         mqttAndroidClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable) {
-                //connectionStatus = false
+                connectionStatus = false
                 // Give your callback on failure here
+                Log.d("DBG", "MQTT connection lost")
+
             }
 
             override fun messageArrived(topic: String, message: MqttMessage) {
@@ -145,10 +98,10 @@ class MqttHelper {
                     // Here I update the fragment that shows the data
                     vehicleFragment.updateUI(vehiclePosition)
 
-                    Log.d("DBG", vehiclePosition.toString())
-
                 } catch (e: Exception) {
                     // Give your callback on error here
+                    Log.d("DBG", "MQTT exception: $e")
+
                 }
             }
 
@@ -158,20 +111,61 @@ class MqttHelper {
         })
     }
 
-    fun unSubscribe() {
-        try {
-            val unsubToken = mqttAndroidClient.unsubscribe(topic)
-            unsubToken.actionCallback = object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    // Give your callback on unsubscribing here
-                }
+    fun receiveMessagesInARMap(mapFragment: MapFragment) {
 
-                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    // Give your callback on failure here
+        val gson = Gson()
+
+        mqttAndroidClient.setCallback(object : MqttCallback {
+            override fun connectionLost(cause: Throwable) {
+                connectionStatus = false
+                // Give your callback on failure here
+                Log.d("DBG", "MQTT connection lost")
+
+            }
+
+            override fun messageArrived(topic: String, message: MqttMessage) {
+
+                try {
+                    val data = String(message.payload, charset("UTF-8"))
+                    val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+
+                    // Here I update the fragment that shows the data
+                    mapFragment.updateUI(vehiclePosition)
+
+                } catch (e: Exception) {
+                    // Give your callback on error here
+                    Log.d("DBG", "MQTT exception: $e")
+
                 }
             }
-        } catch (e: MqttException) {
-            // Give your callback on failure here
+
+            override fun deliveryComplete(token: IMqttDeliveryToken) {
+                // Acknowledgement on delivery complete
+            }
+        })
+    }
+
+
+    fun unSubscribe(topic: String) {
+
+        if (connectionStatus) {
+            try {
+                val unsubToken = mqttAndroidClient.unsubscribe(topic)
+                unsubToken.actionCallback = object : IMqttActionListener {
+                    override fun onSuccess(asyncActionToken: IMqttToken) {
+                        // Give your callback on unsubscribing here
+                        Log.d("DBG", "Successfully unsubscribed from topic: $topic")
+                    }
+
+                    override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                        // Give your callback on failure here
+                    }
+                }
+            } catch (e: MqttException) {
+                // Give your callback on failure here
+            }
+        } else {
+            Log.d("DBG", "Subscribing not working because no connection")
         }
     }
 

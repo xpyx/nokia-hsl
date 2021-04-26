@@ -1,6 +1,7 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
@@ -29,9 +30,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var mAlertViewModel: AlertItemViewModel
-    private lateinit var mStopTimesItemViewModel: StopTimesItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
-    private lateinit var mStopTimesApiViewModel: StopTimesViewModel
     private lateinit var adapter: AlertListAdapter
 
     // Set search at the top menu
@@ -95,21 +94,6 @@ class HomeFragment : Fragment() {
         mAlertApiViewModel.myAlertApiResponse.observe(viewLifecycleOwner, { response ->
             if (response != null && !response.hasErrors()) {
                 insertToAlertDatabase(response)
-            } else {
-                // Log.d("DBG", response.toString())
-            }
-        })
-
-        // StopTimes API viewmodel
-        val stopTimesRepository = StopTimesRepository()
-        val stopTimesViewModelFactory = StopTimesViewModelFactory(stopTimesRepository)
-        mStopTimesApiViewModel =
-            ViewModelProvider(this, stopTimesViewModelFactory).get(StopTimesViewModel::class.java)
-        mStopTimesApiViewModel.getStopTimesData()
-        mStopTimesApiViewModel.myStopTimesApiResponse.observe(viewLifecycleOwner, { response ->
-            if (response != null) {
-                // Log.d("DBG", "@ mStopTimesApiViewModel.myStopTimesApiResponse.observe + $response")
-                insertToStopTimesDatabase(response)
             } else {
                 // Log.d("DBG", response.toString())
             }
@@ -195,22 +179,6 @@ class HomeFragment : Fragment() {
                             alertEffect
                         )
                         mAlertViewModel.addAlertItem(alert)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun insertToStopTimesDatabase(response: Response<StopTimesListQuery.Data>) {
-        if (response.data?.stops() != null) {
-            response.data?.stops()!!.forEach { item ->
-                if (item.stoptimesForPatterns()?.isEmpty() != true) {
-                    GlobalScope.launch(context = Dispatchers.IO) {
-                        val stopTimes = StopTimesItem(
-                            0,
-                            item
-                        )
-                        mStopTimesItemViewModel.addStopItem(stopTimes)
                     }
                 }
             }
