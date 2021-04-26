@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">NokiaHslVisualisation</string>
+    <string name="app_name" translatable="false">NokiaHslVisualisation</string>
 
     // Fragment titles
     <string name="menu_home">Alerts</string>
-    <string name="menu_list">List View</string>
+    <string name="menu_traffic_list">Traffic list view</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Traffic details</string>
     <string name="alert_details_view">Alert details</string>
@@ -12,7 +12,7 @@
     // Traffic list view
     <string name="toast_api_key">To use traffic data, you need HERE maps API key. You can sign up for it in https://developer.here.com/tutorials/getting-here-credentials/</string>
     <string name="add_api_key_button">Add key</string>
-    <string name="api_key_edit_text_hint">API-key here</string>
+    <string name="api_key_edit_text_hint">API key here</string>
     <string name="api_key_link_button_text">LINK</string>
 
     // Content descriptions
@@ -24,7 +24,7 @@
     <string name="alert_icon_content_description">Alert Icon</string>
 
     // Traffic details
-    <string name="traffic_time">Criticality: %1$s\nStart: %2$s\nEnd: %3$s</string>
+    <string name="traffic_time">Criticality: %1$s Start: %2$s End: %3$s</string>
 
     // Home fragment
     <string name="btn_alerts">Show Alerts</string>
@@ -32,8 +32,7 @@
     <string name="btn_stop_mqtt">Stop MQTT</string>
 
 
-    <string name="mapbox_access_token">pk.eyJ1IjoiZGVkYXNzZSIsImEiOiJja21sejhvbW4wMm9oMnZwZWxlNjZ3Y2Q2In0.lvdWT_LNNIlwM-AxY0m7UA</string>
-    <string name="hello_blank_fragment">hello</string>
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoiZGVkYXNzZSIsImEiOiJja21sejhvbW4wMm9oMnZwZWxlNjZ3Y2Q2In0.lvdWT_LNNIlwM-AxY0m7UA</string>
     <string name="search">Search</string>
 
     // Drawer
@@ -56,7 +55,7 @@
     <string name="NO_EFFECT">No effect</string>
 
     <string name="alert_cause">Alert cause</string>
-    <string name="UNKNOWN_CAUSE">Unknow cause</string>
+    <string name="UNKNOWN_CAUSE">Unknown cause</string>
     <string name="OTHER_CAUSE">Other cause</string>
     <string name="TECHNICAL_PROBLEM">Technical problem</string>
     <string name="STRIKE">Strike</string>
@@ -95,7 +94,7 @@
     <string name="apply_button_menu_item">Apply</string>
 
     // AR
-    <string name="user_location_permission_explanation">WIP</string>
+    <string name="user_location_permission_explanation" translatable="false">WIP</string>
     <string name="user_location_permission_not_granted">Location permission not granted</string>
     <string name="distance_hint">e.g. 10</string>
     <string name="CAUSE_MODIFIED_SERVICE">Modified service</string>

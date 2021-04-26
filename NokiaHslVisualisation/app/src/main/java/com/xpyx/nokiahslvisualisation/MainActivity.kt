@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_home,
                 R.id.action_vehicles,
                 R.id.action_map,
-                R.id.action_list,
+                R.id.action_traffic_list,
                 R.id.ar_view,
 
             )

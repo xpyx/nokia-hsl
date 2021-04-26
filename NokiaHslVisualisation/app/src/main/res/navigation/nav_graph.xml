@@ -21,9 +21,9 @@
         tools:layout="@layout/fragment_vehicles" />
 
     <fragment
-        android:id="@+id/action_list"
+        android:id="@+id/action_traffic_list"
         android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
-        android:label="@string/menu_list"
+        android:label="@string/menu_traffic_list"
         tools:layout="@layout/fragment_list">
         <argument
             android:name="TRAFFIC"
@@ -48,7 +48,7 @@
             app:argType="long" />
         <action
             android:id="@+id/action_action_bus_to_action_list"
-            app:destination="@id/action_list" />
+            app:destination="@id/action_traffic_list" />
     </fragment>
     <fragment
         android:id="@+id/ar_view"
