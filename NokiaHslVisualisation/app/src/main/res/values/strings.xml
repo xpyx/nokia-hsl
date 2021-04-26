@@ -116,4 +116,12 @@
     <string name="clear_map">Clear map</string>
     <string name="show_traffic_items">Show Traffic Info</string>
     <string name="traffic_info_title">HERE Maps Traffic Info</string>
+
+    <string name="camera_and_location_permission_request">Location and Camera permissions are needed to use this
+        feature
+    </string>
+    <string name="loading_message" >Loading current location.</string>
+    <string name="arcore_not_supported" >This device does not support AR</string>
+    <string name="arcore_not_installed">Please install ARCore</string>
+    <string name="arcore_not_updated">Please update ARCore</string>
 </resources>

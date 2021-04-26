@@ -2,11 +2,12 @@ package com.xpyx.nokiahslvisualisation.fragments.ar
 
 import android.app.Activity
 import android.widget.Toast
-import com.corebuild.arlocation.demo.R
+
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
 import com.google.ar.core.exceptions.*
+import com.xpyx.nokiahslvisualisation.R
 
 object AugmentedRealityLocationUtils {
 
