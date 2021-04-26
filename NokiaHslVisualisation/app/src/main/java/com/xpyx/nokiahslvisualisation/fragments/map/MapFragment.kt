@@ -50,6 +50,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import java.util.*
 
+
 class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     private lateinit var arFrag: ArFragment
@@ -80,7 +81,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var positions = mutableMapOf<String, VehiclePosition>()
     var listOfTopics = mutableListOf<String>()
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
@@ -88,8 +88,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         // Inflate the layout for this fragment
@@ -111,6 +111,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                     tram.toggle()
                 } else if (bus.isChecked) {
                     bus.toggle()
+                }
+                else if (metro.isChecked) {
+                    metro.toggle()
                 }
             }
 
@@ -142,9 +145,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
-            bus,
-            tram,
-            traffic_items
+                bus,
+                tram,
+                metro,
+                traffic_items
         )
 
         listOfCheckBoxes.forEach { it ->
@@ -159,7 +163,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
+//                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
                             mMQTTViewModel.subscribe(topic)
                         }
                         "Show only busses" -> {
@@ -168,7 +173,18 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/bus/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"
+//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        "Show only metro" -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+                            // Set topic and subscribe
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
+//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
                             mMQTTViewModel.subscribe(topic)
                         }
                         "Show Traffic Info" -> {
@@ -223,76 +239,76 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 // Get stoptimes
                 mStopTimesApiViewModel.getStopTimesData()
                 mStopTimesApiViewModel.myStopTimesApiResponse.observe(
-                    viewLifecycleOwner,
-                    { response ->
-                        if (response != null) {
+                        viewLifecycleOwner,
+                        { response ->
+                            if (response != null) {
 
-                            // Hide spinner
-                            spinner.visibility = View.GONE
+                                // Hide spinner
+                                spinner.visibility = View.GONE
 
-                            // The stoptimes data is here, iterate over the whole response
-                            response.data?.stops()?.forEach {
+                                // The stoptimes data is here, iterate over the whole response
+                                response.data?.stops()?.forEach {
 
-                                if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
+                                    if (it.stoptimesForPatterns()?.isNotEmpty() == true) {
 
-                                    val routeId =
-                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
-                                            ?.trip()?.route()
-                                            ?.gtfsId()?.substring(
-                                                4
-                                            )
+                                        val routeId =
+                                                it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                                        ?.trip()?.route()
+                                                        ?.gtfsId()?.substring(
+                                                                4
+                                                        )
 
-                                    val transportMode =
-                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
-                                            ?.trip()?.route()
-                                            ?.mode()
+                                        val transportMode =
+                                                it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                                        ?.trip()?.route()
+                                                        ?.mode()
 
-                                    val arrivalDelay =
-                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
-                                            ?.arrivalDelay()
+                                        val arrivalDelay =
+                                                it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                                        ?.arrivalDelay()
 
-                                    var directionId =
-                                        it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
-                                            ?.trip()
-                                            ?.directionId()
+                                        var directionId =
+                                                it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                                        ?.trip()
+                                                        ?.directionId()
 
-                                    // Change direction id according to instructions. Also note if null, then -> "+"
-                                    if (directionId.equals("0")) {
-                                        directionId = "1"
-                                    } else if (directionId.equals("1")) {
-                                        directionId = "2"
-                                    }
+                                        // Change direction id according to instructions. Also note if null, then -> "+"
+                                        if (directionId.equals("0")) {
+                                            directionId = "1"
+                                        } else if (directionId.equals("1")) {
+                                            directionId = "2"
+                                        }
 
-                                    if (arrivalDelay != null) {
-                                        if (arrivalDelay > lateTime) {
+                                        if (arrivalDelay != null) {
+                                            if (arrivalDelay > lateTime) {
 
-                                            val late = Late(
-                                                routeId,
-                                                transportMode.toString().toLowerCase(Locale.ROOT),
-                                                arrivalDelay.toString(),
-                                                directionId
-                                            )
+                                                val late = Late(
+                                                        routeId,
+                                                        transportMode.toString().toLowerCase(Locale.ROOT),
+                                                        arrivalDelay.toString(),
+                                                        directionId
+                                                )
 
-                                            topic = topicSetter.setTopic(late)
-                                            listOfTopics.add(topic)
-                                            mMQTTViewModel.subscribe(topic)
+                                                topic = topicSetter.setTopic(late)
+                                                listOfTopics.add(topic)
+                                                mMQTTViewModel.subscribe(topic)
 
-                                            Log.d(
-                                                "DBG late vehicles",
-                                                """routeId          : $routeId
+                                                Log.d(
+                                                        "DBG late vehicles",
+                                                        """routeId          : $routeId
                                                 transportMode    : $transportMode
                                                 arrivalDelay     : $arrivalDelay
                                                 directionId      : $directionId
                                                 ---------------------------""".trimIndent()
-                                            )
+                                                )
+                                            }
                                         }
                                     }
                                 }
+                            } else {
+                                // Log.d("DBG", response.toString())
                             }
-                        } else {
-                            // Log.d("DBG", response.toString())
-                        }
-                    })
+                        })
 
                 editText.text.clear()
                 hideKeyboard()
@@ -346,8 +362,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         //important! set your user agent to prevent getting banned from the osm servers
         Configuration.getInstance().load(
-            ctx,
-            androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+                ctx,
+                androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
         )
         setSeekBars()
 
@@ -362,7 +378,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
 
         arFrag = childFragmentManager.findFragmentById(
-            R.id.sceneform_fragment
+                R.id.sceneform_fragment
         ) as ArFragment
 
         ViewRenderable.builder()
@@ -414,7 +430,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
             map.post({
                 map.zoomToBoundingBox(
-                    b, true, 100
+                        b, true, 100
                 )
                 map.minZoomLevel = 10.0
             })
@@ -495,25 +511,25 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 if (defined.definedOrigin?.definedLocationDirection != null) {
                     "From: ${
                         defined.definedOrigin.definedLocationRoadway?.directionClassDescription?.get(
-                            0
+                                0
                         )?.trafficItemDescriptionElementValue
                     } towards ${
                         defined.definedOrigin.definedLocationDirection.directionClassDescription?.get(
-                            0
+                                0
                         )?.trafficItemDescriptionElementValue
                     } from ${
                         defined.definedOrigin.definedLocationPoint?.directionClassDescription?.get(
-                            0
+                                0
                         )?.trafficItemDescriptionElementValue
                     } to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 } else {
                     "From: ${
                         defined.definedOrigin?.definedLocationRoadway?.directionClassDescription?.get(
-                            0
+                                0
                         )?.trafficItemDescriptionElementValue
                     } from ${
                         defined.definedOrigin?.definedLocationPoint?.directionClassDescription?.get(
-                            0
+                                0
                         )?.trafficItemDescriptionElementValue
                     } to ${defined.definedTo?.definedLocationPoint?.directionClassDescription?.get(0)?.trafficItemDescriptionElementValue}"
                 }
@@ -534,7 +550,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         val b = BoundingBox(lathigh, lgthigh, latlow, lgtlow)
         map.post {
             map.zoomToBoundingBox(
-                b, true, 100
+                    b, true, 100
             )
             map.minZoomLevel = 10.0
         }
@@ -551,9 +567,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         // Icon made by Freepik from www.flaticon.com
         marker.icon = ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.map_warning_icon,
-            requireContext().theme
+                resources,
+                R.drawable.map_warning_icon,
+                requireContext().theme
         )
         marker.title = "$trafficTitle"
         marker.subDescription = locationText
@@ -578,9 +594,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // If positions map contains the vehicle, just update it's info
         if (positions.containsKey(
-                vehiclePosition.VP.oper.toString() +
-                        vehiclePosition.VP.veh.toString()
-            )
+                        vehiclePosition.VP.oper.toString() +
+                                vehiclePosition.VP.veh.toString()
+                )
         ) {
 
             // If positions map doesn't contain the vehicle, add it there
@@ -606,16 +622,31 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             Odometer reading: ${vehiclePosition.VP.odo} m
             Offset from timetable: ${vehiclePosition.VP.dl} seconds
         """.trimIndent()
-
         val marker = Marker(map)
+
         marker.position =
             GeoPoint(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble())
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker.icon = ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.vehicle_location,
-            requireContext().theme
-        )
+        when (vehiclePosition.VP.oper) {
+            40 -> marker.icon = ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.tram_icon,
+                    requireContext().theme,
+                    )
+
+            22 -> marker.icon = ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.bus_icon_map,
+                    requireContext().theme
+
+            )
+
+            50 -> marker.icon = ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.metro_icon,
+                    requireContext().theme
+            )
+        }
         marker.title = title
         marker.subDescription = snippet
 
@@ -624,6 +655,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Remove marker after 2 seconds
         Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+
     }
 
     suspend fun connectMQTT() {
