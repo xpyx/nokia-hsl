@@ -95,7 +95,7 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         )
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.ar_scene, container, false)
+        return inflater.inflate(R.layout.fragment_ar, container, false)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -180,7 +180,9 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-        Toast.makeText(listener, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show()
+        for (permission in permissionsToExplain) {
+            Toast.makeText(listener, permission, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onPermissionResult(granted: Boolean) {
