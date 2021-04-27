@@ -12,7 +12,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import kotlin.properties.Delegates
 
-class MqttHelper() {
+class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
     private var connectionStatus by Delegates.notNull<Boolean>()
@@ -85,7 +85,8 @@ class MqttHelper() {
             override fun connectionLost(cause: Throwable) {
                 connectionStatus = false
                 // Give your callback on failure here
-                Log.d("DBG", "MQTT connection lost")
+                vehicleFragment.showToast(
+                    "MQTT connection lost, restart current view by navigating to Alerts and then back to Vechiles")
 
             }
 
@@ -94,6 +95,7 @@ class MqttHelper() {
                 try {
                     val data = String(message.payload, charset("UTF-8"))
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+                    Log.d("DBG", "vehiclePosition: ${vehiclePosition.VP}")
 
                     // Here I update the fragment that shows the data
                     vehicleFragment.updateUI(vehiclePosition)
@@ -101,6 +103,7 @@ class MqttHelper() {
                 } catch (e: Exception) {
                     // Give your callback on error here
                     Log.d("DBG", "MQTT exception: $e")
+
 
                 }
             }
