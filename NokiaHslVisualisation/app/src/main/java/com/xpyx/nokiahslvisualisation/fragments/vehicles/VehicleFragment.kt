@@ -104,10 +104,14 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         btn_clear.setOnClickListener {
             if (topic.isNotEmpty()) {
                 mMQTTViewModel.unsubscribe(topic)
-                if (tram.isChecked) {
-                    tram.toggle()
-                } else if (bus.isChecked) {
-                    bus.toggle()
+                if (tram_vehicles.isChecked) {
+                    tram_vehicles.toggle()
+                } else if (bus_vehicles.isChecked) {
+                    bus_vehicles.toggle()
+                } else if (metro_vehicles.isChecked) {
+                    metro_vehicles.toggle()
+                } else if (traffic_items_vehicles.isChecked) {
+                    traffic_items_vehicles.toggle()
                 }
 
             }
@@ -140,33 +144,61 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
-            bus,
-            tram
+            bus_vehicles,
+            tram_vehicles,
+            metro_vehicles,
+            traffic_items_vehicles
         )
 
-        listOfCheckBoxes.forEach {
+        listOfCheckBoxes.forEach { it ->
             val name = it.text.toString()
             it.setOnCheckedChangeListener { _, _ ->
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
-                    if (name == "Show only trams") {
-                        // Clear positions map
-                        positions.clear()
-                        // First clear other topics
-                        mMQTTViewModel.unsubscribe(topic)
-                        // Set topic and subscribe
-                        topic = "/hfp/v2/journey/ongoing/vp/tram/#"
-                        mMQTTViewModel.subscribe(topic)
-                    } else if (name == "Show only busses") {
-                        // Clear positions map
-                        positions.clear()
-                        // First clear other topics
-                        mMQTTViewModel.unsubscribe(topic)
-                        // Set topic and subscribe
-                        topic = "/hfp/v2/journey/ongoing/vp/bus/#"
-                        mMQTTViewModel.subscribe(topic)
+                    when (name) {
+                        "Show only trams" -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+                            // Set topic and subscribe
+//                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        "Show only busses" -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+                            // Set topic and subscribe
+                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"
+//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        "Show only metros" -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+                            // Set topic and subscribe
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
+//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        "Show Traffic Info" -> {
+                            //setMapMarkers()
+                        }
                     }
                 } else {
+                    if (name == "Show Traffic Info") {
+                        // remove traffic markers
+                        //map.overlays.forEach {
+                            //if (it is Marker) {
+                            //    map.overlays.remove(it)
+                           // }
+                        //}
+                    }
                     // Clear other topics
                     mMQTTViewModel.unsubscribe(topic)
 
