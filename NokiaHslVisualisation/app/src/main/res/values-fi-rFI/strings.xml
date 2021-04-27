@@ -87,4 +87,5 @@
     <string name="clear_map">Tyhjennä kartta</string>
     <string name="show_traffic_items">Näytä liikennetiedot</string>
     <string name="traffic_info_title">HERE karttojen liikennetiedot</string>
+    <string name="show_metro">Näytä vain metrot</string>
 </resources>

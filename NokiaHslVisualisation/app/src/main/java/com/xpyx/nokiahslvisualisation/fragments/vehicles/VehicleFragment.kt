@@ -176,7 +176,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 //                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only metros" -> {
+                        "Show only metro" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics

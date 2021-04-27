@@ -116,5 +116,4 @@
     <string name="clear_map">Clear map</string>
     <string name="show_traffic_items">Show Traffic Info</string>
     <string name="traffic_info_title">HERE Maps Traffic Info</string>
-    <string name="show_metro">Show only metros</string>
 </resources>
