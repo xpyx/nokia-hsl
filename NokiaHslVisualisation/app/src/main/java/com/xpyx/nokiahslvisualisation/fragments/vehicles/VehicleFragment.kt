@@ -51,7 +51,10 @@ import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import com.xpyx.nokiahslvisualisation.utils.LineToRoute
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_map.*
 import kotlinx.android.synthetic.main.fragment_vehicles.*
+import kotlinx.android.synthetic.main.fragment_vehicles.btn_clear
+import kotlinx.android.synthetic.main.fragment_vehicles.vehicle_count
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -150,48 +153,52 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             traffic_items_vehicles
         )
 
+
+
         listOfCheckBoxes.forEach { it ->
-            val name = it.text.toString()
+            val id = it.id.toString()
             it.setOnCheckedChangeListener { _, _ ->
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
-                    when (name) {
-                        "Show only trams" -> {
+                    when (id) {
+                        // Tram
+                        "2131296786" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-//                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
                             topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only busses" -> {
+                        // Bus
+                        "2131296408" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"
-//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
+                            //<prefix>/<version>/<journey_type>/<temporal_type>/<event_type>/<transport_mode>
+                            topic = "/hfp/v2/journey/ongoing/vp/bus/+/+/+/+/+/+/+/3/#"
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only metro" -> {
+                        // Metro
+                        "2131296584" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
                             topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
-//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show Traffic Info" -> {
+                        // Traffic
+                        "2131296782" -> {
                             //setMapMarkers()
                         }
                     }
                 } else {
-                    if (name == "Show Traffic Info") {
+                    if (id == "Show Traffic Info") {
                         // remove traffic markers
                         //map.overlays.forEach {
                             //if (it is Marker) {
@@ -537,7 +544,13 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     .snippet(snippet)
             )
 
+            // If not a metro or tram, hold the marker on the map for 15 seconds because location updates come in longer intervals
+        if (!vehiclePosition.VP.toString().contains("oper=40") || !vehiclePosition.VP.toString().contains("oper=50")) {
+            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 15000)
+        } else {
             Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
+        }
+
         }
     }
 
@@ -550,7 +563,6 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         super.onResume()
         mapView?.onResume()
     }
-
 
     // When exiting this fragment, unsubscribe from the topic
     override fun onPause() {
