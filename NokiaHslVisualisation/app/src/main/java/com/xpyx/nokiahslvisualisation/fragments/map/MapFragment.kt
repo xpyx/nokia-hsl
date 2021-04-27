@@ -405,9 +405,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 return@setOnTapArPlaneListener
             }
 
-            arFrag.getPlaneDiscoveryController().hide()
-            arFrag.getPlaneDiscoveryController().setInstructionView(null)
-            arFrag.getArSceneView().getPlaneRenderer().setEnabled(false)
+            arFrag.planeDiscoveryController.hide()
+            arFrag.planeDiscoveryController.setInstructionView(null)
+            arFrag.arSceneView.planeRenderer.isEnabled = false
             //Creates a new anchor at the hit location
             val anchor = hitResult!!.createAnchor()
             //Creates a new anchorNode attaching it to anchor
@@ -428,12 +428,12 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             // Center the map to Helsinki area
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
-            map.post({
+            map.post {
                 map.zoomToBoundingBox(
-                        b, true, 100
+                    b, true, 100
                 )
                 map.minZoomLevel = 10.0
-            })
+            }
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
