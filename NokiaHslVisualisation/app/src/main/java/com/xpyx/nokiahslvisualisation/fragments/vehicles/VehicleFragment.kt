@@ -497,7 +497,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mMQTTViewModel.receiveMessages(this)
     }
 
-    fun updateUI(vehiclePosition: VehiclePosition) {
+    fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
 
         Log.d("DBG", vehiclePosition.toString())
         spinner.visibility = View.GONE
@@ -545,15 +545,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     .title(title)
                     .snippet(snippet)
             )
-
-            // If metro or tram, hold the marker on the map for 2 seconds
-        if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
-            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
-        } else {
-            // Bus, hold marker for 15 seconds because location updates come in longer intervals
-            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 15000)
-        }
-
+            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, time)
         }
     }
 
