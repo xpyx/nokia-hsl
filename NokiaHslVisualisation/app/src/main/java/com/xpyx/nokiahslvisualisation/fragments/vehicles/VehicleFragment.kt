@@ -591,4 +591,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+    fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+
+    }
 }
