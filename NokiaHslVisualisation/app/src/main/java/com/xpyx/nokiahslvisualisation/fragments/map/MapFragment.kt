@@ -538,10 +538,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 "Problem: ${item.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue} Location: $address"
             }
 
-            lathigh = Math.max(trafficItemLatitude, lathigh)
-            latlow = Math.min(trafficItemLatitude, latlow)
-            lgthigh = Math.max(trafficItemLongitude, lgthigh)
-            lgtlow = Math.min(trafficItemLongitude, lgtlow)
+            lathigh = trafficItemLatitude.coerceAtLeast(lathigh)
+            latlow = trafficItemLatitude.coerceAtMost(latlow)
+            lgthigh = trafficItemLongitude.coerceAtLeast(lgthigh)
+            lgtlow = trafficItemLongitude.coerceAtMost(lgtlow)
 
             addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
 
