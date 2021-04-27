@@ -1,6 +1,8 @@
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
 import android.app.Activity
+import android.content.Context
+import android.util.Log
 import android.widget.Toast
 
 import com.google.ar.core.ArCoreApk

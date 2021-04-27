@@ -63,8 +63,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     private lateinit var map: org.osmdroid.views.MapView
     private var transparency = 0f
-    private var height = 900
-    private var width = 900
+    private var height = 2400
+    private var width = 2400
     private lateinit var apa: LinearLayout
 
     private lateinit var mMQTTViewModel: MQTTViewModel

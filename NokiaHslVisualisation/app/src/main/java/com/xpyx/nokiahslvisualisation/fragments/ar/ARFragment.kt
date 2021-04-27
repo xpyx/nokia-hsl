@@ -9,6 +9,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.RasterSource
 import com.mapbox.mapboxsdk.style.sources.TileSet
+import com.xpyx.nokiahslvisualisation.MainActivity
 import com.xpyx.nokiahslvisualisation.R
 import kotlinx.android.synthetic.main.ar_scene.*
 import uk.co.appoly.arcorelocation.LocationMarker
@@ -199,24 +201,28 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
     private fun setupSession() {
         if (fragment == null) {
+            Log.e("aaa","fragment is null")
             return
         }
 
         if (fragment.session == null) {
             try {
-                val session = AugmentedRealityLocationUtils.setupSession(Activity(), arCoreInstallRequested)
+                val session = AugmentedRealityLocationUtils.setupSession(requireActivity(), arCoreInstallRequested)
                 if (session == null) {
+                    Log.e("aaa","session is null")
                     arCoreInstallRequested = true
                     return
                 } else {
+                    Log.e("aaa","have a cup of frag.session")
                     fragment.setupSession(session)
                 }
             } catch (e: UnavailableException) {
-                AugmentedRealityLocationUtils.handleSessionException(Activity(), e)
+                Log.e("aaa","shiit catch 22")
+                AugmentedRealityLocationUtils.handleSessionException(requireActivity(), e)
             }
         }
         if (locationScene == null) {
-            locationScene = LocationScene(Activity(), fragment)
+            locationScene = LocationScene(requireActivity(), fragment)
             locationScene!!.setMinimalRefreshing(true)
             locationScene!!.setOffsetOverlapping(true)
 //            locationScene!!.setRemoveOverlapping(true)
@@ -332,6 +338,25 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             }
         }
     }
+    private fun checkAndRequestPermissions() {
+        if (!PermissionUtils.hasLocationAndCameraPermissions(requireContext())) {
+            PermissionUtils.requestCameraAndLocationPermissions(requireActivity())
+        } else {
+            Log.e("AaA","setting up")
+            setupSession()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, results: IntArray) {
+        if (!PermissionUtils.hasLocationAndCameraPermissions(requireContext())) {
+            Toast.makeText(context, R.string.camera_and_location_permission_request, Toast.LENGTH_LONG).show()
+            if (!PermissionUtils.shouldShowRequestPermissionRationale(Activity())) {
+                // Permission denied with checking "Do not ask again".
+                PermissionUtils.launchPermissionSettings(Activity())
+            }
+           // finish()
+        }
+    }
 
     private fun computeNewScaleModifierBasedOnDistance(locationMarker: LocationMarker, distance: Int) {
         val scaleModifier = AugmentedRealityLocationUtils.getScaleModifierBasedOnRealDistance(distance)
@@ -388,6 +413,7 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onResume() {
         super.onResume()
+        checkAndRequestPermissions()
         mapView?.onResume()
     }
 
