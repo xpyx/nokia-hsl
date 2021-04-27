@@ -42,9 +42,9 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.RasterSource
 import com.mapbox.mapboxsdk.style.sources.TileSet
-import com.xpyx.nokiahslvisualisation.MainActivity
 import com.xpyx.nokiahslvisualisation.R
-import kotlinx.android.synthetic.main.ar_scene.*
+
+import kotlinx.android.synthetic.main.fragment_ar.*
 import uk.co.appoly.arcorelocation.LocationMarker
 import uk.co.appoly.arcorelocation.LocationScene
 import java.lang.ref.WeakReference
