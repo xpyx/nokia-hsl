@@ -134,6 +134,7 @@ class MqttHelper {
 
                     // Here I update the fragment that shows the data
                     mapFragment.updateUI(vehiclePosition)
+                    //Log.d("DBG", "Vehi posi: $vehiclePosition")
 
                 } catch (e: Exception) {
                     // Give your callback on error here

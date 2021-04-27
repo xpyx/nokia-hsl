@@ -660,10 +660,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // If not a metro or tram, hold the marker on the map for 15 seconds because location updates come in longer intervals
         if (!vehiclePosition.VP.toString().contains("oper=40") || !vehiclePosition.VP.toString().contains("oper=50")) {
-            Handler().postDelayed({ map.overlays.remove(marker) }, 15000)
+            Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
         } else {
             // If metro or tram, remove marker after 2 seconds
-            Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+            Handler().postDelayed({ map.overlays.remove(marker) }, 15000)
         }
         // This was needed to have the map refresh itself automatically
         map.invalidate()
