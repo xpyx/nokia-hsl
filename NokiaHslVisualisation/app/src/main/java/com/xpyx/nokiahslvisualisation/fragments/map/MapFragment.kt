@@ -151,48 +151,49 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 traffic_items
         )
 
+        Log.d("DBG checkboxes", "${bus.id} ${tram.id} ${metro.id} ${traffic_items.id}")
+
         listOfCheckBoxes.forEach { it ->
-            val name = it.text.toString()
+            val id = it.id.toString()
             it.setOnCheckedChangeListener { _, _ ->
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
-                    when (name) {
-                        "Show only trams" -> {
+                    when (id) {
+                        "2131296785" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-//                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
                             topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only busses" -> {
+                        "2131296405" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
+
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"
-//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
+                            //topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"          // Only Nobina OY
+                            topic = "/hfp/v2/journey/ongoing/vp/bus/+/+/+/+/+/+/+/3/#" // All busses, with updates only 9% of the full rate
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only metro" -> {
+                        "2131296583" -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
                             topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
-//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show Traffic Info" -> {
+                        "2131296781" -> {
                             setMapMarkers()
                         }
                     }
                 } else {
-                    if (name == "Show Traffic Info") {
+                    if (id == "Show Traffic Info") {
                         // remove traffic markers
                         map.overlays.forEach {
                             if (it is Marker) {
@@ -405,9 +406,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 return@setOnTapArPlaneListener
             }
 
-            arFrag.getPlaneDiscoveryController().hide()
-            arFrag.getPlaneDiscoveryController().setInstructionView(null)
-            arFrag.getArSceneView().getPlaneRenderer().setEnabled(false)
+            arFrag.planeDiscoveryController.hide()
+            arFrag.planeDiscoveryController.setInstructionView(null)
+            arFrag.arSceneView.planeRenderer.isEnabled = false
             //Creates a new anchor at the hit location
             val anchor = hitResult!!.createAnchor()
             //Creates a new anchorNode attaching it to anchor
@@ -428,12 +429,12 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             // Center the map to Helsinki area
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
-            map.post({
+            map.post {
                 map.zoomToBoundingBox(
-                        b, true, 100
+                    b, true, 100
                 )
                 map.minZoomLevel = 10.0
-            })
+            }
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
@@ -538,10 +539,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 "Problem: ${item.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue} Location: $address"
             }
 
-            lathigh = Math.max(trafficItemLatitude, lathigh)
-            latlow = Math.min(trafficItemLatitude, latlow)
-            lgthigh = Math.max(trafficItemLongitude, lgthigh)
-            lgtlow = Math.min(trafficItemLongitude, lgtlow)
+            lathigh = trafficItemLatitude.coerceAtLeast(lathigh)
+            latlow = trafficItemLatitude.coerceAtMost(latlow)
+            lgthigh = trafficItemLongitude.coerceAtLeast(lgthigh)
+            lgtlow = trafficItemLongitude.coerceAtMost(lgtlow)
 
             addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
 
@@ -628,24 +629,27 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             GeoPoint(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble())
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         when (vehiclePosition.VP.oper) {
+            // tram
             40 -> marker.icon = ResourcesCompat.getDrawable(
                     resources,
                     R.drawable.tram_icon,
                     requireContext().theme,
                     )
 
-            22 -> marker.icon = ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.bus_icon_map,
-                    requireContext().theme
-
-            )
-
+            // metro
             50 -> marker.icon = ResourcesCompat.getDrawable(
                     resources,
                     R.drawable.metro_icon,
                     requireContext().theme
             )
+
+            // bus
+            else -> marker.icon = ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.bus_icon_map,
+            requireContext().theme
+
+        )
         }
         marker.title = title
         marker.subDescription = snippet
@@ -653,8 +657,16 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // Add marker
         map.overlays.add(marker)
 
-        // Remove marker after 2 seconds
-        Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+
+        // If not a metro or tram, hold the marker on the map for 15 seconds because location updates come in longer intervals
+        if (!vehiclePosition.VP.toString().contains("oper=40") || !vehiclePosition.VP.toString().contains("oper=50")) {
+            Handler().postDelayed({ map.overlays.remove(marker) }, 15000)
+        } else {
+            // If metro or tram, remove marker after 2 seconds
+            Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+        }
+        // This was needed to have the map refresh itself automatically
+        map.invalidate()
 
     }
 
