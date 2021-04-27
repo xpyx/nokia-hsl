@@ -80,6 +80,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var lineToSearch: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
     var listOfTopics = mutableListOf<String>()
+    var isTwoThousand: Boolean = false
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -105,6 +106,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Clear button
         btn_clear.setOnClickListener {
+            isTwoThousand = false
+
             if (topic.isNotEmpty()) {
                 mMQTTViewModel.unsubscribe(topic)
                 if (tram.isChecked) {
@@ -225,6 +228,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
+                // set 2000ms flag
+                isTwoThousand = true
+
                 // Clear positions map
                 positions.clear()
 
@@ -327,6 +333,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // clear editText and hide keyboard
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // set 2000ms flag
+                isTwoThousand = true
 
                 // Clear positions map
                 positions.clear()
@@ -657,7 +666,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // Add marker
         map.overlays.add(marker)
         // remove marker after predefined (set in MQTTHelper) time
-        Handler().postDelayed({ map.overlays.remove(marker) }, time)
+        if (isTwoThousand) {
+            Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+        } else {
+            Handler().postDelayed({ map.overlays.remove(marker) }, time)
+        }
         // This was needed to have the map refresh itself automatically
         map.invalidate()
 

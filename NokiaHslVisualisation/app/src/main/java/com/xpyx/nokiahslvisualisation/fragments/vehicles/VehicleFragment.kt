@@ -79,6 +79,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     var lineToSearch: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
     var listOfTopics = mutableListOf<String>()
+    var isTwoThousand: Boolean = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -105,6 +106,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Clear button
         btn_clear.setOnClickListener {
+            isTwoThousand = false
             if (topic.isNotEmpty()) {
                 mMQTTViewModel.unsubscribe(topic)
                 if (tram_vehicles.isChecked) {
@@ -230,6 +232,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
+                // set 2000ms flag
+                isTwoThousand = true
+
                 // Clear positions map
                 positions.clear()
 
@@ -330,6 +335,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // clear editText and hide keyboard
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // set 2000ms flag
+                isTwoThousand = true
 
                 // Clear positions map
                 positions.clear()
@@ -499,6 +507,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
 
+
         Log.d("DBG", vehiclePosition.toString())
         spinner.visibility = View.GONE
 
@@ -545,6 +554,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     .title(title)
                     .snippet(snippet)
             )
+
+            if (isTwoThousand) {
+                Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
+            }
             Handler().postDelayed({ mapboxMap.removeMarker(mark) }, time)
         }
     }
