@@ -48,8 +48,8 @@
     <string name="CONSTRUCTION">Työmaa</string>
     <string name="POLICE_ACTIVITY">Poliisitoimintaa</string>
     <string name="MEDICAL_EMERGENCY">Lääketieteellinen hätätapaus</string>
-    <string name="menu_positions">Kulkuneuvo</string>
-    <string name="menu_vehicles">Kulkuneuvo</string>
+    <string name="menu_positions">Analytiikka</string>
+    <string name="menu_vehicles">Analytiikka</string>
     <string name="alert_filtering_preferences">Hälytyksen suodatusvalinnat</string>
     <string name="criticality_menu_item">Kriittisyys</string>
     <string name="critical_menu_item">Kriittinen</string>

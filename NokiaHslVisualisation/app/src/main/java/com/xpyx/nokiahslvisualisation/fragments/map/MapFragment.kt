@@ -1,3 +1,17 @@
+/**
+ * Description:
+ *
+ * Fragment for displaying info on an AR Map
+ * - show Here Maps traffic alerts
+ * - show HSL buses, trams, metros
+ * - find and show vehicles that are late $seconds
+ * - find and show all buses, trams or metros on a specific line
+ *
+ * Course: Mobile project
+ * Name: Mikael Ylivaara & Ville Pystynen
+ *
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.map
 
 import android.app.Activity
@@ -38,7 +52,6 @@ import kotlinx.android.synthetic.main.fragment_map.btn_clear
 import kotlinx.android.synthetic.main.fragment_map.bus
 import kotlinx.android.synthetic.main.fragment_map.tram
 import kotlinx.android.synthetic.main.fragment_map.vehicle_count
-import kotlinx.android.synthetic.main.fragment_vehicles.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -102,8 +115,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         super.onViewCreated(view, savedInstanceState)
         val ctx = requireActivity().applicationContext
 
-        // Code from vehicles starts here ------------------------------------------------->
-
         // Clear button
         btn_clear.setOnClickListener {
             isTwoThousand = false
@@ -148,10 +159,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
-                bus,
-                tram,
-                metro,
-                traffic_items
+                bus,            // listOfCheckBoxes[0]
+                tram,           // listOfCheckBoxes[1]
+                metro,          // listOfCheckBoxes[2]
+                traffic_items   // listOfCheckBoxes[3]
         )
 
         Log.d("DBG checkboxes", "${bus.id} ${tram.id} ${metro.id} ${traffic_items.id}")
@@ -162,36 +173,35 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
                     when (id) {
-                        "2131296785" -> {
+                        listOfCheckBoxes[1].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"               // Tram
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "2131296405" -> {
+                        listOfCheckBoxes[0].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
 
                             // Set topic and subscribe
-                            //topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"          // Only Nobina OY
                             topic = "/hfp/v2/journey/ongoing/vp/bus/+/+/+/+/+/+/+/3/#" // All busses, with updates only 9% of the full rate
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "2131296583" -> {
+                        listOfCheckBoxes[2].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"               // Metro
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "2131296781" -> {
+                        else -> {
                             setMapMarkers()
                         }
                     }
@@ -595,12 +605,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         return list[0].getAddressLine(0)
     }
 
-
-
-    // These following methods are from Vehicles
-
     fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
         spinner.visibility = View.GONE
+
+        Log.d("DBG", vehiclePosition.toString())
 
         // If positions map contains the vehicle, just update it's info
         if (positions.containsKey(

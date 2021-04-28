@@ -5,12 +5,48 @@
     android:layout_height="match_parent"
     android:background="?attr/colorOnPrimary"
     android:theme="@style/Theme.NokiaHslVisualisation"
-    tools:context=".fragments.vehicles.VehicleFragment">
+    tools:context=".fragments.analytics.AnalyticsFragment">
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/analytix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/analytics"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/analytics_spinner"
+            android:layout_width="265dp"
+            android:layout_height="62dp"
+            android:layout_marginBottom="396dp"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
+            android:id="@+id/aa_chart_view"
+            android:layout_width="409dp"
+            android:layout_height="583dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/analytix">
+
+        </com.github.aachartmodel.aainfographics.aachartcreator.AAChartView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <ScrollView
         android:id="@+id/scrollView"

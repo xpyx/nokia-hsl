@@ -16,9 +16,9 @@
 
     <fragment
         android:id="@+id/action_vehicles"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.analytics.AnalyticsFragment"
         android:label="@string/menu_vehicles"
-        tools:layout="@layout/fragment_vehicles" />
+        tools:layout="@layout/fragment_analytics" />
 
     <fragment
         android:id="@+id/action_traffic_list"
