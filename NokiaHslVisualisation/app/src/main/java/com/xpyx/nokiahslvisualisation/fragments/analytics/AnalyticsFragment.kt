@@ -13,6 +13,8 @@ import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -44,11 +46,20 @@ class AnalyticsFragment : Fragment() {
         spinner = view.findViewById(R.id.analytics_spinner)
         spinner.visibility = View.VISIBLE
 
+        val startDate = Date()
+
         // HSL GraphQL query
         mStopTimesApiViewModel.getStopTimesData()
         mStopTimesApiViewModel.myStopTimesApiResponse.observe(
             viewLifecycleOwner,
             { response ->
+                val endDate = Date()
+                val current = LocalDateTime.now()
+                val diffInMillisec: Long = endDate.time - startDate.time
+                val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss.SSS")
+                val formatted = current.format(formatter)
+
+
                 if (response != null) {
 
                     // Hide spinner
@@ -56,7 +67,11 @@ class AnalyticsFragment : Fragment() {
 
                     // Timestamp the query
                     val analytix = view.findViewById<TextView>(R.id.analytix)
-                    analytix.text = "Query finished at ${Date()}"
+                    analytix.text = """
+                        Query finished $formatted
+                        Query elapsed $diffInMillisec milliseconds
+                        
+                        """.trimIndent()
 
                     // The stoptimes data is here, iterate over the whole response
                     response.data?.stops()?.forEach {
@@ -91,14 +106,16 @@ class AnalyticsFragment : Fragment() {
                                 directionId = "2"
                             }
 
-                            Log.d("DBG", """
+                            Log.d(
+                                "DBG", """
                                 
                                 $routeId
                                 $transportMode
                                 $directionId
                                 $arrivalDelay
                                 - - - - - - - - - 
-                            """.trimIndent())
+                            """.trimIndent()
+                            )
 
                         }
                     }

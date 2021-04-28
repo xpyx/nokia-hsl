@@ -68,7 +68,7 @@
     <string name="POLICE_ACTIVITY">Police activity</string>
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
     <string name="menu_positions">Vehicles</string>
-    <string name="menu_vehicles">Vehicles</string>
+    <string name="menu_vehicles">Analytics</string>
     <string name="alert_filtering_preferences">Alert filtering preferences</string>
 
     // Traffic Filters
