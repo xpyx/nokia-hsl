@@ -80,6 +80,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var lineToSearch: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
     var listOfTopics = mutableListOf<String>()
+    var isTwoThousand: Boolean = false
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -105,6 +106,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Clear button
         btn_clear.setOnClickListener {
+            isTwoThousand = false
+
             if (topic.isNotEmpty()) {
                 mMQTTViewModel.unsubscribe(topic)
                 if (tram.isChecked) {
@@ -225,6 +228,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
+                // set 2000ms flag
+                isTwoThousand = true
+
                 // Clear positions map
                 positions.clear()
 
@@ -327,6 +333,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // clear editText and hide keyboard
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // set 2000ms flag
+                isTwoThousand = true
 
                 // Clear positions map
                 positions.clear()
@@ -590,7 +599,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     // These following methods are from Vehicles
 
-    fun updateUI(vehiclePosition: VehiclePosition) {
+    fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
         spinner.visibility = View.GONE
 
         // If positions map contains the vehicle, just update it's info
@@ -656,14 +665,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Add marker
         map.overlays.add(marker)
-
-
-        // If not a metro or tram, hold the marker on the map for 15 seconds because location updates come in longer intervals
-        if (!vehiclePosition.VP.toString().contains("oper=40") || !vehiclePosition.VP.toString().contains("oper=50")) {
-            Handler().postDelayed({ map.overlays.remove(marker) }, 15000)
-        } else {
-            // If metro or tram, remove marker after 2 seconds
+        // remove marker after predefined (set in MQTTHelper) time
+        if (isTwoThousand) {
             Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+        } else {
+            Handler().postDelayed({ map.overlays.remove(marker) }, time)
         }
         // This was needed to have the map refresh itself automatically
         map.invalidate()

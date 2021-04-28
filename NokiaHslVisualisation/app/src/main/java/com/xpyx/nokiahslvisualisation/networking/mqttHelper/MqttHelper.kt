@@ -16,6 +16,7 @@ class MqttHelper {
 
     private lateinit var mqttAndroidClient: MqttAndroidClient
     private var connectionStatus by Delegates.notNull<Boolean>()
+    private var time: Long = 0
 
     fun connect(applicationContext: Context) {
 
@@ -97,8 +98,14 @@ class MqttHelper {
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
                     //Log.d("DBG", "vehiclePosition: ${vehiclePosition.VP}")
 
+                    // Set time
+                    time = if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
+                        2000
+                    } else {
+                        15000
+                    }
                     // Here I update the fragment that shows the data
-                    vehicleFragment.updateUI(vehiclePosition)
+                    vehicleFragment.updateUI(vehiclePosition, time)
 
                 } catch (e: Exception) {
                     // Give your callback on error here
@@ -132,8 +139,16 @@ class MqttHelper {
                     val data = String(message.payload, charset("UTF-8"))
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
 
+                    // Set time
+                    time = if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
+                        2000
+                    } else {
+                        15000
+                    }
+
                     // Here I update the fragment that shows the data
-                    mapFragment.updateUI(vehiclePosition)
+                    mapFragment.updateUI(vehiclePosition, time)
+                    //Log.d("DBG", "Vehi posi: $vehiclePosition")
 
                 } catch (e: Exception) {
                     // Give your callback on error here

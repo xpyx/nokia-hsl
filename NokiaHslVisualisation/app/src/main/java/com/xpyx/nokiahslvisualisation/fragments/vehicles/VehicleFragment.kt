@@ -79,6 +79,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     var lineToSearch: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
     var listOfTopics = mutableListOf<String>()
+    var isTwoThousand: Boolean = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -105,6 +106,7 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         // Clear button
         btn_clear.setOnClickListener {
+            isTwoThousand = false
             if (topic.isNotEmpty()) {
                 mMQTTViewModel.unsubscribe(topic)
                 if (tram_vehicles.isChecked) {
@@ -230,6 +232,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
+                // set 2000ms flag
+                isTwoThousand = true
+
                 // Clear positions map
                 positions.clear()
 
@@ -330,6 +335,9 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // clear editText and hide keyboard
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // set 2000ms flag
+                isTwoThousand = true
 
                 // Clear positions map
                 positions.clear()
@@ -497,7 +505,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mMQTTViewModel.receiveMessages(this)
     }
 
-    fun updateUI(vehiclePosition: VehiclePosition) {
+    fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
+
+
+        Log.d("DBG", vehiclePosition.toString())
         spinner.visibility = View.GONE
 
         // If positions map contains the vehicle, just update it's info
@@ -544,13 +555,10 @@ class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     .snippet(snippet)
             )
 
-            // If not a metro or tram, hold the marker on the map for 15 seconds because location updates come in longer intervals
-        if (!vehiclePosition.VP.toString().contains("oper=40") || !vehiclePosition.VP.toString().contains("oper=50")) {
-            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 15000)
-        } else {
-            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
-        }
-
+            if (isTwoThousand) {
+                Handler().postDelayed({ mapboxMap.removeMarker(mark) }, 2000)
+            }
+            Handler().postDelayed({ mapboxMap.removeMarker(mark) }, time)
         }
     }
 
