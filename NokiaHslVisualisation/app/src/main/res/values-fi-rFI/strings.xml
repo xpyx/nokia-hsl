@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="menu_home">Hälytykset</string>
-    <string name="menu_traffic_list">Liikenne -listanäkymä</string>
-    <string name="menu_map">Kartta</string>
-    <string name="details_view">Liikennetapahtuma-yksityiskohdat</string>
-    <string name="alert_details_view">Hälytystapahtuma-yksityiskohdat</string>
-    <string name="menu_ar">AR -näkymä</string>
+    <string name="menu_home">HSL-hälytykset</string>
+    <string name="menu_traffic_list">Liikennetapahtumien listanäkymä</string>
+    <string name="menu_map">Karttanäkymä</string>
+    <string name="details_view">Liikennetapahtuma</string>
+    <string name="alert_details_view">Hälytystapahtuma</string>
+    <string name="menu_ar">AR-näkymä</string>
     <string name="toast_api_key">Käyttääksesi liikennetietoja, tarvitset Here karttojen API-avaimen. Voit hankkia sen täältä: https://developer.here.com/tutorials/getting-here-credentials/</string>
     <string name="add_api_key_button">Lisää API-avain</string>
     <string name="api_key_edit_text_hint">API-avain tähän</string>

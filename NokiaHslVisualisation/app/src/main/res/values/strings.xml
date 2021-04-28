@@ -2,12 +2,12 @@
     <string name="app_name" translatable="false">NokiaHslVisualisation</string>
 
     // Fragment titles
-    <string name="menu_home">Alerts</string>
+    <string name="menu_home">HSL Alerts</string>
     <string name="menu_traffic_list">Traffic list view</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Traffic details</string>
     <string name="alert_details_view">Alert details</string>
-    <string name="menu_ar">AR View</string>
+    <string name="menu_ar">Augmented reality view</string>
 
     // Traffic list view
     <string name="toast_api_key">To use traffic data, you need HERE maps API key. You can sign up for it in https://developer.here.com/tutorials/getting-here-credentials/</string>
