@@ -1,3 +1,11 @@
+/**
+ * Description: Type converters for Room Database to be able
+ * to save Here Traffic items to database
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.utils
 
 import androidx.room.TypeConverter

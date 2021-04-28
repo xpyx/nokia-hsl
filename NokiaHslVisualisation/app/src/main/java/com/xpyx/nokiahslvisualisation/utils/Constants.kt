@@ -1,3 +1,10 @@
+/**
+ * Description: Constants for URLs and SharedPreferences keys
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.utils
 
 class Constants {

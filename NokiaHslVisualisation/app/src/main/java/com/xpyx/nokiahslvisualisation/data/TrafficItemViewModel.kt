@@ -1,3 +1,10 @@
+/**
+ * Description: ViewModel setup for Here traffic
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.data
 
 import android.app.Application
