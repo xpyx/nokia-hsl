@@ -1,7 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.analytics
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,6 +58,9 @@ class AnalyticsFragment : Fragment() {
         spinner.visibility = View.VISIBLE
 
         val startDate = Date()
+        var arrivalTimes = arrayListOf<Double?>()
+        var transportModes = arrayListOf<String?>()
+
 
         // HSL GraphQL query
         mStopTimesApiViewModel.getStopTimesData()
@@ -86,6 +88,9 @@ class AnalyticsFragment : Fragment() {
                         
                         """.trimIndent()
 
+                    var buses = 0
+                    var trams = 0
+                    var metros = 0
 
                     // The stoptimes data is here, iterate over the whole response
                     response.data?.stops()?.forEach {
@@ -106,7 +111,7 @@ class AnalyticsFragment : Fragment() {
 
                             val arrivalDelay =
                                 it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
-                                    ?.arrivalDelay()
+                                    ?.arrivalDelay()?.toDouble()
 
                             var directionId =
                                 it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
@@ -120,42 +125,43 @@ class AnalyticsFragment : Fragment() {
                                 directionId = "2"
                             }
 
-                            Log.d(
-                                "DBG", """
-                                
-                                $routeId
-                                $transportMode
-                                $directionId
-                                $arrivalDelay
-                                - - - - - - - - - 
-                            """.trimIndent()
-                            )
 
+                            arrivalTimes.add(arrivalDelay)
+
+                            when(transportMode.toString()) {
+                                "BUS" -> buses++
+                                "TRAM" -> trams++
+                                "SUBWAY" -> metros++
+
+                            }
                         }
                     }
+
+
+                    // Put response values to chart format
 
 
 
                     // Do chart magic
                     val aaChartModel : AAChartModel = AAChartModel()
                         .chartType(AAChartType.Area)
-                        .title("title")
-                        .subtitle("subtitle")
+                        .title("Arrival times at stops")
+                        //.subtitle("subtitle")
                         .backgroundColor(R.color.design_default_color_background)
-                        .dataLabelsEnabled(true)
+                        .dataLabelsEnabled(false)
                         .series(arrayOf(
                             AASeriesElement()
-                                .name("Tokyo")
-                                .data(arrayOf(7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6)),
+                                .name("Arrival Times")
+                                .data(arrivalTimes.toArray()),
                             AASeriesElement()
-                                .name("NewYork")
-                                .data(arrayOf(0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5)),
+                                .name("Buses")
+                                .data(arrayOf(buses)),
                             AASeriesElement()
-                                .name("London")
-                                .data(arrayOf(0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0)),
+                                .name("Trams")
+                                .data(arrayOf(trams)),
                             AASeriesElement()
-                                .name("Berlin")
-                                .data(arrayOf(3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8))
+                                .name("Metros")
+                                .data(arrayOf(metros)),
                         )
                         )
 

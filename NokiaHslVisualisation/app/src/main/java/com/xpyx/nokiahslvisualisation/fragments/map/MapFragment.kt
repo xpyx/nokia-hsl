@@ -608,6 +608,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
         spinner.visibility = View.GONE
 
+        Log.d("DBG", vehiclePosition.toString())
+
         // If positions map contains the vehicle, just update it's info
         if (positions.containsKey(
                         vehiclePosition.VP.oper.toString() +

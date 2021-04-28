@@ -34,10 +34,11 @@
 
         <com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
             android:id="@+id/aa_chart_view"
-            android:layout_width="442dp"
-            android:layout_height="619dp"
+            android:layout_width="409dp"
+            android:layout_height="583dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/analytix">
 
