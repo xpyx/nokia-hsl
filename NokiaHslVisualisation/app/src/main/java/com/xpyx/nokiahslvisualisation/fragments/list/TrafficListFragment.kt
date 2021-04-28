@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.net.Uri
 import android.os.Build
@@ -226,14 +227,14 @@ class TrafficListFragment : Fragment(){
 
         clear_all_button.setOnClickListener{
 
-                radio_group_criticality.clearCheck()
-                critical_checkbox.isChecked = false
-                major_checkbox.isChecked = false
-                minor_checkbox.isChecked = false
-                road_closed_checkbox.isChecked = false
-                response_vehicles_checkbox.isChecked = false
+            radio_group_criticality.clearCheck()
+            critical_checkbox.isChecked = false
+            major_checkbox.isChecked = false
+            minor_checkbox.isChecked = false
+            road_closed_checkbox.isChecked = false
+            response_vehicles_checkbox.isChecked = false
 
-                distance_slider.setValues(0F, 150F)
+            distance_slider.setValues(0F, 150F)
 
             for (item in listOfBooleanFilterNames) {
                 listOfFilters[item] = false
@@ -246,7 +247,10 @@ class TrafficListFragment : Fragment(){
         }
 
         listOfCheckBoxes.forEach {
-            val name = it.text.toString().toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
+            val i = listOfCheckBoxes.indexOf(it)
+
+            val name = listOfBooleanFilterNames[i].toLowerCase().replace("\\s+".toRegex(), "_")
+            Log.d("DEBUGGING",name)
             val value = listOfFilters[name] as Boolean
             if (value) {
                 it.isChecked = true
@@ -264,7 +268,9 @@ class TrafficListFragment : Fragment(){
         }
 
         listOfRadioButtons.forEach {
-            val name = it.text.toString().toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
+            val i = listOfRadioButtons.indexOf(it)+5
+
+            val name = listOfBooleanFilterNames[i].toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
             val value = listOfFilters[name] as Boolean
             if (value) {
                 it.isChecked = true
@@ -366,6 +372,7 @@ class TrafficListFragment : Fragment(){
     }
 
     private fun saveData() {
+
         val sPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_FILTERS, MODE_PRIVATE)
         val editor = sPreferences?.edit()
         for (item in listOfBooleanFilterNames) {
@@ -388,8 +395,9 @@ class TrafficListFragment : Fragment(){
     }
 
     private fun loadData() {
-        val apikeyPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_API_KEY, MODE_PRIVATE)
-        val buffer: String? = apikeyPreferences?.getString(Constants.TRAFFIC_API_KEY, "")
+
+        val apiKeyPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_API_KEY, MODE_PRIVATE)
+        val buffer: String? = apiKeyPreferences?.getString(Constants.TRAFFIC_API_KEY, "")
         if (!buffer.isNullOrEmpty()) {
             hereTrafficApiKey = buffer
         }
@@ -412,6 +420,7 @@ class TrafficListFragment : Fragment(){
     }
 
     private fun checkFilters() {
+
         var filterText = ""
         for (item in listOfBooleanFilterNames) {
             val value = listOfFilters[item] as Boolean
@@ -434,6 +443,7 @@ class TrafficListFragment : Fragment(){
         }
 
         adapter.filter.filter(filterText)
+
     }
 
     private fun getLocationUpdates() {

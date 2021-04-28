@@ -27,6 +27,7 @@ import androidx.navigation.findNavController
 import com.xpyx.nokiahslvisualisation.R
 import com.xpyx.nokiahslvisualisation.data.DataTrafficItem
 import com.xpyx.nokiahslvisualisation.data.TrafficItemViewModel
+import kotlinx.android.synthetic.main.fragment_traffic_details.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -68,9 +69,9 @@ class TrafficDetailsFragment : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        trafficDescriptionTV = view.findViewById(R.id.traffic_description)
-        trafficTitleTV = view.findViewById(R.id.traffic_title)
-        trafficTimeTV = view.findViewById(R.id.traffic_time)
+        trafficDescriptionTV = traffic_description
+        trafficTitleTV = traffic_title
+        trafficTimeTV = traffic_time
 
         return view
     }
