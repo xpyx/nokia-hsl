@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.math.Quaternion
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -404,7 +406,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             if (viewRenderable == null) {
                 return@setOnTapArPlaneListener
             }
-
+            //hide ar controls for 1 map is enuff
             arFrag.getPlaneDiscoveryController().hide()
             arFrag.getPlaneDiscoveryController().setInstructionView(null)
             arFrag.getArSceneView().getPlaneRenderer().setEnabled(false)
@@ -418,8 +420,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             val viewNode = TransformableNode(arFrag.transformationSystem)
             // Add viewNode as anchorNode's child
             viewNode.setParent(anchorNode)
-            viewNode.renderable = viewRenderable
             // Sets this as the selected node in the TransformationSystem
+            viewNode.renderable = viewRenderable
+           // show sideBars
             mTransparencyBar?.visibility = View.VISIBLE
             mHeightBar?.visibility = View.VISIBLE
             mWidthBar?.visibility = View.VISIBLE
@@ -435,13 +438,13 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 map.minZoomLevel = 10.0
             })
         }
-
+        // sidebars action listeners
         mTransparencyBar?.setOnSeekBarChangeListener(this)
         mHeightBar?.setOnSeekBarChangeListener(this)
         mWidthBar?.setOnSeekBarChangeListener(this)
         refresh_map_button.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
     }
-
+    //update when sidebars change
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         when (seekBar) {
             mTransparencyBar -> {
@@ -546,7 +549,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
 
         }
-
+        // zoomto boundigbox so every marks is shown
         val b = BoundingBox(lathigh, lgthigh, latlow, lgtlow)
         map.post {
             map.zoomToBoundingBox(
