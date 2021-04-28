@@ -2,6 +2,7 @@ package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,7 +93,8 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
 
             } else {
 
-                val filterPattern: String = constraint.toString().toLowerCase(Locale.ROOT).trim()
+                val filterPattern: String = constraint.toString()
+                Log.d("DEBUGGING", filterPattern)
                 for (item in alertListFull) {
                     if (
                         item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||

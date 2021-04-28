@@ -164,9 +164,11 @@ class HomeFragment : Fragment() {
 
 
         listOfCheckBoxes.forEach {
-            val i = listOfCheckBoxes.indexOf(it)
-            val name = listOfCheckBoxNames[i].toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
+
             it.setOnCheckedChangeListener { _, _ ->
+                val i = listOfCheckBoxes.indexOf(it)
+                val name = listOfCheckBoxNames[i].toLowerCase(Locale.ROOT).replace("_", " ")
+                Log.d("DEBUGGING", name)
                 if (it.isChecked) {
                     adapter.filter.filter(name)
                 } else if (!it.isChecked) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="menu_home">HSL-hälytykset</string>
-    <string name="menu_traffic_list">Liikennetapahtumien listanäkymä</string>
+    <string name="menu_traffic_list">Liikennetapahtumat</string>
     <string name="menu_map">Karttanäkymä</string>
     <string name="details_view">Liikennetapahtuma</string>
     <string name="alert_details_view">Hälytystapahtuma</string>
@@ -49,7 +49,7 @@
     <string name="POLICE_ACTIVITY">Poliisitoimintaa</string>
     <string name="MEDICAL_EMERGENCY">Lääketieteellinen hätätapaus</string>
     <string name="menu_positions">Analytiikka</string>
-    <string name="menu_vehicles">Analytiikka</string>
+    <string name="menu_analytics">Analytiikka</string>
     <string name="alert_filtering_preferences">Hälytyksen suodatusvalinnat</string>
     <string name="criticality_menu_item">Kriittisyys</string>
     <string name="critical_menu_item">Kriittinen</string>
@@ -88,4 +88,16 @@
     <string name="show_traffic_items">Näytä liikennetiedot</string>
     <string name="traffic_info_title">HERE karttojen liikennetiedot</string>
     <string name="show_metro">Näytä vain metrot</string>
+    <string name="analytics">Lataa HSL APIa</string>
+    <string name="arcore_not_updated">Olkaa hyvä ja päivittäkää AR Core</string>
+    <string name="arcore_not_installed">Olkaa hyvä ja asentakaa AR Core</string>
+    <string name="arcore_not_supported">Tämä laite ei tue lisättyä todellisuutta</string>
+    <string name="loading_message">Lataa tämänhetkistä lokaatiota</string>
+    <string name="camera_and_location_permission_request">Paikka ja kamera -oikeudet</string>
+    <string name="analytics_text_view">Kysely päättyi %1$s \nKyselyssä kesti %2$s millisekuntia</string>
+    <string name="analytics_chartmodel_title">Saapumisajat pysäkeillä</string>
+    <string name="arrival_times_text">Saapumisajat</string>
+    <string name="busses_text">Bussit</string>
+    <string name="trams_text">Raitiovaunut</string>
+    <string name="metros_text">Metrot</string>
 </resources>
