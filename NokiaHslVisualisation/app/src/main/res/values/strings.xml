@@ -68,7 +68,7 @@
     <string name="POLICE_ACTIVITY">Police activity</string>
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
     <string name="menu_positions">Vehicles</string>
-    <string name="menu_vehicles">Vehicles</string>
+    <string name="menu_vehicles">Analytics</string>
     <string name="alert_filtering_preferences">Alert filtering preferences</string>
 
     // Traffic Filters
@@ -124,4 +124,6 @@
     <string name="arcore_not_supported" >This device does not support AR</string>
     <string name="arcore_not_installed">Please install ARCore</string>
     <string name="arcore_not_updated">Please update ARCore</string>
+    <string name="menu_analytics">Analytics</string>
+    <string name="analytics">Quering HSL API...</string>
 </resources>

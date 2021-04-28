@@ -7,8 +7,8 @@
         android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/action_vehicles"
-        android:title="@string/menu_positions"
-        android:icon="@drawable/bus_icon_image_view_black"
+        android:title="@string/menu_analytics"
+        android:icon="@drawable/ic_baseline_analytics_24"
         android:iconTint="@color/design_default_color_on_secondary"/>
 
     <item android:id="@+id/action_map"
