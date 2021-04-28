@@ -1,4 +1,4 @@
-package com.xpyx.nokiahslvisualisation.fragments.vehicles
+package com.xpyx.nokiahslvisualisation.fragments.analytics
 
 import android.Manifest
 import android.app.Activity
@@ -61,7 +61,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
-class VehicleFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
+class AnalyticsFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private lateinit var mMQTTViewModel: MQTTViewModel
     private lateinit var mStopTimesApiViewModel: StopTimesViewModel

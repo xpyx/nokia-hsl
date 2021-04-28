@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="?attr/colorOnPrimary"
     android:theme="@style/Theme.NokiaHslVisualisation"
-    tools:context=".fragments.vehicles.VehicleFragment">
+    tools:context=".fragments.analytics.AnalyticsFragment">
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"

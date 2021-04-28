@@ -148,10 +148,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
-                bus,
-                tram,
-                metro,
-                traffic_items
+                bus,            // listOfCheckBoxes[0]
+                tram,           // listOfCheckBoxes[1]
+                metro,          // listOfCheckBoxes[2]
+                traffic_items   // listOfCheckBoxes[3]
         )
 
         Log.d("DBG checkboxes", "${bus.id} ${tram.id} ${metro.id} ${traffic_items.id}")
@@ -162,36 +162,35 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
                     when (id) {
-                        "2131296785" -> {
+                        listOfCheckBoxes[1].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"               // Tram
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "2131296405" -> {
+                        listOfCheckBoxes[0].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
 
                             // Set topic and subscribe
-                            //topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"          // Only Nobina OY
                             topic = "/hfp/v2/journey/ongoing/vp/bus/+/+/+/+/+/+/+/3/#" // All busses, with updates only 9% of the full rate
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "2131296583" -> {
+                        listOfCheckBoxes[2].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"               // Metro
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "2131296781" -> {
+                        else -> {
                             setMapMarkers()
                         }
                     }

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.xpyx.nokiahslvisualisation.fragments.map.MapFragment
-import com.xpyx.nokiahslvisualisation.fragments.vehicles.VehicleFragment
+import com.xpyx.nokiahslvisualisation.fragments.analytics.AnalyticsFragment
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
@@ -78,7 +78,7 @@ class MqttHelper {
 
     }
 
-    fun receiveMessages(vehicleFragment: VehicleFragment) {
+    fun receiveMessages(analyticsFragment: AnalyticsFragment) {
 
         val gson = Gson()
 
@@ -86,7 +86,7 @@ class MqttHelper {
             override fun connectionLost(cause: Throwable) {
                 connectionStatus = false
                 // Give your callback on failure here
-                vehicleFragment.showToast(
+                analyticsFragment.showToast(
                     "MQTT connection lost, restart current view by navigating to Alerts and then back to Vechiles")
 
             }
@@ -105,7 +105,7 @@ class MqttHelper {
                         15000
                     }
                     // Here I update the fragment that shows the data
-                    vehicleFragment.updateUI(vehiclePosition, time)
+                    analyticsFragment.updateUI(vehiclePosition, time)
 
                 } catch (e: Exception) {
                     // Give your callback on error here
