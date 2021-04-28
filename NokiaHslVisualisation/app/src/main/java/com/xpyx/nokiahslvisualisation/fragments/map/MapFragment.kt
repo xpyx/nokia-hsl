@@ -1,3 +1,17 @@
+/**
+ * Description:
+ *
+ * Fragment for displaying info on an AR Map
+ * - show Here Maps traffic alerts
+ * - show HSL buses, trams, metros
+ * - find and show vehicles that are late $seconds
+ * - find and show all buses, trams or metros on a specific line
+ *
+ * Course: Mobile project
+ * Name: Mikael Ylivaara & Ville Pystynen
+ *
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.map
 
 import android.app.Activity
@@ -38,7 +52,6 @@ import kotlinx.android.synthetic.main.fragment_map.btn_clear
 import kotlinx.android.synthetic.main.fragment_map.bus
 import kotlinx.android.synthetic.main.fragment_map.tram
 import kotlinx.android.synthetic.main.fragment_map.vehicle_count
-import kotlinx.android.synthetic.main.fragment_vehicles.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -101,8 +114,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ctx = requireActivity().applicationContext
-
-        // Code from vehicles starts here ------------------------------------------------->
 
         // Clear button
         btn_clear.setOnClickListener {
@@ -593,10 +604,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         val list = geoCoder.getFromLocation(lat ?: 0.0, lng ?: 0.0, 1)
         return list[0].getAddressLine(0)
     }
-
-
-
-    // These following methods are from Vehicles
 
     fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
         spinner.visibility = View.GONE

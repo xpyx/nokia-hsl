@@ -78,48 +78,6 @@ class MqttHelper {
 
     }
 
-    fun receiveMessages(analyticsFragment: AnalyticsFragment) {
-
-        val gson = Gson()
-
-        mqttAndroidClient.setCallback(object : MqttCallback {
-            override fun connectionLost(cause: Throwable) {
-                connectionStatus = false
-                // Give your callback on failure here
-                analyticsFragment.showToast(
-                    "MQTT connection lost, restart current view by navigating to Alerts and then back to Vechiles")
-
-            }
-
-            override fun messageArrived(topic: String, message: MqttMessage) {
-
-                try {
-                    val data = String(message.payload, charset("UTF-8"))
-                    val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
-                    //Log.d("DBG", "vehiclePosition: ${vehiclePosition.VP}")
-
-                    // Set time
-                    time = if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
-                        2000
-                    } else {
-                        15000
-                    }
-                    // Here I update the fragment that shows the data
-                    analyticsFragment.updateUI(vehiclePosition, time)
-
-                } catch (e: Exception) {
-                    // Give your callback on error here
-                    Log.d("DBG", "MQTT exception: $e")
-
-
-                }
-            }
-
-            override fun deliveryComplete(token: IMqttDeliveryToken) {
-                // Acknowledgement on delivery complete
-            }
-        })
-    }
 
     fun receiveMessagesInARMap(mapFragment: MapFragment) {
 

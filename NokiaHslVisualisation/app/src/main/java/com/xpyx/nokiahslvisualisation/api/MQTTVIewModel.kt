@@ -26,12 +26,6 @@ class MQTTViewModel(private val mqttRepository: MQTTRepository): ViewModel() {
         }
     }
 
-    fun receiveMessages(analyticsFragment: AnalyticsFragment) {
-        viewModelScope.launch {
-            mqttRepository.mqtt.receiveMessages(analyticsFragment)
-        }
-    }
-
     fun receiveMessagesInARMAp(mapFragment: MapFragment) {
         viewModelScope.launch {
             mqttRepository.mqtt.receiveMessagesInARMap(mapFragment)
