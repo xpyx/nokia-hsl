@@ -165,8 +165,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 traffic_items   // listOfCheckBoxes[3]
         )
 
-        Log.d("DBG checkboxes", "${bus.id} ${tram.id} ${metro.id} ${traffic_items.id}")
-
         listOfCheckBoxes.forEach { it ->
             val id = it.id.toString()
             it.setOnCheckedChangeListener { _, _ ->

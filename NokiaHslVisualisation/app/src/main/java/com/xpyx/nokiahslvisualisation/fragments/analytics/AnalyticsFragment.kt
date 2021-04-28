@@ -40,8 +40,6 @@ class AnalyticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var responseForChart: Response<StopTimesListQuery.Data>? = null
-
         // Init and hide chart
         val aaChartView = view.findViewById<AAChartView>(R.id.aa_chart_view)
         aaChartView.visibility = View.GONE
@@ -73,20 +71,16 @@ class AnalyticsFragment : Fragment() {
                 val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss.SSS")
                 val formatted = current.format(formatter)
 
-                responseForChart = response
                 if (response != null) {
-
 
                     // Hide spinner
                     spinner.visibility = View.GONE
 
                     // Timestamp the query
                     val analytix = view.findViewById<TextView>(R.id.analytix)
-                    analytix.text = """
+                    """
                         Query finished $formatted
-                        Query elapsed $diffInMillisec milliseconds
-                        
-                        """.trimIndent()
+                        Query elapsed $diffInMillisec milliseconds""".trimIndent().also { analytix.text = it }
 
                     var buses = 0
                     var trams = 0
@@ -113,19 +107,6 @@ class AnalyticsFragment : Fragment() {
                                 it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
                                     ?.arrivalDelay()?.toDouble()
 
-                            var directionId =
-                                it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
-                                    ?.trip()
-                                    ?.directionId()
-
-                            // Change direction id according to instructions. Also note if null, then -> "+"
-                            if (directionId.equals("0")) {
-                                directionId = "1"
-                            } else if (directionId.equals("1")) {
-                                directionId = "2"
-                            }
-
-
                             arrivalTimes.add(arrivalDelay)
 
                             when(transportMode.toString()) {
@@ -136,11 +117,6 @@ class AnalyticsFragment : Fragment() {
                             }
                         }
                     }
-
-
-                    // Put response values to chart format
-
-
 
                     // Do chart magic
                     val aaChartModel : AAChartModel = AAChartModel()
