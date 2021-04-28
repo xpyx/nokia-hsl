@@ -1,3 +1,17 @@
+/**
+ * Description:
+ *
+ * Fragment to list causes of possible traffic jams. User can filter data by
+ * 1) Criticality - Critical, Major and Minor
+ * 2) Distance - Minimum and maximum
+ * 3) Miscellaneous - Road closed and Response vehicles
+ * 4) Type - Event or Incident
+ *
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.list
 
 import android.Manifest
@@ -39,7 +53,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
-class ListFragment : Fragment(){
+class TrafficListFragment : Fragment(){
 
 
     private lateinit var recyclerView: RecyclerView

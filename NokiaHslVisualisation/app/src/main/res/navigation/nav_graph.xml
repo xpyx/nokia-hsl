@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/action_traffic_list"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.list.TrafficListFragment"
         android:label="@string/menu_traffic_list"
         tools:layout="@layout/fragment_traffic_list">
         <argument

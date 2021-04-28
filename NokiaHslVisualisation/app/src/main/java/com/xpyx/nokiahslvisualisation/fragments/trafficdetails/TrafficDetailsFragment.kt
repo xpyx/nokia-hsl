@@ -1,3 +1,14 @@
+/**
+ * Description:
+ *
+ * Fragment to present more data of a single traffic event/incident with
+ * 1) a map displaying location and
+ * 2) more detailed explanation of the cause.
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.trafficdetails
 
 import android.location.Geocoder

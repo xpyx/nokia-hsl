@@ -676,7 +676,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
     }
 
-    suspend fun connectMQTT() {
+    private suspend fun connectMQTT() {
         val job = GlobalScope.launch(Dispatchers.IO) {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
