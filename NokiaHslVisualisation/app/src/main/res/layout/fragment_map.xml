@@ -80,7 +80,7 @@
 
     <ScrollView
         android:id="@+id/scrollView"
-        android:layout_width="260dp"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start|bottom"
         android:background="?attr/colorOnPrimary">
@@ -106,7 +106,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:background="?attr/colorOnSecondary" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:gravity="fill"
                 android:text="@string/show_traffic_items" />
 
@@ -135,7 +135,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:background="?attr/colorOnSecondary" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:gravity="fill"
                 android:text="@string/show_busses" />
 
@@ -154,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:gravity="fill"
                 android:text="@string/show_trams" />
 
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:gravity="fill"
                 android:text="@string/show_metro" />
 
@@ -183,7 +183,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:background="?attr/colorOnSecondary" />
 
 
@@ -193,7 +193,7 @@
                 android:layout_width="280dp"
                 android:layout_height="63dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:hint="@string/vehicle_late_time_hint"
                 app:boxCornerRadiusBottomEnd="5dp"
@@ -224,7 +224,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:gravity="fill"
                 android:text="@string/lines_search"
                 android:textColor="?attr/colorOnSecondary"
@@ -233,7 +232,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:background="?attr/colorOnSecondary" />
 
 
@@ -243,7 +242,7 @@
                 android:layout_width="280dp"
                 android:layout_height="63dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:hint="@string/see_bus_lines_hint"
                 app:boxCornerRadiusBottomEnd="5dp"
@@ -272,7 +271,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/clear_map" />
 
@@ -281,7 +279,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="36dp"
                 android:layout_weight="1" />
 
 
@@ -291,7 +288,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:gravity="fill"
                 android:text="@string/vehicle_count"
                 android:textColor="?attr/colorOnSecondary"

@@ -1,3 +1,17 @@
+/**
+ * Description:
+ *
+ * Fragment for displaying info on an AR Map
+ * - show Here Maps traffic alerts
+ * - show HSL buses, trams, metros
+ * - find and show vehicles that are late $seconds
+ * - find and show all buses, trams or metros on a specific line
+ *
+ * Course: Mobile project
+ * Name: Mikael Ylivaara & Ville Pystynen
+ *
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.map
 
 import android.app.Activity
@@ -82,6 +96,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var lineToSearch: String = ""
     var positions = mutableMapOf<String, VehiclePosition>()
     var listOfTopics = mutableListOf<String>()
+    var isTwoThousand: Boolean = false
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -107,6 +122,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Clear button
         btn_clear.setOnClickListener {
+            isTwoThousand = false
+
             if (topic.isNotEmpty()) {
                 mMQTTViewModel.unsubscribe(topic)
                 if (tram.isChecked) {
@@ -147,54 +164,54 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         // Checkboxes
         val listOfCheckBoxes = listOf<CheckBox>(
-                bus,
-                tram,
-                metro,
-                traffic_items
+                bus,            // listOfCheckBoxes[0]
+                tram,           // listOfCheckBoxes[1]
+                metro,          // listOfCheckBoxes[2]
+                traffic_items   // listOfCheckBoxes[3]
         )
 
+        Log.d("DBG checkboxes", "${bus.id} ${tram.id} ${metro.id} ${traffic_items.id}")
+
         listOfCheckBoxes.forEach { it ->
-            val name = it.text.toString()
+            val id = it.id.toString()
             it.setOnCheckedChangeListener { _, _ ->
                 if (it.isChecked) {
                     // subscribe to topic containing only trams or busses
-                    when (name) {
-                        "Show only trams" -> {
+                    when (id) {
+                        listOfCheckBoxes[1].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-//                            topic = "/hfp/v2/journey/ongoing/vp/tram/#"
-                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"               // Tram
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only busses" -> {
+                        listOfCheckBoxes[0].id.toString() -> {
+                            // Clear positions map
+                            positions.clear()
+                            // First clear other topics
+                            mMQTTViewModel.unsubscribe(topic)
+
+                            // Set topic and subscribe
+                            topic = "/hfp/v2/journey/ongoing/vp/bus/+/+/+/+/+/+/+/3/#" // All busses, with updates only 9% of the full rate
+                            mMQTTViewModel.subscribe(topic)
+                        }
+                        listOfCheckBoxes[2].id.toString() -> {
                             // Clear positions map
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
                             // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#"
-//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
+                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"               // Metro
                             mMQTTViewModel.subscribe(topic)
                         }
-                        "Show only metro" -> {
-                            // Clear positions map
-                            positions.clear()
-                            // First clear other topics
-                            mMQTTViewModel.unsubscribe(topic)
-                            // Set topic and subscribe
-                            topic = "/hfp/v2/journey/ongoing/vp/+/0050/#"
-//                            topic = "/hfp/v2/journey/ongoing/vp/bus/0022/#";"/hfp/v2/journey/ongoing/vp/bus/0012/#"
-                            mMQTTViewModel.subscribe(topic)
-                        }
-                        "Show Traffic Info" -> {
+                        else -> {
                             setMapMarkers()
                         }
                     }
                 } else {
-                    if (name == "Show Traffic Info") {
+                    if (id == "Show Traffic Info") {
                         // remove traffic markers
                         map.overlays.forEach {
                             if (it is Marker) {
@@ -225,6 +242,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         // clear editText and hide keyboard
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                // set 2000ms flag
+                isTwoThousand = true
 
                 // Clear positions map
                 positions.clear()
@@ -329,6 +349,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         editTextBusses.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
+                // set 2000ms flag
+                isTwoThousand = true
+
                 // Clear positions map
                 positions.clear()
 
@@ -406,10 +429,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             if (viewRenderable == null) {
                 return@setOnTapArPlaneListener
             }
-            //hide ar controls for 1 map is enuff
-            arFrag.getPlaneDiscoveryController().hide()
-            arFrag.getPlaneDiscoveryController().setInstructionView(null)
-            arFrag.getArSceneView().getPlaneRenderer().setEnabled(false)
+
+            arFrag.planeDiscoveryController.hide()
+            arFrag.planeDiscoveryController.setInstructionView(null)
+            arFrag.arSceneView.planeRenderer.isEnabled = false
             //Creates a new anchor at the hit location
             val anchor = hitResult!!.createAnchor()
             //Creates a new anchorNode attaching it to anchor
@@ -431,12 +454,12 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             // Center the map to Helsinki area
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
-            map.post({
+            map.post {
                 map.zoomToBoundingBox(
-                        b, true, 100
+                    b, true, 100
                 )
                 map.minZoomLevel = 10.0
-            })
+            }
         }
         // sidebars action listeners
         mTransparencyBar?.setOnSeekBarChangeListener(this)
@@ -541,10 +564,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 "Problem: ${item.trafficItemDescriptionElement?.get(0)?.trafficItemDescriptionElementValue} Location: $address"
             }
 
-            lathigh = Math.max(trafficItemLatitude, lathigh)
-            latlow = Math.min(trafficItemLatitude, latlow)
-            lgthigh = Math.max(trafficItemLongitude, lgthigh)
-            lgtlow = Math.min(trafficItemLongitude, lgtlow)
+            lathigh = trafficItemLatitude.coerceAtLeast(lathigh)
+            latlow = trafficItemLatitude.coerceAtMost(latlow)
+            lgthigh = trafficItemLongitude.coerceAtLeast(lgthigh)
+            lgtlow = trafficItemLongitude.coerceAtMost(lgtlow)
 
             addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
 
@@ -588,12 +611,10 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         return list[0].getAddressLine(0)
     }
 
-
-
-    // These following methods are from Vehicles
-
-    fun updateUI(vehiclePosition: VehiclePosition) {
+    fun updateUI(vehiclePosition: VehiclePosition, time: Long) {
         spinner.visibility = View.GONE
+
+        Log.d("DBG", vehiclePosition.toString())
 
         // If positions map contains the vehicle, just update it's info
         if (positions.containsKey(
@@ -631,33 +652,41 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             GeoPoint(vehiclePosition.VP.lat.toDouble(), vehiclePosition.VP.long.toDouble())
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         when (vehiclePosition.VP.oper) {
+            // tram
             40 -> marker.icon = ResourcesCompat.getDrawable(
                     resources,
                     R.drawable.tram_icon,
                     requireContext().theme,
                     )
 
-            22 -> marker.icon = ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.bus_icon_map,
-                    requireContext().theme
-
-            )
-
+            // metro
             50 -> marker.icon = ResourcesCompat.getDrawable(
                     resources,
                     R.drawable.metro_icon,
                     requireContext().theme
             )
+
+            // bus
+            else -> marker.icon = ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.bus_icon_map,
+            requireContext().theme
+
+        )
         }
         marker.title = title
         marker.subDescription = snippet
 
         // Add marker
         map.overlays.add(marker)
-
-        // Remove marker after 2 seconds
-        Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+        // remove marker after predefined (set in MQTTHelper) time
+        if (isTwoThousand) {
+            Handler().postDelayed({ map.overlays.remove(marker) }, 2000)
+        } else {
+            Handler().postDelayed({ map.overlays.remove(marker) }, time)
+        }
+        // This was needed to have the map refresh itself automatically
+        map.invalidate()
 
     }
 
