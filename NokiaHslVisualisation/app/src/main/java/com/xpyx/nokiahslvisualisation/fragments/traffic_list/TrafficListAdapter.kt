@@ -10,7 +10,7 @@
  * Name: Matias Hätönen
  */
 
-package com.xpyx.nokiahslvisualisation.fragments.list
+package com.xpyx.nokiahslvisualisation.fragments.traffic_list
 
 
 

@@ -12,7 +12,7 @@
  * Name: Matias Hätönen
  */
 
-package com.xpyx.nokiahslvisualisation.fragments.list
+package com.xpyx.nokiahslvisualisation.fragments.traffic_list
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -21,7 +21,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.location.Location
 import android.net.Uri
 import android.os.Build
