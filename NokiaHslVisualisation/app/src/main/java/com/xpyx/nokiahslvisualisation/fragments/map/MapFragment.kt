@@ -49,6 +49,10 @@ import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
 import com.xpyx.nokiahslvisualisation.utils.LineToRoute
 import kotlinx.android.synthetic.main.fragment_map.*
+import kotlinx.android.synthetic.main.fragment_map.btn_clear
+import kotlinx.android.synthetic.main.fragment_map.bus
+import kotlinx.android.synthetic.main.fragment_map.tram
+import kotlinx.android.synthetic.main.fragment_map.vehicle_count
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -452,8 +456,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
                 map.minZoomLevel = 10.0
                 mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
                 mLocationOverlay!!.enableMyLocation()
-                map.getOverlays().add(mLocationOverlay)
+                map.overlays.add(mLocationOverlay)
             }
+
         }
 
         mTransparencyBar?.setOnSeekBarChangeListener(this)
