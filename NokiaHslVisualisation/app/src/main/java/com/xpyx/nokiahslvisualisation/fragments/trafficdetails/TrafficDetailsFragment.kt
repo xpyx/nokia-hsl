@@ -69,9 +69,9 @@ class TrafficDetailsFragment : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        trafficDescriptionTV = traffic_description
-        trafficTitleTV = traffic_title
-        trafficTimeTV = traffic_time
+        trafficDescriptionTV = view.findViewById(R.id.traffic_description)
+        trafficTitleTV = view.findViewById(R.id.traffic_title)
+        trafficTimeTV = view.findViewById(R.id.traffic_time)
 
         return view
     }
