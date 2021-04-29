@@ -73,8 +73,8 @@ object AugmentedRealityLocationUtils {
             in 1501..2000 -> 0.2f
             in 2001..2500 -> 0.15f
             in 2501..3000 -> 0.1f
-            in 3001..RENDER_MARKER_MAX_DISTANCE -> 0.25f
-            in RENDER_MARKER_MAX_DISTANCE + 1..Integer.MAX_VALUE -> 0.15f
+            in 3001..RENDER_MARKER_MAX_DISTANCE -> 0.09f
+            in RENDER_MARKER_MAX_DISTANCE + 1..Integer.MAX_VALUE -> 0.07f
             else -> -1f
         }
     }

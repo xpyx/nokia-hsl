@@ -78,6 +78,7 @@
     <string name="vehicle_late_time_hint">Sekuntia myöhässä</string>
     <string name="show_trams">Näytä vain raitiovaunut</string>
     <string name="show_busses">Näytä vain bussit</string>
+    <string name="show_metros">Näytä vain metrot</string>
     <string name="see_bus_lines_hint">Syötä linjanumero</string>
     <string name="lines_search">Näytä kaikki kulkuneuvot linjalla</string>
     <string name="ar_map_refresh_button_text">Lataa kartta uudelleen</string>

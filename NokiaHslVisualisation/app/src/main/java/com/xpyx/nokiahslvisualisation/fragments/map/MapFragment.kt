@@ -29,8 +29,11 @@ import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.location.*
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.math.Quaternion
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -52,6 +55,7 @@ import kotlinx.android.synthetic.main.fragment_map.btn_clear
 import kotlinx.android.synthetic.main.fragment_map.bus
 import kotlinx.android.synthetic.main.fragment_map.tram
 import kotlinx.android.synthetic.main.fragment_map.vehicle_count
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -61,10 +65,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.*
 
 
-class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
+class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
 
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
@@ -95,6 +101,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var listOfTopics = mutableListOf<String>()
     var isTwoThousand: Boolean = false
 
+    private var mLocationOverlay: MyLocationNewOverlay? = null
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
@@ -114,6 +121,8 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ctx = requireActivity().applicationContext
+
+        // Code from vehicles starts here ------------------------------------------------->
 
         // Clear button
         btn_clear.setOnClickListener {
@@ -178,6 +187,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
+
                             // Set topic and subscribe
                             topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"               // Tram
                             mMQTTViewModel.subscribe(topic)
@@ -406,7 +416,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             .build()
             .thenAcceptAsync {
                 //load apa as container of map to get size control
-
                 apa = it.view as LinearLayout
                 map = it.view.findViewById<org.osmdroid.views.MapView>(R.id.map)
                 map.setTileSource(TileSourceFactory.MAPNIK)
@@ -416,9 +425,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 map.zoomController
                 map.controller.setCenter(GeoPoint(60.17, 24.95))
                 viewRenderable = it
-
             }
-
 
         arFrag.setOnTapArPlaneListener { hitResult: HitResult?, _, _ ->
             if (viewRenderable == null) {
@@ -438,8 +445,9 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             val viewNode = TransformableNode(arFrag.transformationSystem)
             // Add viewNode as anchorNode's child
             viewNode.setParent(anchorNode)
-            viewNode.renderable = viewRenderable
             // Sets this as the selected node in the TransformationSystem
+            viewNode.renderable = viewRenderable
+           // show sideBars
             mTransparencyBar?.visibility = View.VISIBLE
             mHeightBar?.visibility = View.VISIBLE
             mWidthBar?.visibility = View.VISIBLE
@@ -450,18 +458,23 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
             map.post {
                 map.zoomToBoundingBox(
-                    b, true, 100
+                        b, true, 100
                 )
                 map.minZoomLevel = 10.0
+                mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
+                mLocationOverlay!!.enableMyLocation()
+                map.overlays.add(mLocationOverlay)
             }
-        }
 
+        }
+        // sidebars action listeners
         mTransparencyBar?.setOnSeekBarChangeListener(this)
         mHeightBar?.setOnSeekBarChangeListener(this)
         mWidthBar?.setOnSeekBarChangeListener(this)
         refresh_map_button.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
-    }
 
+    }
+    //update when sidebars change
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         when (seekBar) {
             mTransparencyBar -> {
@@ -566,7 +579,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             addMarker(trafficItemLatitude, trafficItemLongitude, trafficTitle, locationText)
 
         }
-
+        // zoomto boundigbox so every marks is shown
         val b = BoundingBox(lathigh, lgthigh, latlow, lgtlow)
         map.post {
             map.zoomToBoundingBox(
@@ -596,6 +609,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         //marker.setInfoWindow(null)
 
         map.overlays.add(marker)
+
 
     }
 
@@ -651,7 +665,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                     resources,
                     R.drawable.tram_icon,
                     requireContext().theme,
-                    )
+            )
 
             // metro
             50 -> marker.icon = ResourcesCompat.getDrawable(
@@ -662,11 +676,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             // bus
             else -> marker.icon = ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.bus_icon_map,
-            requireContext().theme
+                    resources,
+                    R.drawable.bus_icon_map,
+                    requireContext().theme
 
-        )
+            )
         }
         marker.title = title
         marker.subDescription = snippet
