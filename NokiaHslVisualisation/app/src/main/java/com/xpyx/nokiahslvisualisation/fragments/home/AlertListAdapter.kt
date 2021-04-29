@@ -87,28 +87,51 @@ class AlertListAdapter : RecyclerView.Adapter<AlertListAdapter.AlertViewHolder>(
 
         override fun performFiltering(constraint: CharSequence?): FilterResults {
 
+            val listOfAlertItemIds = mutableListOf<String>()
             val filteredAlertList = mutableListOf<AlertItem>()
-            if (constraint == null || constraint.isEmpty()) {
+            if (constraint.isNullOrEmpty()) {
                 filteredAlertList.addAll(alertListFull)
 
             } else {
+                val buffer = constraint.toString().toLowerCase().trim()
+                val filterPattern: MutableList<String> = buffer.split(";").toMutableList()
 
-                val filterPattern: String = constraint.toString()
-                Log.d("DEBUGGING", filterPattern)
-                for (item in alertListFull) {
-                    if (
-                        item.alertHeaderText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
-                        item.alertDescriptionText?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
-                        item.alertSeverityLevel?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
-                        item.alertCause?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!! ||
-                        item.alertEffect?.toLowerCase(Locale.ROOT)?.contains(filterPattern)!!
-                    ) {
-                        filteredAlertList.add(item)
+                for (alertItem in alertListFull) {
+
+                    for (filter in filterPattern) {
+                        if (!filter.isNullOrEmpty()) {
+                            Log.d("filteringadapter", filter.toLowerCase())
+                            if (
+                                    alertItem.alertHeaderText?.toLowerCase()?.contains(filter)!! ||
+                                    alertItem.alertDescriptionText?.toLowerCase()?.contains(filter)!! ||
+                                    alertItem.alertSeverityLevel?.toLowerCase()?.contains(filter)!! ||
+                                    alertItem.alertCause?.toLowerCase()?.contains(filter)!! ||
+                                    alertItem.alertEffect?.toLowerCase()?.contains(filter)!!
+                            ) {
+                                if (!listOfAlertItemIds.contains(alertItem.alertId)) {
+                                    filteredAlertList.add(alertItem)
+                                    listOfAlertItemIds.add(alertItem.alertId!!)
+                                    Log.d("FILTERADAPTER", "added with ${filterPattern.indexOf(filter)} $filter: ${alertItem.alertId}")
+                                }
+                            } else if (listOfAlertItemIds.contains(alertItem.alertId)) {
+                                if (filteredAlertList.contains(alertItem)) {
+                                    filteredAlertList.remove(alertItem)
+                                    Log.d("FILTERADAPTER", "Removed with ${filterPattern.indexOf(filter)} $filter:  ${alertItem.alertId}")
+                                }
+                            } else {
+                                listOfAlertItemIds.add(alertItem.alertId!!)
+                                Log.d("FILTERADAPTER", "Excluded with ${filterPattern.indexOf(filter)} $filter: ${alertItem.alertId}")
+                            }
+                        }
                     }
                 }
+
+                Log.d("filteringsize", filterPattern.size.toString())
             }
             val results = FilterResults()
             results.values = filteredAlertList
+            Log.d("filteringvaluesid", listOfAlertItemIds.size.toString())
+            Log.d("filteringvalues", filteredAlertList.size.toString())
             return results
         }
     }

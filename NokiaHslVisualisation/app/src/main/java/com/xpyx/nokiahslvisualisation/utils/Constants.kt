@@ -16,5 +16,6 @@ class Constants {
         const val TRAFFIC_FILTERS = "trafficFilterSharedPreferences"
         const val TRAFFIC_API_KEY = "trafficApiKeySharedPreferences"
         const val API_KEY_LINK_URL = "https://developer.here.com/tutorials/getting-here-credentials/"
+        const val HSL_ALERT_FILTERS = "hSLAlertFilterSharedPreferences"
     }
 }

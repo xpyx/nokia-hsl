@@ -125,7 +125,7 @@
     <string name="arcore_not_installed">Please install ARCore</string>
     <string name="arcore_not_updated">Please update ARCore</string>
     <string name="analytics">Quering HSL API...</string>
-    <string name="analytics_text_view">Query finished %1$s  Query elapsed %2$s milliseconds</string>
+    <string name="analytics_text_view">Query finished %1$s \nQuery elapsed %2$s milliseconds</string>
     <string name="analytics_chartmodel_title">Arrival times at stops</string>
     <string name="arrival_times_text">Arrival times</string>
     <string name="busses_text">Buses</string>
