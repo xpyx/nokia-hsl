@@ -166,7 +166,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:gravity="fill"
-                android:text="@string/show_metro" />
+                android:text="@string/show_metros" />
 
             <TextView
                 android:id="@+id/late_time"

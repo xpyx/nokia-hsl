@@ -29,6 +29,7 @@ import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.location.*
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.math.Quaternion
@@ -64,10 +65,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.*
 
 
-class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
+class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
 
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
@@ -98,6 +101,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     var listOfTopics = mutableListOf<String>()
     var isTwoThousand: Boolean = false
 
+    private var mLocationOverlay: MyLocationNewOverlay? = null
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
@@ -412,7 +416,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             .build()
             .thenAcceptAsync {
                 //load apa as container of map to get size control
-
                 apa = it.view as LinearLayout
                 map = it.view.findViewById<org.osmdroid.views.MapView>(R.id.map)
                 map.setTileSource(TileSourceFactory.MAPNIK)
@@ -422,9 +425,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                 map.zoomController
                 map.controller.setCenter(GeoPoint(60.17, 24.95))
                 viewRenderable = it
-
             }
-
 
         arFrag.setOnTapArPlaneListener { hitResult: HitResult?, _, _ ->
             if (viewRenderable == null) {
@@ -457,16 +458,21 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             val b = BoundingBox(60.292254, 25.104019, 60.120471, 24.811164)
             map.post {
                 map.zoomToBoundingBox(
-                    b, true, 100
+                        b, true, 100
                 )
                 map.minZoomLevel = 10.0
+                mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
+                mLocationOverlay!!.enableMyLocation()
+                map.overlays.add(mLocationOverlay)
             }
+
         }
         // sidebars action listeners
         mTransparencyBar?.setOnSeekBarChangeListener(this)
         mHeightBar?.setOnSeekBarChangeListener(this)
         mWidthBar?.setOnSeekBarChangeListener(this)
         refresh_map_button.setOnClickListener { map.setTileSource(TileSourceFactory.MAPNIK) }
+
     }
     //update when sidebars change
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -604,6 +610,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
         map.overlays.add(marker)
 
+
     }
 
     private fun getAddress(lat: Double?, lng: Double?): String {
@@ -658,7 +665,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                     resources,
                     R.drawable.tram_icon,
                     requireContext().theme,
-                    )
+            )
 
             // metro
             50 -> marker.icon = ResourcesCompat.getDrawable(
@@ -669,11 +676,11 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
 
             // bus
             else -> marker.icon = ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.bus_icon_map,
-            requireContext().theme
+                    resources,
+                    R.drawable.bus_icon_map,
+                    requireContext().theme
 
-        )
+            )
         }
         marker.title = title
         marker.subDescription = snippet
