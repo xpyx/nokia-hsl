@@ -7,7 +7,7 @@
  * - find and show vehicles that are late $seconds
  * - find and show all buses, trams or metros on a specific line
  *
- * Course: Mobile project
+ * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Mikael Ylivaara & Ville Pystynen
  *
  */
