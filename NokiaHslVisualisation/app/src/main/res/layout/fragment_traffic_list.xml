@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.list.ListFragment"
+    tools:context=".fragments.traffic_list.TrafficListFragment"
     android:background="?attr/colorOnPrimary"
     android:theme="@style/Theme.NokiaHslVisualisation">
 

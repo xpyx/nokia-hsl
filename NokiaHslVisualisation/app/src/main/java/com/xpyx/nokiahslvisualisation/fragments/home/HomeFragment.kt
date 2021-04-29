@@ -1,5 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.home
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -130,15 +132,50 @@ class HomeFragment : Fragment() {
             MEDICAL_EMERGENCY
         )
 
+        val listOfCheckBoxNames = listOf<String>(
+                "UNKNOWN_SEVERITY",
+                "INFO",
+                "WARNING",
+                "SEVERE",
+                "NO_SERVICE",
+                "REDUCED_SERVICE",
+                "SIGNIFICANT_DELAYS",
+                "DETOUR",
+                "ADDITIONAL_SERVICE",
+                "MODIFIED_SERVICE",
+                "OTHER_EFFECT",
+                "UNKNOWN_EFFECT",
+                "STOP_MOVED",
+                "NO_EFFECT",
+                "UNKNOWN_CAUSE",
+                "OTHER_CAUSE",
+                "TECHNICAL_PROBLEM",
+                "STRIKE",
+                "DEMONSTRATION",
+                "CAUSE_MODIFIED_SERVICE",
+                "ACCIDENT",
+                "HOLIDAY",
+                "WEATHER",
+                "MAINTENANCE",
+                "CONSTRUCTION",
+                "POLICE_ACTIVITY",
+                "MEDICAL_EMERGENCY"
+        )
+
+
         listOfCheckBoxes.forEach {
-            val name = it.text.toString()
+
             it.setOnCheckedChangeListener { _, _ ->
+                val i = listOfCheckBoxes.indexOf(it)
+                val name = listOfCheckBoxNames[i].toLowerCase(Locale.ROOT).replace("_", " ")
+                Log.d("DEBUGGING", name)
                 if (it.isChecked) {
                     adapter.filter.filter(name)
                 } else if (!it.isChecked) {
                     adapter.filter.filter("")
                 }
             }
+
         }
     }
 

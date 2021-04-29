@@ -1,3 +1,10 @@
+/**
+ * Description: Room Database entity for Traffic item
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.data
 
 import androidx.room.*

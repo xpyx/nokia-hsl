@@ -15,14 +15,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/action_vehicles"
+        android:id="@+id/action_analytics"
         android:name="com.xpyx.nokiahslvisualisation.fragments.analytics.AnalyticsFragment"
-        android:label="@string/menu_vehicles"
+        android:label="@string/menu_analytics"
         tools:layout="@layout/fragment_analytics" />
 
     <fragment
         android:id="@+id/action_traffic_list"
-        android:name="com.xpyx.nokiahslvisualisation.fragments.list.ListFragment"
+        android:name="com.xpyx.nokiahslvisualisation.fragments.traffic_list.TrafficListFragment"
         android:label="@string/menu_traffic_list"
         tools:layout="@layout/fragment_traffic_list">
         <argument

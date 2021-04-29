@@ -6,11 +6,6 @@
         android:icon="@drawable/home_icon"
         android:iconTint="@color/design_default_color_on_secondary"/>
 
-    <item android:id="@+id/action_vehicles"
-        android:title="@string/menu_analytics"
-        android:icon="@drawable/ic_baseline_analytics_24"
-        android:iconTint="@color/design_default_color_on_secondary"/>
-
     <item android:id="@+id/action_map"
         android:title="@string/menu_map"
         android:icon="@drawable/map_icon"
@@ -24,5 +19,10 @@
     <item android:id="@+id/ar_view"
         android:title="@string/menu_ar"
         android:icon="@drawable/ar_icon"
+        android:iconTint="@color/design_default_color_on_secondary"/>
+
+    <item android:id="@+id/action_analytics"
+        android:title="@string/menu_analytics"
+        android:icon="@drawable/analytics_icon"
         android:iconTint="@color/design_default_color_on_secondary"/>
 </menu>
