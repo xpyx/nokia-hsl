@@ -54,7 +54,7 @@ import kotlinx.android.synthetic.main.fragment_map.btn_clear
 import kotlinx.android.synthetic.main.fragment_map.bus
 import kotlinx.android.synthetic.main.fragment_map.tram
 import kotlinx.android.synthetic.main.fragment_map.vehicle_count
-import kotlinx.android.synthetic.main.fragment_vehicles.*
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -183,6 +183,7 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
                             positions.clear()
                             // First clear other topics
                             mMQTTViewModel.unsubscribe(topic)
+
                             // Set topic and subscribe
                             topic = "/hfp/v2/journey/ongoing/vp/+/0040/#"               // Tram
                             mMQTTViewModel.subscribe(topic)
