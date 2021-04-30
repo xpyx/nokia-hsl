@@ -7,7 +7,7 @@
  * - find and show vehicles that are late $seconds
  * - find and show all buses, trams or metros on a specific line
  *
- * Course: Mobile project
+ * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Mikael Ylivaara & Ville Pystynen
  *
  */
@@ -173,8 +173,6 @@ class MapFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
                 metro,          // listOfCheckBoxes[2]
                 traffic_items   // listOfCheckBoxes[3]
         )
-
-        Log.d("DBG checkboxes", "${bus.id} ${tram.id} ${metro.id} ${traffic_items.id}")
 
         listOfCheckBoxes.forEach { it ->
             val id = it.id.toString()

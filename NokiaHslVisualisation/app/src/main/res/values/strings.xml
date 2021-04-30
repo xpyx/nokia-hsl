@@ -131,5 +131,6 @@
     <string name="busses_text">Buses</string>
     <string name="trams_text">Trams</string>
     <string name="metros_text">Metros</string>
+    <string name="show_metro">Show only metros</string>
 
 </resources>

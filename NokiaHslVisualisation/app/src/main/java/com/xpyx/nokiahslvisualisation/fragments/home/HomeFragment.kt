@@ -1,3 +1,10 @@
+/**
+ * Description:
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.home
 
 import android.content.Context

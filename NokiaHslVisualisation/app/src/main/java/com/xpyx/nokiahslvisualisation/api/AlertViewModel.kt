@@ -1,3 +1,10 @@
+/**
+ * Description:
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.api
 
 import androidx.lifecycle.MutableLiveData
@@ -19,3 +26,4 @@ class AlertViewModel(private val alertRepository: AlertRepository): ViewModel() 
         }
     }
 }
+
