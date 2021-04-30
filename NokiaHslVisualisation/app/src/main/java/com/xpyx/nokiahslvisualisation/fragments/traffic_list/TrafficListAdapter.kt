@@ -1,11 +1,21 @@
-package com.xpyx.nokiahslvisualisation.fragments.list
+/**
+ * Description:
+ *
+ * Adapter for recycler view to set data,
+ * apply filters used in TrafficListFragment and
+ * apply navigation to TrafficDetailsFragment
+ *
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
+package com.xpyx.nokiahslvisualisation.fragments.traffic_list
 
 
-import android.Manifest
+
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,9 +24,6 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView

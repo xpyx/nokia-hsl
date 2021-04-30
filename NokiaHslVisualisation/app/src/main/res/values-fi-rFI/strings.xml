@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="menu_home">Hälytykset</string>
-    <string name="menu_traffic_list">Liikenne -listanäkymä</string>
-    <string name="menu_map">Kartta</string>
-    <string name="details_view">Liikennetapahtuma-yksityiskohdat</string>
-    <string name="alert_details_view">Hälytystapahtuma-yksityiskohdat</string>
-    <string name="menu_ar">AR -näkymä</string>
+    <string name="menu_home">HSL-hälytykset</string>
+    <string name="menu_traffic_list">Liikennetapahtumat</string>
+    <string name="menu_map">Karttanäkymä</string>
+    <string name="details_view">Liikennetapahtuma</string>
+    <string name="alert_details_view">Hälytystapahtuma</string>
+    <string name="menu_ar">AR-näkymä</string>
     <string name="toast_api_key">Käyttääksesi liikennetietoja, tarvitset Here karttojen API-avaimen. Voit hankkia sen täältä: https://developer.here.com/tutorials/getting-here-credentials/</string>
     <string name="add_api_key_button">Lisää API-avain</string>
     <string name="api_key_edit_text_hint">API-avain tähän</string>
@@ -49,7 +49,7 @@
     <string name="POLICE_ACTIVITY">Poliisitoimintaa</string>
     <string name="MEDICAL_EMERGENCY">Lääketieteellinen hätätapaus</string>
     <string name="menu_positions">Analytiikka</string>
-    <string name="menu_vehicles">Analytiikka</string>
+    <string name="menu_analytics">Analytiikka</string>
     <string name="alert_filtering_preferences">Hälytyksen suodatusvalinnat</string>
     <string name="criticality_menu_item">Kriittisyys</string>
     <string name="critical_menu_item">Kriittinen</string>
@@ -78,6 +78,7 @@
     <string name="vehicle_late_time_hint">Sekuntia myöhässä</string>
     <string name="show_trams">Näytä vain raitiovaunut</string>
     <string name="show_busses">Näytä vain bussit</string>
+    <string name="show_metros">Näytä vain metrot</string>
     <string name="see_bus_lines_hint">Syötä linjanumero</string>
     <string name="lines_search">Näytä kaikki kulkuneuvot linjalla</string>
     <string name="ar_map_refresh_button_text">Lataa kartta uudelleen</string>
@@ -88,4 +89,16 @@
     <string name="show_traffic_items">Näytä liikennetiedot</string>
     <string name="traffic_info_title">HERE karttojen liikennetiedot</string>
     <string name="show_metro">Näytä vain metrot</string>
+    <string name="analytics">Lataa HSL APIa</string>
+    <string name="arcore_not_updated">Olkaa hyvä ja päivittäkää AR Core</string>
+    <string name="arcore_not_installed">Olkaa hyvä ja asentakaa AR Core</string>
+    <string name="arcore_not_supported">Tämä laite ei tue lisättyä todellisuutta</string>
+    <string name="loading_message">Lataa tämänhetkistä lokaatiota</string>
+    <string name="camera_and_location_permission_request">Paikka ja kamera -oikeudet</string>
+    <string name="analytics_text_view">Kysely päättyi %1$s \nKyselyssä kesti %2$s millisekuntia</string>
+    <string name="analytics_chartmodel_title">Saapumisajat pysäkeillä</string>
+    <string name="arrival_times_text">Saapumisajat</string>
+    <string name="busses_text">Bussit</string>
+    <string name="trams_text">Raitiovaunut</string>
+    <string name="metros_text">Metrot</string>
 </resources>

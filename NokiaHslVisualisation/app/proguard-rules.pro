@@ -21,3 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.github.aachartmodel.aainfographics.* { *; }
+
+-keep class com.github.aachartmodel.aainfographics.* { *; }

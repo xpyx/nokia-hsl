@@ -1,10 +1,3 @@
-/**
- * Description:
- *
- * Course: Mobiiliprojekti TX00CK67-3008
- * Name: Ville Pystynen
- */
-
 package com.xpyx.nokiahslvisualisation.fragments.analytics
 
 import android.os.Bundle
@@ -12,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.apollographql.apollo.api.Response
@@ -25,6 +17,7 @@ import com.xpyx.nokiahslvisualisation.StopTimesListQuery
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModel
 import com.xpyx.nokiahslvisualisation.api.StopTimesViewModelFactory
 import com.xpyx.nokiahslvisualisation.repository.StopTimesRepository
+import kotlinx.android.synthetic.main.fragment_analytics.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -47,6 +40,8 @@ class AnalyticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var responseForChart: Response<StopTimesListQuery.Data>? = null
+
         // Init and hide chart
         val aaChartView = view.findViewById<AAChartView>(R.id.aa_chart_view)
         aaChartView.visibility = View.GONE
@@ -63,7 +58,7 @@ class AnalyticsFragment : Fragment() {
         spinner.visibility = View.VISIBLE
 
         val startDate = Date()
-        var arrivalTimes = arrayListOf<Double?>()
+        val arrivalTimes = arrayListOf<Double?>()
         var transportModes = arrayListOf<String?>()
 
 
@@ -78,16 +73,16 @@ class AnalyticsFragment : Fragment() {
                 val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss.SSS")
                 val formatted = current.format(formatter)
 
+                responseForChart = response
                 if (response != null) {
+
 
                     // Hide spinner
                     spinner.visibility = View.GONE
 
                     // Timestamp the query
-                    val analytix = view.findViewById<TextView>(R.id.analytix)
-                    """
-                        Query finished $formatted
-                        Query elapsed $diffInMillisec milliseconds""".trimIndent().also { analytix.text = it }
+                    analytix.text = getString(R.string.analytics_text_view, formatted, diffInMillisec.toString())
+
 
                     var buses = 0
                     var trams = 0
@@ -114,6 +109,19 @@ class AnalyticsFragment : Fragment() {
                                 it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
                                     ?.arrivalDelay()?.toDouble()
 
+                            var directionId =
+                                it.stoptimesForPatterns()?.get(0)?.stoptimes()?.get(0)
+                                    ?.trip()
+                                    ?.directionId()
+
+                            // Change direction id according to instructions. Also note if null, then -> "+"
+                            if (directionId.equals("0")) {
+                                directionId = "1"
+                            } else if (directionId.equals("1")) {
+                                directionId = "2"
+                            }
+
+
                             arrivalTimes.add(arrivalDelay)
 
                             when(transportMode.toString()) {
@@ -125,25 +133,30 @@ class AnalyticsFragment : Fragment() {
                         }
                     }
 
+
+                    // Put response values to chart format
+
+
+
                     // Do chart magic
                     val aaChartModel : AAChartModel = AAChartModel()
                         .chartType(AAChartType.Area)
-                        .title("Arrival times at stops")
+                        .title(getString(R.string.analytics_chartmodel_title))
                         //.subtitle("subtitle")
                         .backgroundColor(R.color.design_default_color_background)
                         .dataLabelsEnabled(false)
                         .series(arrayOf(
                             AASeriesElement()
-                                .name("Arrival Times")
+                                .name(getString(R.string.arrival_times_text))
                                 .data(arrivalTimes.toArray()),
                             AASeriesElement()
-                                .name("Buses")
+                                .name(getString(R.string.busses_text))
                                 .data(arrayOf(buses)),
                             AASeriesElement()
-                                .name("Trams")
+                                .name(getString(R.string.trams_text))
                                 .data(arrayOf(trams)),
                             AASeriesElement()
-                                .name("Metros")
+                                .name(getString(R.string.metros_text))
                                 .data(arrayOf(metros)),
                         )
                         )

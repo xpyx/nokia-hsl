@@ -7,6 +7,9 @@
 
 package com.xpyx.nokiahslvisualisation.fragments.home
 
+import android.content.Context
+import android.content.res.Configuration
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -28,10 +31,13 @@ import com.xpyx.nokiahslvisualisation.api.AlertViewModel
 import com.xpyx.nokiahslvisualisation.api.AlertViewModelFactory
 import com.xpyx.nokiahslvisualisation.data.AlertItem
 import com.xpyx.nokiahslvisualisation.data.AlertItemViewModel
+import com.xpyx.nokiahslvisualisation.utils.Constants
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_traffic_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -39,6 +45,38 @@ class HomeFragment : Fragment() {
     private lateinit var mAlertViewModel: AlertItemViewModel
     private lateinit var mAlertApiViewModel: AlertViewModel
     private lateinit var adapter: AlertListAdapter
+    private val listOfFilters = mutableMapOf<String, Any>()
+    private val stringSearchView: String = "stringSearchView"
+
+    val listOfCheckBoxNames = listOf<String>(
+            "UNKNOWN_SEVERITY",
+            "INFO",
+            "WARNING",
+            "SEVERE",
+            "NO_SERVICE",
+            "REDUCED_SERVICE",
+            "SIGNIFICANT_DELAYS",
+            "DETOUR",
+            "ADDITIONAL_SERVICE",
+            "MODIFIED_SERVICE",
+            "OTHER_EFFECT",
+            "UNKNOWN_EFFECT",
+            "STOP_MOVED",
+            "NO_EFFECT",
+            "UNKNOWN_CAUSE",
+            "OTHER_CAUSE",
+            "TECHNICAL_PROBLEM",
+            "STRIKE",
+            "DEMONSTRATION",
+            "CAUSE_MODIFIED_SERVICE",
+            "ACCIDENT",
+            "HOLIDAY",
+            "WEATHER",
+            "MAINTENANCE",
+            "CONSTRUCTION",
+            "POLICE_ACTIVITY",
+            "MEDICAL_EMERGENCY"
+    )
 
     // Set search at the top menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -54,7 +92,8 @@ class HomeFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
+                listOfFilters[stringSearchView] = newText!!
+                checkFilters()
                 return true
             }
         })
@@ -81,6 +120,7 @@ class HomeFragment : Fragment() {
         mAlertViewModel = ViewModelProvider(this).get(AlertItemViewModel::class.java)
         mAlertViewModel.readAllData.observe(viewLifecycleOwner, { alerts ->
             adapter.setData(alerts)
+            checkFilters()
         })
 
         // Set top bar search
@@ -137,15 +177,29 @@ class HomeFragment : Fragment() {
             MEDICAL_EMERGENCY
         )
 
+        loadData()
+
+
         listOfCheckBoxes.forEach {
-            val name = it.text.toString()
-            it.setOnCheckedChangeListener { _, _ ->
-                if (it.isChecked) {
-                    adapter.filter.filter(name)
-                } else if (!it.isChecked) {
-                    adapter.filter.filter("")
-                }
+            val i = listOfCheckBoxes.indexOf(it)
+
+            val name = listOfCheckBoxNames[i]
+            Log.d("filter", name)
+            val value = listOfFilters[name] as Boolean
+
+            if (value) {
+                it.isChecked = true
+                it.jumpDrawablesToCurrentState()
+            } else {
+                it.isChecked = false
+                it.jumpDrawablesToCurrentState()
             }
+
+            it.setOnCheckedChangeListener { _, _ ->
+                listOfFilters[name] = it.isChecked
+                checkFilters()
+            }
+
         }
     }
 
@@ -190,5 +244,52 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadData()
+    }
+
+    private fun saveData() {
+        val sPreferences = activity?.getSharedPreferences(Constants.HSL_ALERT_FILTERS, Context.MODE_PRIVATE)
+        val editor = sPreferences?.edit()
+
+        for (item in listOfCheckBoxNames) {
+            editor?.putBoolean(item, listOfFilters[item] as Boolean)
+            editor?.apply()
+        }
+    }
+
+    private fun loadData() {
+        val sPreferences = activity?.getSharedPreferences(Constants.HSL_ALERT_FILTERS, Context.MODE_PRIVATE)
+        for (item in listOfCheckBoxNames) {
+            listOfFilters[item] = sPreferences?.getBoolean(item, false) as Boolean
+        }
+
+        checkFilters()
+    }
+
+    private fun checkFilters() {
+        var filterText = ""
+        for (item in listOfCheckBoxNames) {
+            val value = listOfFilters[item] as Boolean
+            if (value) {
+                filterText += "$item;"
+            }
+        }
+        val stringSearch: String? = listOfFilters[stringSearchView] as String?
+        if (stringSearch != null && stringSearch != "") {
+            filterText += "$stringSearch;"
+        }
+        Log.d("filtering", filterText)
+
+        adapter.filter.filter(filterText)
+
     }
 }

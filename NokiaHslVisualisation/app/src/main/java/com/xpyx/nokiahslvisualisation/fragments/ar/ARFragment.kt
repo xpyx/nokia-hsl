@@ -1,9 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.graphics.Color
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -13,12 +10,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.BounceInterpolator
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.ar.core.TrackingState
@@ -26,38 +22,29 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.UnavailableException
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.assets.RenderableSource
+import com.google.ar.sceneform.math.Quaternion
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.location.LocationComponentOptions
-import com.mapbox.mapboxsdk.location.modes.CameraMode
-import com.mapbox.mapboxsdk.location.modes.RenderMode
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.sources.RasterSource
-import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.xpyx.nokiahslvisualisation.R
-
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
+import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
+import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import kotlinx.android.synthetic.main.fragment_ar.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.co.appoly.arcorelocation.LocationMarker
 import uk.co.appoly.arcorelocation.LocationScene
 import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
 
 
-class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
+class ARFragment : Fragment() {
 
-    private lateinit var listener: FragmentActivity
-    private var mapView: MapView? = null
-    private var permissionsManager: PermissionsManager = PermissionsManager(this)
-    private lateinit var mapboxMap: MapboxMap
     private var arCoreInstallRequested = false
+    var positions = mutableMapOf<String, VehiclePosition>()
 
     // Our ARCore-Location scene
     private var locationScene: LocationScene? = null
@@ -74,125 +61,134 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private var userGeolocation = Geolocation.EMPTY_GEOLOCATION
 
-    private var VehicleSet: MutableSet<Vehicle> = mutableSetOf()
+    private var vehicleSet: MutableSet<Vehicle> = mutableSetOf()
     private var areAllMarkersLoaded = false
+    private lateinit var mMQTTViewModel: MQTTViewModel
 
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is Activity) {
-            this.listener = context as FragmentActivity
-        }
-    }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-
-        Mapbox.getInstance(
-                listener, getString(R.string.mapbox_access_token)
-        )
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_ar, container, false)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mapView = view.findViewById(R.id.mapView)
-        mapView?.onCreate(savedInstanceState)
-        mapView?.getMapAsync(this)
+        // set up mqtt
+        // MQTT viewmodel
+        val mqttRepository = MQTTRepository()
+        val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
+        mMQTTViewModel =
+            ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
+
         setupLoadingDialog()
 
-        VehicleSet.add(Vehicle("1","2",60.2700,24.400,90.0))
-        VehicleSet.add(Vehicle("1","203",60.278996,24.443877,90.0))
-        renderVenues()
+    }
 
-            }
+    private fun subscribe() {
+
+        // Get user location
+        Log.d("DBG", "Geoloc: ${userGeolocation.latitude} ${userGeolocation.longitude}")
+
+        val add = 0.02
+
+        // vasen alakulma
+        val lat = userGeolocation.latitude!!.toDouble() - add
+        val long = userGeolocation.longitude!!.toDouble() - add
+
+        // oikea yläkulma
+        val lat2 = userGeolocation.latitude!!.toDouble() + add
+        val long2 = userGeolocation.longitude!!.toDouble() + add
 
 
+        // Fetch all buses in radius of 5km
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        this.mapboxMap = mapboxMap
-        mapboxMap.setStyle(Style.Builder().fromUri(
-                "asset://local_style")) {
+        // 1. do bounding box
+        val bb = getBoundingBox(lat, long, lat2, long2)
 
-            val source = RasterSource(
-                    "map", TileSet("https://cdn.digitransit.fi/map/v1/hsl-map" + "/{z}/{x}/{y}.png", "mapbox://mapid")
+        // 2. subscribe to MQTT
+        mMQTTViewModel.subscribe(bb[0])
+        mMQTTViewModel.subscribe(bb[1])
+    }
+
+    private suspend fun connectMQTT() {
+        val job = GlobalScope.launch(Dispatchers.IO) {
+            view?.context?.let { mMQTTViewModel.connectMQTT(it) }
+        }
+        job.join()
+        delay(5000) // wait for connection to be established
+        mMQTTViewModel.receiveMessagesInARBus(this)
+
+        subscribe()
+    }
+
+    fun updateUI(vehiclePosition: VehiclePosition) {
+
+        // For each arriving vehiclePosition
+        // Add to positions map
+        // If positions map contains the vehicle, just update it's info
+        if (positions.containsKey(
+                vehiclePosition.VP.oper.toString() +
+                        vehiclePosition.VP.veh.toString())
+        ) {
+            // If positions map doesn't contain the vehicle, add it there
+        } else {
+            positions[vehiclePosition.VP.oper.toString() +
+                    vehiclePosition.VP.veh.toString()] = vehiclePosition
+        }
+
+        positions.forEach {
+
+            Log.d("DBG", "VP: ${vehiclePosition.toString()}")
+
+            vehicleSet.add(
+                Vehicle(
+                    it.value.VP.oper.toString(),
+                    it.value.VP.veh.toString(),
+                    it.value.VP.lat.toDouble(),
+                    it.value.VP.long.toDouble(),
+                    it.value.VP.hdg.toDouble(),
+                    it.value.VP.spd.toDouble(),
+                    it.value.VP.acc.toDouble(),
+                    it.value.VP.odo.toDouble(),
+                    it.value.VP.dl.toDouble()
+                )
             )
-
-
-            val position = CameraPosition.Builder()
-                    .zoom(25.5)
-                    .tilt(20.0)
-                    .build()
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
-            it.addSource(source)
-
-
-            enableLocationComponent(it)
         }
+
+        renderVenues()
     }
 
-    @SuppressLint("MissingPermission")
-    private fun enableLocationComponent(loadedMapStyle: Style) {
-// Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(listener)) {
+    private fun getBoundingBox(lat: Double, long: Double, lat2: Double, long2: Double): List<String> {
 
-// Create and customize the LocationComponent's options
-            val customLocationComponentOptions = LocationComponentOptions.builder(listener)
-                    .trackingGesturesManagement(true)
-                    .pulseEnabled(true)
-                    .pulseColor(Color.GREEN)
-                    .pulseAlpha(.4f)
-                    .pulseInterpolator(BounceInterpolator())
-                    .build()
+        val latSplit = lat.toString().split(".")
+        val longSplit = long.toString().split(".")
 
-            val locationComponentActivationOptions = LocationComponentActivationOptions
-                    .builder(listener, loadedMapStyle)
-                    .locationComponentOptions(customLocationComponentOptions)
-                    .build()
+        val latSplit2 = lat2.toString().split(".")
+        val longSplit2 = long2.toString().split(".")
 
+        val topic1: String =
+            "/hfp/v2/journey/ongoing/+/+/+/+/+/+/+/+/+/3" +
+                    "/${latSplit[0]};${longSplit[0]}" +
+                    "/${latSplit[1].first()}${longSplit[1].first()}" +
+                    "/${latSplit[1][1]}${longSplit[1][1]}" +
+                    "/#"
 
+        val topic2: String =
+            "/hfp/v2/journey/ongoing/+/+/+/+/+/+/+/+/+/3" +
+                    "/${latSplit2[0]};${longSplit2[0]}" +
+                    "/${latSplit2[1].first()}${longSplit2[1].first()}" +
+                    "/${latSplit2[1][1]}${longSplit2[1][1]}" +
+                    "/#"
 
-// Get an instance of the LocationComponent and then adjust its settings
-            mapboxMap.locationComponent.apply {
+        return listOf(topic1, topic2)
 
-// Activate the LocationComponent with options
-                activateLocationComponent(locationComponentActivationOptions)
-
-// Enable to make the LocationComponent visible
-                isLocationComponentEnabled = true
-
-// Set the LocationComponent's camera mode
-                cameraMode = CameraMode.TRACKING_COMPASS
-
-// Set the LocationComponent's render mode
-                renderMode = RenderMode.COMPASS
-            }
-        } else {
-            permissionsManager = PermissionsManager(this)
-            permissionsManager.requestLocationPermissions(listener)
-        }
     }
 
-
-
-    override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-        for (permission in permissionsToExplain) {
-            Toast.makeText(listener, permission, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            enableLocationComponent(mapboxMap.style!!)
-        } else {
-            Toast.makeText(listener, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show()
-
-        }
-    }
     private fun setupLoadingDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         val dialogHintMainView =
@@ -201,25 +197,25 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         loadingDialog = alertDialogBuilder.create()
         loadingDialog.setCanceledOnTouchOutside(false)
     }
+
     private fun setupSession() {
         if (fragment == null) {
-            Log.e("aaa","fragment is null")
             return
         }
 
         if (fragment.session == null) {
             try {
-                val session = AugmentedRealityLocationUtils.setupSession(requireActivity(), arCoreInstallRequested)
+                val session = AugmentedRealityLocationUtils.setupSession(
+                    requireActivity(),
+                    arCoreInstallRequested
+                )
                 if (session == null) {
-                    Log.e("aaa","session is null")
                     arCoreInstallRequested = true
                     return
                 } else {
-                    Log.e("aaa","have a cup of frag.session")
                     fragment.setupSession(session)
                 }
             } catch (e: UnavailableException) {
-                Log.e("aaa","shiit catch 22")
                 AugmentedRealityLocationUtils.handleSessionException(requireActivity(), e)
             }
         }
@@ -245,23 +241,38 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     fun fetchVenues(deviceLatitude: Double, deviceLongitude: Double) {
         loadingDialog.dismiss()
+
+        // This is where the user is
         userGeolocation = Geolocation(deviceLatitude.toString(), deviceLongitude.toString())
 
+        // Connect to MQTT broker, subscribe to topic and start receiving messages
+        GlobalScope.launch(Dispatchers.Main) {
+            connectMQTT()
+        }
+
+
     }
+
     private fun renderVenues() {
         setupAndRenderVenuesMarkers()
         updateVenuesMarkers()
     }
 
     private fun setupAndRenderVenuesMarkers() {
-        val uri = Uri.parse("file:///android_asset/bus3.gltf")
-        VehicleSet.forEach { vehicle ->
+        val uri = Uri.parse("file:///android_asset/bus4.gltf")
+        vehicleSet.forEach { vehicle ->
             val completableFutureViewRenderable = ModelRenderable.builder()
-                .setSource(context, RenderableSource.builder().setSource(context, uri, RenderableSource.SourceType.GLTF2)
-                    .setScale(0.1f)
-                    .setRecenterMode(RenderableSource.RecenterMode.ROOT)
-                    .build())
-                .setRegistryId(("bus3"))
+                .setSource(
+                    context, RenderableSource.builder().setSource(
+                        context,
+                        uri,
+                        RenderableSource.SourceType.GLTF2
+                    )
+                        .setScale(0.1f)
+                        .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                        .build()
+                )
+                .setRegistryId(("bus4"))
                 .build()
             CompletableFuture.anyOf(completableFutureViewRenderable)
                 .handle<Any> { _, throwable ->
@@ -279,9 +290,9 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                         arHandler.postDelayed({
                             attachMarkerToScene(
                                 venueMarker,
-                                completableFutureViewRenderable
+                                vehicle.heading.toFloat()
                             )
-                            if (VehicleSet.indexOf(vehicle) == VehicleSet.size - 1) {
+                            if (vehicleSet.indexOf(vehicle) == vehicleSet.size - 1) {
                                 areAllMarkersLoaded = true
                             }
                         }, 200)
@@ -305,10 +316,9 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 locationMarker.height =
                     AugmentedRealityLocationUtils.generateRandomHeightBasedOnDistance(
                         locationMarker?.anchorNode?.distance ?: 0
+
                     )
             }
-
-
             val frame = fragment!!.arFrame ?: return@addOnUpdateListener
             if (frame.camera.trackingState != TrackingState.TRACKING) {
                 return@addOnUpdateListener
@@ -320,13 +330,13 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private fun attachMarkerToScene(
         locationMarker: LocationMarker,
-        layoutRendarable: CompletableFuture<ModelRenderable>
+        heading: Float
     ) {
         resumeArElementsTask.run {
             locationMarker.scalingMode = LocationMarker.ScalingMode.FIXED_SIZE_ON_SCREEN
+
             locationMarker.scaleModifier =
                 AugmentedRealityLocationUtils.INITIAL_MARKER_SCALE_MODIFIER
-
             locationScene?.mLocationMarkers?.add(locationMarker)
             locationMarker.anchorNode?.isEnabled = true
 
@@ -336,36 +346,52 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
             resumeArElementsTask.run {
                 computeNewScaleModifierBasedOnDistance(locationMarker, locationNode.distance)
+                locationMarker.node.localRotation =
+                    Quaternion.axisAngle(Vector3(0f, 1f, 0f), heading)
 
             }
         }
     }
+
     private fun checkAndRequestPermissions() {
         if (!PermissionUtils.hasLocationAndCameraPermissions(requireContext())) {
             PermissionUtils.requestCameraAndLocationPermissions(requireActivity())
         } else {
-            Log.e("AaA","setting up")
             setupSession()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, results: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        results: IntArray
+    ) {
         if (!PermissionUtils.hasLocationAndCameraPermissions(requireContext())) {
-            Toast.makeText(context, R.string.camera_and_location_permission_request, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                R.string.camera_and_location_permission_request,
+                Toast.LENGTH_LONG
+            ).show()
             if (!PermissionUtils.shouldShowRequestPermissionRationale(Activity())) {
                 // Permission denied with checking "Do not ask again".
                 PermissionUtils.launchPermissionSettings(Activity())
             }
-           // finish()
+            // finish()
         }
     }
 
-    private fun computeNewScaleModifierBasedOnDistance(locationMarker: LocationMarker, distance: Int) {
-        val scaleModifier = AugmentedRealityLocationUtils.getScaleModifierBasedOnRealDistance(distance)
+    private fun computeNewScaleModifierBasedOnDistance(
+        locationMarker: LocationMarker,
+        distance: Int
+    ) {
+        val scaleModifier = AugmentedRealityLocationUtils.getScaleModifierBasedOnRealDistance(
+            distance
+        )
         return if (scaleModifier == AugmentedRealityLocationUtils.INVALID_MARKER_SCALE_MODIFIER) {
             detachMarker(locationMarker)
         } else {
             locationMarker.scaleModifier = scaleModifier
+
         }
     }
 
@@ -376,18 +402,27 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
 
-    private fun setVenueNode(venue: Vehicle, completableFuture: CompletableFuture<ModelRenderable>): Node {
+    private fun setVenueNode(
+        venue: Vehicle,
+        completableFuture: CompletableFuture<ModelRenderable>
+    ): Node {
         val node = Node()
 
-        node.renderable = completableFuture.get()
+        val snippet = """ 
+            Operator: ${venue.oper}
+            Vehicle: ${venue.veh}   
+            
+            Speed: ${venue.spd} m/s
+            Heading: ${venue.heading} degrees
+            Acceleration: ${venue.acc} m/s2
+            Odometer reading: ${venue.odo} m
+            Offset from timetable: ${venue.dl} seconds
+        """.trimIndent()
 
-        /* val nodeLayout = completableFuture.get().view
-         val venueName = nodeLayout.name
-         val markerLayoutContainer = nodeLayout.pinContainer
-         venueName.text = venue.name
-         markerLayoutContainer.visibility = View.GONE */
+        node.renderable = completableFuture.get()
+        node.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f), venue.heading.toFloat())
         node.setOnTouchListener { _, _ ->
-            Toast.makeText(context, "Bussi no: ${venue.veh}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, snippet, Toast.LENGTH_LONG).show()
 
 
             false
@@ -396,27 +431,16 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         Glide.with(this)
             .load(venue.veh)
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-        // .into(nodeLayout.categoryIcon)
+
 
         return node
     }
 
 
-
-
-
-
-
-
-    override fun onStart() {
-        super.onStart()
-        mapView?.onStart()
-    }
-
     override fun onResume() {
         super.onResume()
         checkAndRequestPermissions()
-        mapView?.onResume()
+
     }
 
     override fun onPause() {
@@ -425,28 +449,11 @@ class ARFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             locationScene?.pause()
             fragment?.pause()
         }
-        mapView?.onPause()
+
     }
 
-    override fun onStop() {
-        super.onStop()
-        mapView?.onStop()
-    }
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mapView?.onSaveInstanceState(outState)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView?.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView?.onLowMemory()
-    }
 }
+
 class LocationAsyncTask(private val activityWeakReference: WeakReference<ARFragment>) :
     AsyncTask<LocationScene, Void, List<Double>>() {
 
@@ -466,7 +473,10 @@ class LocationAsyncTask(private val activityWeakReference: WeakReference<ARFragm
     }
 
     override fun onPostExecute(geolocation: List<Double>) {
-        activityWeakReference.get()!!.fetchVenues(deviceLatitude = geolocation[0], deviceLongitude = geolocation[1])
+        activityWeakReference.get()!!.fetchVenues(
+            deviceLatitude = geolocation[0],
+            deviceLongitude = geolocation[1]
+        )
         super.onPostExecute(geolocation)
     }
 }

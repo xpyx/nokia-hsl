@@ -1,3 +1,10 @@
+/**
+ * Description: Livedata and DAO connections
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.data
 
 import androidx.lifecycle.LiveData

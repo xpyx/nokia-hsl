@@ -1,3 +1,10 @@
+/**
+ * Description: Returns the instances for making Here traffic API calls
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
 package com.xpyx.nokiahslvisualisation.repository
 
 import com.xpyx.nokiahslvisualisation.api.RetrofitInstance

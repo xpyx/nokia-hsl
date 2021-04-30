@@ -1,4 +1,18 @@
-package com.xpyx.nokiahslvisualisation.fragments.list
+/**
+ * Description:
+ *
+ * Fragment to list causes of possible traffic jams. User can filter data by
+ * 1) Criticality - Critical, Major and Minor
+ * 2) Distance - Minimum and maximum
+ * 3) Miscellaneous - Road closed and Response vehicles
+ * 4) Type - Event or Incident
+ *
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen
+ */
+
+package com.xpyx.nokiahslvisualisation.fragments.traffic_list
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -39,7 +53,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
-class ListFragment : Fragment(){
+class TrafficListFragment : Fragment(){
 
 
     private lateinit var recyclerView: RecyclerView
@@ -212,14 +226,14 @@ class ListFragment : Fragment(){
 
         clear_all_button.setOnClickListener{
 
-                radio_group_criticality.clearCheck()
-                critical_checkbox.isChecked = false
-                major_checkbox.isChecked = false
-                minor_checkbox.isChecked = false
-                road_closed_checkbox.isChecked = false
-                response_vehicles_checkbox.isChecked = false
+            radio_group_criticality.clearCheck()
+            critical_checkbox.isChecked = false
+            major_checkbox.isChecked = false
+            minor_checkbox.isChecked = false
+            road_closed_checkbox.isChecked = false
+            response_vehicles_checkbox.isChecked = false
 
-                distance_slider.setValues(0F, 150F)
+            distance_slider.setValues(0F, 150F)
 
             for (item in listOfBooleanFilterNames) {
                 listOfFilters[item] = false
@@ -232,7 +246,10 @@ class ListFragment : Fragment(){
         }
 
         listOfCheckBoxes.forEach {
-            val name = it.text.toString().toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
+            val i = listOfCheckBoxes.indexOf(it)
+
+            val name = listOfBooleanFilterNames[i].toLowerCase().replace("\\s+".toRegex(), "_")
+            Log.d("DEBUGGING",name)
             val value = listOfFilters[name] as Boolean
             if (value) {
                 it.isChecked = true
@@ -250,7 +267,9 @@ class ListFragment : Fragment(){
         }
 
         listOfRadioButtons.forEach {
-            val name = it.text.toString().toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
+            val i = listOfRadioButtons.indexOf(it)+5
+
+            val name = listOfBooleanFilterNames[i].toLowerCase(Locale.ROOT).replace("\\s+".toRegex(), "_")
             val value = listOfFilters[name] as Boolean
             if (value) {
                 it.isChecked = true
@@ -352,6 +371,7 @@ class ListFragment : Fragment(){
     }
 
     private fun saveData() {
+
         val sPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_FILTERS, MODE_PRIVATE)
         val editor = sPreferences?.edit()
         for (item in listOfBooleanFilterNames) {
@@ -374,8 +394,9 @@ class ListFragment : Fragment(){
     }
 
     private fun loadData() {
-        val apikeyPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_API_KEY, MODE_PRIVATE)
-        val buffer: String? = apikeyPreferences?.getString(Constants.TRAFFIC_API_KEY, "")
+
+        val apiKeyPreferences = activity?.getSharedPreferences(Constants.TRAFFIC_API_KEY, MODE_PRIVATE)
+        val buffer: String? = apiKeyPreferences?.getString(Constants.TRAFFIC_API_KEY, "")
         if (!buffer.isNullOrEmpty()) {
             hereTrafficApiKey = buffer
         }
@@ -398,6 +419,7 @@ class ListFragment : Fragment(){
     }
 
     private fun checkFilters() {
+
         var filterText = ""
         for (item in listOfBooleanFilterNames) {
             val value = listOfFilters[item] as Boolean
@@ -420,6 +442,7 @@ class ListFragment : Fragment(){
         }
 
         adapter.filter.filter(filterText)
+
     }
 
     private fun getLocationUpdates() {

@@ -2,12 +2,12 @@
     <string name="app_name" translatable="false">NokiaHslVisualisation</string>
 
     // Fragment titles
-    <string name="menu_home">Alerts</string>
+    <string name="menu_home">HSL Alerts</string>
     <string name="menu_traffic_list">Traffic list view</string>
     <string name="menu_map">Map</string>
     <string name="details_view">Traffic details</string>
     <string name="alert_details_view">Alert details</string>
-    <string name="menu_ar">AR View</string>
+    <string name="menu_ar">Augmented reality view</string>
 
     // Traffic list view
     <string name="toast_api_key">To use traffic data, you need HERE maps API key. You can sign up for it in https://developer.here.com/tutorials/getting-here-credentials/</string>
@@ -68,7 +68,7 @@
     <string name="POLICE_ACTIVITY">Police activity</string>
     <string name="MEDICAL_EMERGENCY">Medical emergency</string>
     <string name="menu_positions">Vehicles</string>
-    <string name="menu_vehicles">Analytics</string>
+    <string name="menu_analytics">Analytics</string>
     <string name="alert_filtering_preferences">Alert filtering preferences</string>
 
     // Traffic Filters
@@ -106,7 +106,7 @@
     <string name="vehicle_late_time_hint">Seconds late</string>
     <string name="show_trams">Show only trams</string>
     <string name="show_busses">Show only busses</string>
-    <string name="show_metro">Show only metro</string>
+    <string name="show_metros">Show only metros</string>
     <string name="see_bus_lines_hint">Enter a line number</string>
     <string name="lines_search">See all vehicles on a line</string>
     <string name="ar_map_refresh_button_text">Refresh Map</string>
@@ -124,6 +124,12 @@
     <string name="arcore_not_supported" >This device does not support AR</string>
     <string name="arcore_not_installed">Please install ARCore</string>
     <string name="arcore_not_updated">Please update ARCore</string>
-    <string name="menu_analytics">Analytics</string>
     <string name="analytics">Quering HSL API...</string>
+    <string name="analytics_text_view">Query finished %1$s \nQuery elapsed %2$s milliseconds</string>
+    <string name="analytics_chartmodel_title">Arrival times at stops</string>
+    <string name="arrival_times_text">Arrival times</string>
+    <string name="busses_text">Buses</string>
+    <string name="trams_text">Trams</string>
+    <string name="metros_text">Metros</string>
+
 </resources>
