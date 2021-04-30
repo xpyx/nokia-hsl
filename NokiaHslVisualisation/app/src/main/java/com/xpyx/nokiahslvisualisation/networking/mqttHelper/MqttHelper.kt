@@ -2,9 +2,11 @@ package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
 import android.util.Log
+import com.google.ar.sceneform.ux.ArFragment
 import com.google.gson.Gson
 import com.xpyx.nokiahslvisualisation.fragments.map.MapFragment
 import com.xpyx.nokiahslvisualisation.fragments.analytics.AnalyticsFragment
+import com.xpyx.nokiahslvisualisation.fragments.ar.ARFragment
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_CLIENT_USER_NAME
 import com.xpyx.nokiahslvisualisation.utils.Constants.Companion.HSL_MQTT_HOST
@@ -121,6 +123,48 @@ class MqttHelper {
         })
     }
 
+
+    fun receiveMessagesInARBus(arFragment: ARFragment) {
+
+        val gson = Gson()
+
+        mqttAndroidClient.setCallback(object : MqttCallback {
+            override fun connectionLost(cause: Throwable) {
+                connectionStatus = false
+                // Give your callback on failure here
+                Log.d("DBG", "MQTT connection lost")
+
+            }
+
+            override fun messageArrived(topic: String, message: MqttMessage) {
+
+                try {
+                    val data = String(message.payload, charset("UTF-8"))
+                    val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
+
+                    // Set time
+                    time = if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
+                        2000
+                    } else {
+                        15000
+                    }
+
+                    // Here I update the fragment that shows the data
+                    arFragment.updateUI(vehiclePosition)
+                    //Log.d("DBG", "Vehi posi: $vehiclePosition")
+
+                } catch (e: Exception) {
+                    // Give your callback on error here
+                    Log.d("DBG", "MQTT exception: $e")
+
+                }
+            }
+
+            override fun deliveryComplete(token: IMqttDeliveryToken) {
+                // Acknowledgement on delivery complete
+            }
+        })
+    }
 
     fun unSubscribe(topic: String) {
 

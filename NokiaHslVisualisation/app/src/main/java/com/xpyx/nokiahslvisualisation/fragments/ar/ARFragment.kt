@@ -1,20 +1,32 @@
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.UnavailableException
@@ -24,18 +36,27 @@ import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.xpyx.nokiahslvisualisation.R
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModel
+import com.xpyx.nokiahslvisualisation.api.MQTTViewModelFactory
+import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
+import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import kotlinx.android.synthetic.main.fragment_ar.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import uk.co.appoly.arcorelocation.LocationMarker
 import uk.co.appoly.arcorelocation.LocationScene
 import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
+import java.util.jar.Manifest
 
 
 class ARFragment : Fragment() {
 
-
-
     private var arCoreInstallRequested = false
+    var positions = mutableMapOf<String, VehiclePosition>()
 
     // Our ARCore-Location scene
     private var locationScene: LocationScene? = null
@@ -54,6 +75,7 @@ class ARFragment : Fragment() {
 
     private var vehicleSet: MutableSet<Vehicle> = mutableSetOf()
     private var areAllMarkersLoaded = false
+    private lateinit var mMQTTViewModel: MQTTViewModel
 
 
     override fun onCreateView(
@@ -64,17 +86,134 @@ class ARFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_ar, container, false)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // set up mqtt
+        // MQTT viewmodel
+        val mqttRepository = MQTTRepository()
+        val mqttViewModelFactory = MQTTViewModelFactory(mqttRepository)
+        mMQTTViewModel =
+            ViewModelProvider(this, mqttViewModelFactory).get(MQTTViewModel::class.java)
 
         setupLoadingDialog()
 
-        vehicleSet.add(Vehicle("1", "2", 60.2700, 24.400, 90.0))
-        vehicleSet.add(Vehicle("1", "203", 60.2833, 24.4607, 0.0))
+    }
+
+    private fun subscribe() {
+
+        // Get user location
+        Log.d("DBG", "Geoloc: ${userGeolocation.latitude} ${userGeolocation.longitude}")
+
+        val add = 0.02
+
+        // vasen alakulma
+        val lat = userGeolocation.latitude!!.toDouble() - add
+        val long = userGeolocation.longitude!!.toDouble() - add
+
+        // oikea yläkulma
+        val lat2 = userGeolocation.latitude!!.toDouble() + add
+        val long2 = userGeolocation.longitude!!.toDouble() + add
+
+
+        // Fetch all buses in radius of 5km
+
+        // 1. do bounding box
+        val bb = getBoundingBox(lat, long, lat2, long2)
+
+        // 2. subscribe to MQTT
+        mMQTTViewModel.subscribe(bb[0])
+        mMQTTViewModel.subscribe(bb[1])
+    }
+
+    private suspend fun connectMQTT() {
+        val job = GlobalScope.launch(Dispatchers.IO) {
+            view?.context?.let { mMQTTViewModel.connectMQTT(it) }
+        }
+        job.join()
+        delay(10000) // wait for connection to be established
+        mMQTTViewModel.receiveMessagesInARBus(this)
+
+        subscribe()
+    }
+
+    fun updateUI(vehiclePosition: VehiclePosition) {
+
+//        var x = 1
+//
+//        if (x == 1) {
+        // For each vehiclePosition
+        // add to map
+        // If positions map contains the vehicle, just update it's info
+        if (positions.containsKey(
+                vehiclePosition.VP.oper.toString() +
+                        vehiclePosition.VP.veh.toString()
+            )
+        ) {
+
+            // If positions map doesn't contain the vehicle, add it there
+        } else {
+            positions[vehiclePosition.VP.oper.toString() +
+                    vehiclePosition.VP.veh.toString()] = vehiclePosition
+
+        }
+
+
+
+        positions.forEach {
+
+            Log.d("DBG", vehiclePosition.toString())
+
+            vehicleSet.add(
+                Vehicle(
+                    it.value.VP.oper.toString(),
+                    it.value.VP.veh.toString(),
+                    it.value.VP.lat.toDouble(),
+                    it.value.VP.long.toDouble(),
+                    it.value.VP.hdg.toDouble()
+                )
+            )
+        }
+
+
+
         renderVenues()
 
-            }
+//            x++
+//        }
+
+
+    }
+
+    fun getBoundingBox(lat: Double, long: Double, lat2: Double, long2: Double): List<String> {
+
+        val latSplit = lat.toString().split(".")
+        val longSplit = long.toString().split(".")
+
+        val latSplit2 = lat2.toString().split(".")
+        val longSplit2 = long2.toString().split(".")
+
+        val topic1: String =
+            "/hfp/v2/journey/ongoing/+/+/+/+/+/+/+/+/+/3" +
+                    "/${latSplit[0]};${longSplit[0]}" +
+                    "/${latSplit[1].first()}${longSplit[1].first()}" +
+                    "/${latSplit[1][1]}${longSplit[1][1]}" +
+                    "/#"
+
+        val topic2: String =
+            "/hfp/v2/journey/ongoing/+/+/+/+/+/+/+/+/+/3" +
+                    "/${latSplit2[0]};${longSplit2[0]}" +
+                    "/${latSplit2[1].first()}${longSplit2[1].first()}" +
+                    "/${latSplit2[1][1]}${longSplit2[1][1]}" +
+                    "/#"
+
+
+        val list = listOf<String>(topic1, topic2)
+
+        return list
+
+    }
 
     private fun setupLoadingDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
@@ -84,6 +223,7 @@ class ARFragment : Fragment() {
         loadingDialog = alertDialogBuilder.create()
         loadingDialog.setCanceledOnTouchOutside(false)
     }
+
     private fun setupSession() {
         if (fragment == null) {
             return
@@ -127,9 +267,18 @@ class ARFragment : Fragment() {
 
     fun fetchVenues(deviceLatitude: Double, deviceLongitude: Double) {
         loadingDialog.dismiss()
+
+        // This is where the user is
         userGeolocation = Geolocation(deviceLatitude.toString(), deviceLongitude.toString())
 
+        // Connect to MQTT broker, subscribe to topic and start receiving messages
+        GlobalScope.launch(Dispatchers.Main) {
+            connectMQTT()
+        }
+
+
     }
+
     private fun renderVenues() {
         setupAndRenderVenuesMarkers()
         updateVenuesMarkers()
@@ -223,11 +372,13 @@ class ARFragment : Fragment() {
 
             resumeArElementsTask.run {
                 computeNewScaleModifierBasedOnDistance(locationMarker, locationNode.distance)
-                locationMarker.node.localRotation = Quaternion.axisAngle(Vector3(0f,1f,0f),heading)
+                locationMarker.node.localRotation =
+                    Quaternion.axisAngle(Vector3(0f, 1f, 0f), heading)
 
             }
         }
     }
+
     private fun checkAndRequestPermissions() {
         if (!PermissionUtils.hasLocationAndCameraPermissions(requireContext())) {
             PermissionUtils.requestCameraAndLocationPermissions(requireActivity())
@@ -251,7 +402,7 @@ class ARFragment : Fragment() {
                 // Permission denied with checking "Do not ask again".
                 PermissionUtils.launchPermissionSettings(Activity())
             }
-           // finish()
+            // finish()
         }
     }
 
@@ -277,11 +428,14 @@ class ARFragment : Fragment() {
     }
 
 
-    private fun setVenueNode(venue: Vehicle, completableFuture: CompletableFuture<ModelRenderable>): Node {
+    private fun setVenueNode(
+        venue: Vehicle,
+        completableFuture: CompletableFuture<ModelRenderable>
+    ): Node {
         val node = Node()
 
         node.renderable = completableFuture.get()
-        node.localRotation = Quaternion.axisAngle(Vector3(0f,1f,0f),venue.heading.toFloat())
+        node.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f), venue.heading.toFloat())
         node.setOnTouchListener { _, _ ->
             Toast.makeText(context, "Bussi no: ${venue.veh}", Toast.LENGTH_SHORT).show()
 
@@ -314,6 +468,7 @@ class ARFragment : Fragment() {
     }
 
 }
+
 class LocationAsyncTask(private val activityWeakReference: WeakReference<ARFragment>) :
     AsyncTask<LocationScene, Void, List<Double>>() {
 
