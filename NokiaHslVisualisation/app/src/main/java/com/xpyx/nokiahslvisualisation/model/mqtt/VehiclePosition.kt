@@ -27,5 +27,4 @@ data class SingleVehiclePositionData(
     val stop: String,
     val route: String,
     val occu: Int
-
 )

@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.ar.sceneform.ux.ArFragment
 import com.xpyx.nokiahslvisualisation.fragments.map.MapFragment
 import com.xpyx.nokiahslvisualisation.fragments.analytics.AnalyticsFragment
+import com.xpyx.nokiahslvisualisation.fragments.ar.ARFragment
 import com.xpyx.nokiahslvisualisation.model.mqtt.VehiclePosition
 import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import kotlinx.coroutines.launch
@@ -29,6 +31,12 @@ class MQTTViewModel(private val mqttRepository: MQTTRepository): ViewModel() {
     fun receiveMessagesInARMAp(mapFragment: MapFragment) {
         viewModelScope.launch {
             mqttRepository.mqtt.receiveMessagesInARMap(mapFragment)
+        }
+    }
+
+    fun receiveMessagesInARBus(arFragment: ARFragment) {
+        viewModelScope.launch {
+            mqttRepository.mqtt.receiveMessagesInARBus(arFragment)
         }
     }
 
