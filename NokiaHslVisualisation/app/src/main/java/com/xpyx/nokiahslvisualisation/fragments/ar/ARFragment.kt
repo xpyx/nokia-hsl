@@ -1,11 +1,6 @@
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -18,15 +13,10 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.UnavailableException
@@ -45,12 +35,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import uk.co.appoly.arcorelocation.LocationMarker
 import uk.co.appoly.arcorelocation.LocationScene
 import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
-import java.util.jar.Manifest
 
 
 class ARFragment : Fragment() {
@@ -132,7 +120,7 @@ class ARFragment : Fragment() {
             view?.context?.let { mMQTTViewModel.connectMQTT(it) }
         }
         job.join()
-        delay(10000) // wait for connection to be established
+        delay(5000) // wait for connection to be established
         mMQTTViewModel.receiveMessagesInARBus(this)
 
         subscribe()
@@ -140,30 +128,22 @@ class ARFragment : Fragment() {
 
     fun updateUI(vehiclePosition: VehiclePosition) {
 
-//        var x = 1
-//
-//        if (x == 1) {
-        // For each vehiclePosition
-        // add to map
+        // For each arriving vehiclePosition
+        // Add to positions map
         // If positions map contains the vehicle, just update it's info
         if (positions.containsKey(
                 vehiclePosition.VP.oper.toString() +
-                        vehiclePosition.VP.veh.toString()
-            )
+                        vehiclePosition.VP.veh.toString())
         ) {
-
             // If positions map doesn't contain the vehicle, add it there
         } else {
             positions[vehiclePosition.VP.oper.toString() +
                     vehiclePosition.VP.veh.toString()] = vehiclePosition
-
         }
-
-
 
         positions.forEach {
 
-            Log.d("DBG", vehiclePosition.toString())
+            Log.d("DBG", "VP: ${vehiclePosition.toString()}")
 
             vehicleSet.add(
                 Vehicle(
@@ -171,22 +151,19 @@ class ARFragment : Fragment() {
                     it.value.VP.veh.toString(),
                     it.value.VP.lat.toDouble(),
                     it.value.VP.long.toDouble(),
-                    it.value.VP.hdg.toDouble()
+                    it.value.VP.hdg.toDouble(),
+                    it.value.VP.spd.toDouble(),
+                    it.value.VP.acc.toDouble(),
+                    it.value.VP.odo.toDouble(),
+                    it.value.VP.dl.toDouble()
                 )
             )
         }
 
-
-
         renderVenues()
-
-//            x++
-//        }
-
-
     }
 
-    fun getBoundingBox(lat: Double, long: Double, lat2: Double, long2: Double): List<String> {
+    private fun getBoundingBox(lat: Double, long: Double, lat2: Double, long2: Double): List<String> {
 
         val latSplit = lat.toString().split(".")
         val longSplit = long.toString().split(".")
@@ -208,10 +185,7 @@ class ARFragment : Fragment() {
                     "/${latSplit2[1][1]}${longSplit2[1][1]}" +
                     "/#"
 
-
-        val list = listOf<String>(topic1, topic2)
-
-        return list
+        return listOf(topic1, topic2)
 
     }
 
@@ -434,10 +408,21 @@ class ARFragment : Fragment() {
     ): Node {
         val node = Node()
 
+        val snippet = """ 
+            Operator: ${venue.oper}
+            Vehicle: ${venue.veh}   
+            
+            Speed: ${venue.spd} m/s
+            Heading: ${venue.heading} degrees
+            Acceleration: ${venue.acc} m/s2
+            Odometer reading: ${venue.odo} m
+            Offset from timetable: ${venue.dl} seconds
+        """.trimIndent()
+
         node.renderable = completableFuture.get()
         node.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f), venue.heading.toFloat())
         node.setOnTouchListener { _, _ ->
-            Toast.makeText(context, "Bussi no: ${venue.veh}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, snippet, Toast.LENGTH_LONG).show()
 
 
             false

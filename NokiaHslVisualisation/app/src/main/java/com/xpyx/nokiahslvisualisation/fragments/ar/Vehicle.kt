@@ -5,5 +5,9 @@ data class Vehicle(
     val veh:String,
     val lat:Double,
     val long:Double,
-    val heading:Double
+    val heading:Double,
+    val spd: Double,
+    val acc: Double,
+    val odo: Double,
+    val dl: Double
 )
