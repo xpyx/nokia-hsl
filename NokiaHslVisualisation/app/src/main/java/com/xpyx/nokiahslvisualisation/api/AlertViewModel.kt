@@ -26,3 +26,4 @@ class AlertViewModel(private val alertRepository: AlertRepository): ViewModel() 
         }
     }
 }
+
