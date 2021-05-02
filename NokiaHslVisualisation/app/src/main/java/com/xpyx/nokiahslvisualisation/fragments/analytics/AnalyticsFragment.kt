@@ -1,3 +1,11 @@
+/**
+ * Description: Fragment to show analytical information of the current status of HSL
+ * transport system stops and vehicles arriving at the stops
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.analytics
 
 import android.os.Bundle
@@ -21,7 +29,6 @@ import kotlinx.android.synthetic.main.fragment_analytics.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-
 
 class AnalyticsFragment : Fragment() {
 

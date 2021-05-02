@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: ViewModel setup for alert items
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen

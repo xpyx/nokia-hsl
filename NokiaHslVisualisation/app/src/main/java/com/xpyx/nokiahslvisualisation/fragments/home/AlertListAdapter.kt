@@ -1,6 +1,10 @@
 /**
  * Description:
  *
+ * Adapter for alert recycler view to set the data,
+ * apply filters used in HomeFragment and
+ * apply navigation to HSL web pages
+ *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen
  */

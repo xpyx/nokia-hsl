@@ -1,3 +1,10 @@
+/**
+ * Description: Fragment to show live positions of busses with 3D models in AR
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Mikael Ylivaara, Ville Pystynen, Billy To
+ */
+
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
 import android.app.Activity

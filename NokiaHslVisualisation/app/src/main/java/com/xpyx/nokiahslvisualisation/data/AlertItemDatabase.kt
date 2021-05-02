@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: Room Database instance
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen

@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: The class responsible for creating the instance of an StopTimesViewModel
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen

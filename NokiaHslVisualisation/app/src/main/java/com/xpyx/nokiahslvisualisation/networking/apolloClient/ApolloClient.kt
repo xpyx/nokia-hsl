@@ -1,3 +1,10 @@
+/**
+ * Description: An Apollo client for making queries to HSL GraphQL API
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.networking.apolloClient
 
 import com.apollographql.apollo.ApolloClient

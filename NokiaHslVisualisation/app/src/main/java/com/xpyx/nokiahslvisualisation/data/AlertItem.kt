@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: Room Database entity for an alert from HSL API
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen
