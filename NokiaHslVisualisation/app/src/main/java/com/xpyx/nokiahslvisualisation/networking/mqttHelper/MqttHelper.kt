@@ -1,3 +1,10 @@
+/**
+ * Description: Helper class for using the Paho MQTT client
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import android.content.Context
@@ -100,7 +107,9 @@ class MqttHelper {
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
 
                     // Set time
-                    time = if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
+                    time = if (vehiclePosition.VP.toString().contains("oper=40") ||
+                        vehiclePosition.VP.toString().contains("oper=50")
+                    ) {
                         2000
                     } else {
                         15000
@@ -108,7 +117,6 @@ class MqttHelper {
 
                     // Here I update the fragment that shows the data
                     mapFragment.updateUI(vehiclePosition, time)
-                    //Log.d("DBG", "Vehi posi: $vehiclePosition")
 
                 } catch (e: Exception) {
                     // Give your callback on error here
@@ -143,7 +151,10 @@ class MqttHelper {
                     val vehiclePosition = gson.fromJson(data, VehiclePosition::class.java)
 
                     // Set time
-                    time = if (vehiclePosition.VP.toString().contains("oper=40") || vehiclePosition.VP.toString().contains("oper=50")) {
+                    time = if (vehiclePosition.VP.toString()
+                            .contains("oper=40") || vehiclePosition.VP.toString()
+                            .contains("oper=50")
+                    ) {
                         2000
                     } else {
                         15000
@@ -151,7 +162,6 @@ class MqttHelper {
 
                     // Here I update the fragment that shows the data
                     arFragment.updateUI(vehiclePosition)
-                    //Log.d("DBG", "Vehi posi: $vehiclePosition")
 
                 } catch (e: Exception) {
                     // Give your callback on error here

@@ -1,3 +1,10 @@
+/**
+ * Description: Helper class to convert a HSL transport line string to a route string
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.utils
 
 import android.util.Log

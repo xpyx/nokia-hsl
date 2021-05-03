@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: ViewModel for getting alert information from HSL GraphQL API
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen
