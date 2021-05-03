@@ -1,7 +1,8 @@
 ## Tools no more in use (updated in case a library is dropped)
 
 Docker
-
+Mapbox 9.6.1 [Terms of service](https://www.mapbox.com/legal/tos
+)
 ## Instructions no more in use
 
 #### To get the MQTT feed of vehicles
