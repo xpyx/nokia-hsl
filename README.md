@@ -66,11 +66,11 @@ There are 5 tabs to navigate to:
 
 ---
 
-https://youtu.be/AvtVSAVF5Lo
+Demo video of the application in use
+
 
 [![Demo video](https://img.youtube.com/vi/AvtVSAVF5Lo/0.jpg)](https://www.youtube.com/watch?v=AvtVSAVF5Lo
  "AR Visualisation for Android")
-
 
 ---
 
