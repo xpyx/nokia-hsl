@@ -36,10 +36,10 @@ This repository contains:
 
 ---
 
-[![Demo video](https://img.youtube.com/vi/qkDK1kZ4PvY/0.jpg)](https://youtu.be/bQxho0rFLpQ
- "App demo video")
 
-https://youtu.be/bQxho0rFLpQ
+
+[Demo video](https://youtu.be/bQxho0rFLpQ)
+
 
 ---
 
