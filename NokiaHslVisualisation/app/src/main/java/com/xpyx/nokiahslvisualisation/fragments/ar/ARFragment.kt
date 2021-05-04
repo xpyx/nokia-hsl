@@ -1,3 +1,13 @@
+/**
+ * Description:
+ *
+ * Fragment for displaying Bus locations on an AR inside boundingbox
+ * - find and show all buses near user
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Mikael Ylivaara & Ville Pystynen
+ *
+ */
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
 import android.app.Activity
@@ -127,7 +137,7 @@ class ARFragment : Fragment() {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
-
+        vehicleSet.clear()
         // For each arriving vehiclePosition
         // Add to positions map
         // If positions map contains the vehicle, just update it's info
@@ -230,7 +240,6 @@ class ARFragment : Fragment() {
             resumeArElementsTask.run()
         } catch (e: CameraNotAvailableException) {
             Toast.makeText(context, "Unable to get camera", Toast.LENGTH_LONG).show()
-            //finish()
             return
         }
 

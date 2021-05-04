@@ -1,3 +1,10 @@
+/**
+ * Description:
+ *Vehicle
+ *
+ * Name: Mikael Ylivaara
+ *
+ */
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
 data class Vehicle(

@@ -1,3 +1,13 @@
+/**
+ * Description:
+ *
+ * Object for handeling permissions
+ *
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Mikael Ylivaara
+ *
+ */
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
 import android.Manifest

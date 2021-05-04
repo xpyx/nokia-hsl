@@ -1,3 +1,13 @@
+/**
+ * Description:
+ *
+ * Object for settingup ArSession
+ * and handeling distance & scaling
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Mikael Ylivaara
+ *
+ */
 package com.xpyx.nokiahslvisualisation.fragments.ar
 
 import android.app.Activity
@@ -14,7 +24,7 @@ import com.xpyx.nokiahslvisualisation.R
 object AugmentedRealityLocationUtils {
 
     private const val RENDER_MARKER_MIN_DISTANCE = 2//meters
-    private const val RENDER_MARKER_MAX_DISTANCE = 7000//meters
+    private const val RENDER_MARKER_MAX_DISTANCE = 5000//meters
     const val INVALID_MARKER_SCALE_MODIFIER = -1F
     const val INITIAL_MARKER_SCALE_MODIFIER = 0.1f
 
