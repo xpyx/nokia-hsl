@@ -1,5 +1,6 @@
 /**
- * Description:
+ * Description: Fragment to show and filter information of alerts from HSL API
+ * Navigate to HSL web pages for more information of an alert by clicking it
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen

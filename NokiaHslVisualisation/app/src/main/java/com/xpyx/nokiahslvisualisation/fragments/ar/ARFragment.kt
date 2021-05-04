@@ -137,7 +137,9 @@ class ARFragment : Fragment() {
     }
 
     fun updateUI(vehiclePosition: VehiclePosition) {
+
         vehicleSet.clear()
+
         // For each arriving vehiclePosition
         // Add to positions map
         // If positions map contains the vehicle, just update it's info
@@ -240,6 +242,7 @@ class ARFragment : Fragment() {
             resumeArElementsTask.run()
         } catch (e: CameraNotAvailableException) {
             Toast.makeText(context, "Unable to get camera", Toast.LENGTH_LONG).show()
+            //finish()
             return
         }
 

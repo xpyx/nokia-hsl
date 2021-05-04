@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: ViewModel for handling MQTT operations
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen
@@ -20,8 +20,6 @@ import com.xpyx.nokiahslvisualisation.repository.MQTTRepository
 import kotlinx.coroutines.launch
 
 class MQTTViewModel(private val mqttRepository: MQTTRepository): ViewModel() {
-
-    var myMQTTResponse: MutableLiveData<VehiclePosition> = MutableLiveData()
 
     fun connectMQTT(viewContext: Context) {
         viewModelScope.launch {

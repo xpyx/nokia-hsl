@@ -1,9 +1,9 @@
 /**
  * Description: Type converters for Room Database to be able
- * to save Here Traffic items to database
+ * to save Here Traffic items and Alert items to database
  *
  * Course: Mobiiliprojekti TX00CK67-3008
- * Name: Matias Hätönen
+ * Name: Matias Hätönen, Ville Pystynen
  */
 
 package com.xpyx.nokiahslvisualisation.utils

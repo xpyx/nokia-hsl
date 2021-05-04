@@ -1,3 +1,10 @@
+/**
+ * Description: Helper class for setting an MQTT topic string
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation.networking.mqttHelper
 
 import com.xpyx.nokiahslvisualisation.model.late.Late

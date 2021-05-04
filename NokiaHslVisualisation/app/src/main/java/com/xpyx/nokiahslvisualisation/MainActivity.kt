@@ -1,3 +1,10 @@
+/**
+ * Description: Main access point of the application
+ *
+ * Course: Mobiiliprojekti TX00CK67-3008
+ * Name: Matias Hätönen, Ville Pystynen
+ */
+
 package com.xpyx.nokiahslvisualisation
 
 import android.os.Bundle

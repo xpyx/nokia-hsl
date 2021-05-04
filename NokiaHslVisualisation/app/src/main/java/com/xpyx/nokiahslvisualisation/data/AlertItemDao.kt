@@ -1,5 +1,5 @@
 /**
- * Description:
+ * Description: DAO for making queries into alert database
  *
  * Course: Mobiiliprojekti TX00CK67-3008
  * Name: Ville Pystynen
