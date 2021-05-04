@@ -27,7 +27,7 @@ This repository contains:
 
 #### Install from Google Play
 
-1. To install from Google Play you need to be part of the Mobile Project course of Metropolia. All those who are in the course can access the application installation via Google Play from [here](https://play.google.com/apps/internaltest/4699344503639103194)
+1. To install from Google Play you need to be part of the Mobile Project course of Metropolia. All those who are in the course can access the application installation via Google Play from [here](https://play.google.com/apps/internaltest/4699344503639103194). When you click the link it might tell you that "The application is not in use on this account." Then simply change your user to your Metropolia account and you will get access to the installation.
 
 #### Instructions
 
