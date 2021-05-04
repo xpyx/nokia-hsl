@@ -32,7 +32,6 @@ This repository contains:
 - Jacoco 0.8.5 [License](https://www.eclemma.org/jacoco/trunk/doc/license.html)
 - Apollo Graphql Client 2.5.5 [License](https://github.com/apollographql/apollo/blob/main/LICENSE)
 - Paho Mqtt Client 1.1.0 [License](https://www.eclipse.org/org/documents/epl-v10.php)
-- Mapbox 9.6.1 [Terms of service](https://www.mapbox.com/legal/tos)
 
 
 ---
