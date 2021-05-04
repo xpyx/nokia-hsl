@@ -1,3 +1,4 @@
+# AR Visualisation tool
 #### for transportation problems in the HSL public transport region
  
 [![CI Workflow](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml/badge.svg)](https://github.com/xpyx/nokia-hsl/actions/workflows/android-workflow.yaml)
@@ -33,6 +34,12 @@ This repository contains:
 - Apollo Graphql Client 2.5.5 [License](https://github.com/apollographql/apollo/blob/main/LICENSE)
 - Paho Mqtt Client 1.1.0 [License](https://www.eclipse.org/org/documents/epl-v10.php)
 
+---
+
+[![Demo video](https://img.youtube.com/vi/qkDK1kZ4PvY/0.jpg)](https://youtu.be/bQxho0rFLpQ
+ "App demo video")
+
+https://youtu.be/bQxho0rFLpQ
 
 ---
 
