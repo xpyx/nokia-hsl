@@ -57,7 +57,16 @@ There are 5 tabs to navigate to:
 - Gson 2.8.6 [License](https://github.com/google/gson/blob/master/LICENSE)
 - AAChartKit [Github](https://github.com/AAChartModel/AAChartKit/blob/master/LICENSE)
 
+#### Used APIs
+
+- [HSL Routing API](https://digitransit.fi/en/developers/apis/1-routing-api/)
+- [HSL Realtime API](https://digitransit.fi/en/developers/apis/4-realtime-api/)
+- [HSL High Frequency Positioning API](https://digitransit.fi/en/developers/apis/4-realtime-api/vehicle-positions/)
+- [HERE Maps API](https://developer.here.com/)
+
 ---
+
+
 
 
 [Demo video](https://youtu.be/bQxho0rFLpQ)
