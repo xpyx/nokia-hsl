@@ -25,6 +25,10 @@ This repository contains:
 
 1. To get the apk, use the releases tab in this repository.
 
+#### Install from Google Play
+
+1. To install from Google Play you need to be part of the Mobile Project course of Metropolia. All those who are in the course can access the application installation via Google Play from [here](https://play.google.com/apps/internaltest/4699344503639103194)
+
 #### Instructions
 
 There are 5 tabs to navigate to:
