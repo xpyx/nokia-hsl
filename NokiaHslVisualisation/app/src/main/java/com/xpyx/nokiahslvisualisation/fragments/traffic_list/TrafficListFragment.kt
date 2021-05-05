@@ -138,8 +138,8 @@ class TrafficListFragment : Fragment(){
         hereTrafficViewModelTraffic =
                 ViewModelProvider(this, viewModelFactory).get(TrafficApiViewModel::class.java)
 
-        //hereTrafficApiKey = resources.getString(string.here_maps_api_key)
-        hereTrafficApiKey = ""
+        hereTrafficApiKey = resources.getString(string.here_maps_api_key)
+        //hereTrafficApiKey = ""
 
         loadData()
         if (hereTrafficApiKey.isNotEmpty()) {
